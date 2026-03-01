@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 class Base:
     name: str
 
@@ -11,12 +13,53 @@ class Base:
         return hash(self.name)
 
 
+class Table:
+    data: dict[str, Base]
+
+    def __init__(self):
+        self.data = {}
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, key: str):
+        return self.data[key]
+
+    def __delitem__(self, key: str):
+        del self.data[key]
+
+    def __iter__(self):
+        return map(lambda name: self.data[name], sorted(self.data.keys()))
+
+    def add(self, item: Base):
+        self.data[item.name] = item
+
+
+@dataclass
+class SurfaceCondition:
+    property: str
+    min: float | None
+    max: float | None
+
+
+class Lab(Base):
+    inputs: set[str]
+    surface_conditions: list[SurfaceCondition]
+
+    def __init__(self, name: str, inputs: set[str], surface_conditions: list[SurfaceCondition]):
+        super().__init__(name)
+        self.inputs = inputs
+        self.surface_conditions = surface_conditions
+
+
 class Machine(Base):
     categories: set[str]
+    surface_conditions: list[SurfaceCondition]
 
-    def __init__(self, name: str, categories: set[str]):
+    def __init__(self, name: str, categories: set[str], surface_conditions: list[SurfaceCondition] = None):
         super().__init__(name)
         self.categories = categories
+        self.surface_conditions = surface_conditions if surface_conditions is not None else list()
 
 
 class Recipe(Base):
@@ -34,8 +77,11 @@ class Recipe(Base):
 
 
 class Surface(Base):
-    def __init__(self, name: str):
+    properties: dict[str, float]
+
+    def __init__(self, name: str, properties: dict[str, float]):
         super().__init__(name)
+        self.properties = properties
 
 
 class Technology(Base):

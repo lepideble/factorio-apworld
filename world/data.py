@@ -3,49 +3,65 @@ import pkgutil
 import orjson
 
 from .config import override_data
-from .data_classes import Machine, Recipe, Surface, Technology
+from .data_classes import Lab, Machine, Recipe, Surface, SurfaceCondition, Table, Technology
 
 
-data = orjson.loads(pkgutil.get_data(__name__, "config/data.json"))
+data = orjson.loads(pkgutil.get_data(__name__, 'config/data.json'))
 
 def get_data(type: str):
-    return {k: v for k, v in data[type].items() if not v.get("parameter", False)}
+    return ((k, v) for k, v in data[type].items() if not v.get('parameter', False))
+
+
+# Surfaces
+surfaces = Table()
+surfaces_accessible_at_start = {'nauvis'}
+
+for surface_name, surface_data in get_data('surface'):
+    surfaces.add(Surface(surface_name, surface_data['surface_properties']))
+
+for planet_name, planet_data in get_data('planet'):
+    surfaces.add(Surface(planet_name, planet_data['surface_properties']))
 
 
 # Machines
-machines: dict[str, Machine] = {}
+machines = Table()
 
-for machine_name, machine_data in get_data("assembling-machine").items():
-    machine = Machine(machine_name, set(machine_data["crafting_categories"]))
-    machines[machine.name] = machine
+for machine_name, machine_data in get_data("assembling-machine"):
+    machines.add(Machine(machine_name, set(machine_data["crafting_categories"])))
 
-for machine_name, machine_data in get_data("asteroid-collector").items():
-    machine = Machine(machine_name, {"asteroid-collecting"})
-    machines[machine.name] = machine
+for machine_name, machine_data in get_data("asteroid-collector"):
+    machines.add(Machine(machine_name, {"asteroid-collecting"}))
 
-for machine_name, machine_data in get_data("character").items():
-    machine = Machine(machine_name, set(machine_data["crafting_categories"]))
-    machines[machine.name] = machine
+for machine_name, machine_data in get_data("character"):
+    machines.add(Machine(machine_name, set(machine_data["crafting_categories"])))
 
-for machine_name, machine_data in get_data("mining-drill").items():
-    machine = Machine(machine_name, set(machine_data["resource_categories"]))
-    machines[machine.name] = machine
+for machine_name, machine_data in get_data("mining-drill"):
+    machines.add(Machine(machine_name, set(machine_data["resource_categories"])))
 
-for machine_name, machine_data in get_data("furnace").items():
-    machine = Machine(machine_name, set(machine_data["crafting_categories"]))
-    machines[machine.name] = machine
+for machine_name, machine_data in get_data("furnace"):
+    machines.add(Machine(machine_name, set(machine_data["crafting_categories"])))
 
-for machine_name, machine_data in get_data("rocket-silo").items():
-    machine = Machine(machine_name, set(machine_data["crafting_categories"]))
-    machines[machine.name] = machine
+for machine_name, machine_data in get_data("rocket-silo"):
+    machines.add(Machine(machine_name, set(machine_data["crafting_categories"])))
+
+
+# Science lab
+labs = Table()
+
+for lab_name, lab_data in get_data('lab'):
+    labs.add(Lab(
+        lab_name,
+        set(lab_data['inputs']),
+        [SurfaceCondition(surface_condition['property'], surface_condition.get('min'), surface_condition.get('max')) for surface_condition in lab_data.get('surface_conditions', [])],
+    ))
 
 
 # Recipes
-recipes: dict[str, Recipe] = {}
+recipes = Table()
 recipes_unlocked_at_start: dict[str] = set()
 recipes_mining_with_fluid: dict[str] = set()
 
-for asteroid_name, asteroid_data in get_data("asteroid").items():
+for asteroid_name, asteroid_data in get_data("asteroid"):
     recipe = Recipe(
         f"asteroid-collecting-{asteroid_name}",
         "asteroid-collecting",
@@ -54,10 +70,10 @@ for asteroid_name, asteroid_data in get_data("asteroid").items():
         0,
     )
 
-    recipes[recipe.name] = recipe
+    recipes.add(recipe)
     recipes_unlocked_at_start.add(recipe.name)
 
-for recipe_name, recipe_data in get_data("recipe").items():
+for recipe_name, recipe_data in get_data('recipe'):
     recipe = Recipe(
         recipe_name, 
         recipe_data.get("category", "crafting"),
@@ -66,11 +82,11 @@ for recipe_name, recipe_data in get_data("recipe").items():
         recipe_data.get("energy_required", 0.5)
     )
 
-    recipes[recipe.name] = recipe
+    recipes.add(recipe)
     if recipe_data.get("enabled", True):
         recipes_unlocked_at_start.add(recipe.name)
 
-for resource_name, resource_data in get_data("resource").items():
+for resource_name, resource_data in get_data("resource"):
     if "result" in resource_data["minable"]:
         products = {resource_data["minable"]["result"]: 1}
     elif "results" in resource_data["minable"]:
@@ -86,17 +102,26 @@ for resource_name, resource_data in get_data("resource").items():
         resource_data["minable"]["mining_time"]
     )
 
-    recipes[recipe.name] = recipe
+    recipes.add(recipe)
     recipes_unlocked_at_start.add(recipe.name)
 
     if "required_fluid" in resource_data["minable"]:
         recipes_mining_with_fluid.add(recipe.name)
 
 
-# Technologies
-technologies: dict[str, Technology] = {}
+# Science packs
+# this is a list because keeping the order in which they are defined is important
+science_packs = list()
 
-for technology_name, technology_data in get_data("technology").items():
+for tool_name, tool_data in get_data('tool'):
+    if tool_data['subgroup'] == 'science-pack':
+        science_packs.append(tool_name)
+
+
+# Technologies
+technologies = Table()
+
+for technology_name, technology_data in get_data('technology'):
     technology = Technology(technology_name)
 
     for effect in technology_data.get("effects", []):
@@ -110,7 +135,7 @@ for technology_name, technology_data in get_data("technology").items():
             case _:
                 technology.modifiers.append(effect["type"])
 
-    technologies[technology.name] = technology
+    technologies.add(technology)
 
 
 # Cleanup
@@ -118,26 +143,12 @@ del recipes_mining_with_fluid
 
 
 # Override
-override_data(machines, recipes, recipes_unlocked_at_start, technologies)
-
-
-# Debug
-if __name__ == '__main__':
-    for machine in machines.values():
-        print(f'Machine: {machine.name}')
-        print(f'  categories: {', '.join(machine.categories)}')
-
-    for recipe in recipes.values():
-        print(f'Recipe: {recipe.name}')
-        print(f'  category: {recipe.category}')
-        print(f'  ingredients: {recipe.ingredients}')
-        print(f'  products: {recipe.products}')
-
-    for technology in technologies.values():
-        print(f'Technologies: {technology.name}')
-        if len(technology.unlocked_recipes) > 0:
-            print(f'  unlocked_recipes: {', '.join(technology.unlocked_recipes)}')
-        if len(technology.unlocked_space_locations) > 0:
-            print(f'  unlocked_space_locations: {', '.join(technology.unlocked_space_locations)}')
-        if len(technology.modifiers) > 0:
-            print(f'  modifiers: {technology.modifiers}')
+override_data(
+    machines=machines,
+    recipes=recipes,
+    recipes_unlocked_at_start=recipes_unlocked_at_start,
+    science_packs=science_packs,
+    surfaces=surfaces,
+    surfaces_accessible_at_start=surfaces_accessible_at_start,
+    technologies=technologies,
+)
