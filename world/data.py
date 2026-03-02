@@ -27,10 +27,18 @@ for planet_name, planet_data in get_data('planet'):
 machines = Table()
 
 for machine_name, machine_data in get_data("assembling-machine"):
-    machines.add(Machine(machine_name, set(machine_data["crafting_categories"])))
+    machines.add(Machine(
+        machine_name,
+        set(machine_data["crafting_categories"]),
+        [SurfaceCondition.from_data(surface_condition) for surface_condition in machine_data.get('surface_conditions', [])],
+    ))
 
 for machine_name, machine_data in get_data("asteroid-collector"):
-    machines.add(Machine(machine_name, {"asteroid-collecting"}))
+    machines.add(Machine(
+        machine_name,
+        {'asteroid'},
+        [SurfaceCondition.from_data(surface_condition) for surface_condition in machine_data.get('surface_conditions', [])],
+    ))
 
 for machine_name, machine_data in get_data("character"):
     machines.add(Machine(machine_name, set(machine_data["crafting_categories"])))
@@ -52,7 +60,7 @@ for lab_name, lab_data in get_data('lab'):
     labs.add(Lab(
         lab_name,
         set(lab_data['inputs']),
-        [SurfaceCondition(surface_condition['property'], surface_condition.get('min'), surface_condition.get('max')) for surface_condition in lab_data.get('surface_conditions', [])],
+        [SurfaceCondition.from_data(surface_condition) for surface_condition in lab_data.get('surface_conditions', [])],
     ))
 
 
@@ -61,17 +69,12 @@ recipes = Table()
 recipes_unlocked_at_start: dict[str] = set()
 recipes_mining_with_fluid: dict[str] = set()
 
-for asteroid_name, asteroid_data in get_data("asteroid"):
-    recipe = Recipe(
-        f"asteroid-collecting-{asteroid_name}",
-        "asteroid-collecting",
-        {},
-        {asteroid_name: 1},
-        0,
-    )
+for asteroid_chunk_name, asteroid_chunk_data in get_data('asteroid-chunk'):
+    if not 'minable' in asteroid_chunk_data:
+        continue
 
-    recipes.add(recipe)
-    recipes_unlocked_at_start.add(recipe.name)
+    recipes.add(Recipe(asteroid_chunk_name, 'asteroid', {}, {asteroid_chunk_data['minable']['result']: 1}, 0))
+    recipes_unlocked_at_start.add(asteroid_chunk_name)
 
 for recipe_name, recipe_data in get_data('recipe'):
     recipe = Recipe(
@@ -152,3 +155,43 @@ override_data(
     surfaces_accessible_at_start=surfaces_accessible_at_start,
     technologies=technologies,
 )
+
+
+# Create lookup tables
+_machines_by_category: dict[str, list[Machine]] = {}
+
+for machine in machines:
+    for category in machine.categories:
+        if not category in _machines_by_category:
+            _machines_by_category[category] = list()
+
+        _machines_by_category[category].append(machine)
+
+def machines_by_category(category: str) -> list[Machine]:
+    return _machines_by_category.get(category, [])
+
+
+_recipes_by_product: dict[str, list[Recipe]] = {}
+
+for recipe in recipes:
+    for product in recipe.products.keys():
+        if not product in _recipes_by_product:
+            _recipes_by_product[product] = list()
+
+        _recipes_by_product[product].append(recipe)
+
+def recipes_by_product(product: str) -> list[Recipe]:
+    return _recipes_by_product.get(product, [])
+
+
+_technologies_by_recipe_unlocked: dict[str, list[Technology]] = {}
+
+for technology in technologies:
+    for recipe_name in technology.unlocked_recipes:
+        if not recipe_name in _technologies_by_recipe_unlocked:
+            _technologies_by_recipe_unlocked[recipe_name] = list()
+
+        _technologies_by_recipe_unlocked[recipe_name].append(technology)
+
+def technologies_by_recipe_unlocked(recipe: str) -> list[Technology]:
+    return _technologies_by_recipe_unlocked.get(recipe, [])

@@ -1,12 +1,14 @@
 from BaseClasses import Region, Location, Item, ItemClassification
+from rule_builder.rules import And, HasAny, Or
 from worlds.AutoWorld import World
 
 from ..config import game_name
-from ..data import recipes, science_packs, surfaces, surfaces_accessible_at_start, technologies
+from ..data import machines_by_category, recipes, recipes_by_product, science_packs, surfaces, surfaces_accessible_at_start, technologies, technologies_by_recipe_unlocked
 
 from .items import item_ids
 from .locations import location_ids, science_location_pools
 from .options import FactorioOptions
+from .rules import HasMachine, HasRecipe
 
 class FactorioItem(Item):
     game = game_name
@@ -41,6 +43,8 @@ class FactorioWorld(World):
     options_dataclass = FactorioOptions
     options: FactorioOptions
 
+    science_locations: list[FactorioScienceLocation]
+
     def __init__(self, multiworld, player: int):
         super().__init__(multiworld, player)
 
@@ -59,6 +63,7 @@ class FactorioWorld(World):
 
             for recipe in recipes:
                 region.add_event(f'Automate {recipe.name} on {surface.name}')
+                region.add_event(f'Craft {recipe.name} on {surface.name}')
 
             self.multiworld.regions.append(region)
 
@@ -68,9 +73,9 @@ class FactorioWorld(World):
         for pack in self.options.max_science_pack.get_allowed_packs():
             science_location_pool.extend(science_location_pools[pack])
 
-        science_locations = []
+        self.science_locations = []
         for science_location_name in self.random.sample(science_location_pool, len(technologies)):
-            science_locations.append(FactorioScienceLocation(self.player, science_location_name, None, menu_region))
+            self.science_locations.append(FactorioScienceLocation(self.player, science_location_name, None, menu_region))
 
         cost_distribution = self.options.tech_cost_distribution
         min_cost = self.options.min_tech_cost.value
@@ -78,13 +83,13 @@ class FactorioWorld(World):
 
         match cost_distribution:
             case cost_distribution.option_even:
-                science_location_costs = (self.random.randint(min_cost, max_cost) for _ in science_locations)
+                science_location_costs = (self.random.randint(min_cost, max_cost) for _ in self.science_locations)
             case cost_distribution.option_low:
-                science_location_costs = (self.random.triangular(min_cost, max_cost, min_cost) for _ in science_locations)
+                science_location_costs = (self.random.triangular(min_cost, max_cost, min_cost) for _ in self.science_locations)
             case cost_distribution.option_middle:
-                science_location_costs = (self.random.triangular(min_cost, max_cost, (min_cost + max_cost) // 2) for _ in science_locations)
+                science_location_costs = (self.random.triangular(min_cost, max_cost, (min_cost + max_cost) // 2) for _ in self.science_locations)
             case cost_distribution.option_high:
-                science_location_costs = (self.random.triangular(min_cost, max_cost, max_cost) for _ in science_locations)
+                science_location_costs = (self.random.triangular(min_cost, max_cost, max_cost) for _ in self.science_locations)
 
         science_location_costs = sorted(science_location_costs)
 
@@ -93,14 +98,46 @@ class FactorioWorld(World):
         else:
             sorter = lambda location: location.cost
 
-        for i, location in enumerate(sorted(science_locations, key=sorter)):
+        for i, location in enumerate(sorted(self.science_locations, key=sorter)):
             location.count = science_location_costs[i]
 
-        menu_region.locations.extend(science_locations)
+        menu_region.locations.extend(self.science_locations)
 
     def create_items(self) -> None:
         for technology in technologies:
             self.multiworld.itempool.append(self.create_item(technology.name))
+
+    def set_rules(self) -> None:
+        for surface in surfaces:
+            for recipe in recipes:
+                self.set_rule(
+                    self.get_location(f'Craft {recipe.name} on {surface.name}'),
+                    And(
+                        HasRecipe(recipe.name),
+                        Or(*[HasMachine(machine.name, surface.name) for machine in machines_by_category(recipe.category) if machine.can_be_placed_on(surface)]),
+                        And(*[
+                            HasAny(*[f'Craft {ingredient_recipe.name} on {surface.name}' for ingredient_recipe in recipes_by_product(ingredient_name)
+                        ]) for ingredient_name in recipe.ingredients.keys()]),
+                    ),
+                )
+
+                self.set_rule(
+                    self.get_location(f'Automate {recipe.name} on {surface.name}'),
+                    And(
+                        HasRecipe(recipe.name),
+                        Or(*[HasMachine(machine.name, surface.name) for machine in machines_by_category(recipe.category) if machine.can_be_placed_on(surface) and machine.name != 'character']),
+                        And(*[
+                            HasAny(*[f'Automate {ingredient_recipe.name} on {surface.name}' for ingredient_recipe in recipes_by_product(ingredient_name)
+                        ]) for ingredient_name in recipe.ingredients.keys()]),
+                    ),
+                )
+
+        for science_location in self.science_locations:
+            self.set_rule(science_location, And(*[
+                HasAny(*[f'Automate {science_pack} on {surface.name}' for surface in surfaces])
+                for science_pack in science_location.ingredients.keys()
+            ]))
+
 
     def create_item(self, name: str) -> FactorioItem:
         technology = technologies[name]

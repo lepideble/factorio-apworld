@@ -35,11 +35,35 @@ class Table:
         self.data[item.name] = item
 
 
+class Surface(Base):
+    properties: dict[str, float]
+
+    def __init__(self, name: str, properties: dict[str, float]):
+        super().__init__(name)
+        self.properties = properties
+
+
 @dataclass
 class SurfaceCondition:
     property: str
     min: float | None
     max: float | None
+
+    def accept(self, surface: Surface) -> bool:
+        self.accept_value(surface.properties[self.property])
+
+    def accept_value(self, value: float) -> bool:
+        if self.min is not None and value < self.min:
+            return False
+
+        if self.max is not None and value > self.max:
+            return False
+
+        return True
+
+    @classmethod
+    def from_data(cls, data):
+        return cls(data['property'], data.get('min'), data.get('max'))
 
 
 class Lab(Base):
@@ -61,6 +85,9 @@ class Machine(Base):
         self.categories = categories
         self.surface_conditions = surface_conditions if surface_conditions is not None else list()
 
+    def can_be_placed_on(self, surface: Surface) -> bool:
+        return all(map(lambda surface_condition: surface_condition.accept(surface), self.surface_conditions))
+
 
 class Recipe(Base):
     category: str
@@ -74,14 +101,6 @@ class Recipe(Base):
         self.ingredients = ingredients
         self.products = products
         self.time = time
-
-
-class Surface(Base):
-    properties: dict[str, float]
-
-    def __init__(self, name: str, properties: dict[str, float]):
-        super().__init__(name)
-        self.properties = properties
 
 
 class Technology(Base):
