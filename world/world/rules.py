@@ -13,8 +13,26 @@ class HasMachine(Rule['FactorioWorld'], game=game_name):
     def _instantiate(self, world: 'FactorioWorld') -> Rule.Resolved:
         if self.machine_name == 'character':
             return True_().resolve(world)
+        else:
+            return CanCraft(self.machine_name, self.surface_name).resolve(world)
 
-        return HasAny(*[f'Craft {recipe.name} on {self.surface_name}' for recipe in recipes_by_product(self.machine_name)]).resolve(world)
+
+@dataclass()
+class CanCraft(Rule['FactorioWorld'], game=game_name):
+    item_name: str
+    surface_name: str
+
+    def _instantiate(self, world: 'FactorioWorld') -> Rule.Resolved:
+        return HasAny(*[f'Craft {recipe.name} on {self.surface_name}' for recipe in recipes_by_product(self.item_name)]).resolve(world)
+
+
+@dataclass()
+class CanAutomate(Rule['FactorioWorld'], game=game_name):
+    item_name: str
+    surface_name: str
+
+    def _instantiate(self, world: 'FactorioWorld') -> Rule.Resolved:
+        return HasAny(*[f'Automate {recipe.name} on {self.surface_name}' for recipe in recipes_by_product(self.item_name)]).resolve(world)
 
 
 @dataclass()

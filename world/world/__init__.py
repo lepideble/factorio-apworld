@@ -2,13 +2,13 @@ from BaseClasses import Region, Location, Item, ItemClassification
 from rule_builder.rules import And, HasAny, Or
 from worlds.AutoWorld import World
 
-from ..config import game_name
+from ..config import game_name, override_rules
 from ..data import machines_by_category, recipes, recipes_by_product, science_packs, surfaces, surfaces_accessible_at_start, technologies, technologies_by_recipe_unlocked
 
 from .items import item_ids
 from .locations import location_ids, science_location_pools
 from .options import FactorioOptions
-from .rules import HasMachine, HasRecipe
+from .rules import CanAutomate, CanCraft, HasMachine, HasRecipe
 
 class FactorioItem(Item):
     game = game_name
@@ -50,7 +50,7 @@ class FactorioWorld(World):
 
     def create_regions(self) -> None:
         # Menu region holds all locations that are not tied to a specific surface
-        menu_region = Region("Menu", self.player, self.multiworld)
+        menu_region = Region('Menu', self.player, self.multiworld)
 
         self.multiworld.regions.append(menu_region)
 
@@ -115,9 +115,7 @@ class FactorioWorld(World):
                     And(
                         HasRecipe(recipe.name),
                         Or(*[HasMachine(machine.name, surface.name) for machine in machines_by_category(recipe.category) if machine.can_be_placed_on(surface)]),
-                        And(*[
-                            HasAny(*[f'Craft {ingredient_recipe.name} on {surface.name}' for ingredient_recipe in recipes_by_product(ingredient_name)
-                        ]) for ingredient_name in recipe.ingredients.keys()]),
+                        And(*[CanCraft(ingredient_name, surface.name) for ingredient_name in recipe.ingredients.keys()]),
                     ),
                 )
 
@@ -126,9 +124,7 @@ class FactorioWorld(World):
                     And(
                         HasRecipe(recipe.name),
                         Or(*[HasMachine(machine.name, surface.name) for machine in machines_by_category(recipe.category) if machine.can_be_placed_on(surface) and machine.name != 'character']),
-                        And(*[
-                            HasAny(*[f'Automate {ingredient_recipe.name} on {surface.name}' for ingredient_recipe in recipes_by_product(ingredient_name)
-                        ]) for ingredient_name in recipe.ingredients.keys()]),
+                        And(*[CanAutomate(ingredient_name, surface.name) for ingredient_name in recipe.ingredients.keys()]),
                     ),
                 )
 
@@ -138,6 +134,7 @@ class FactorioWorld(World):
                 for science_pack in science_location.ingredients.keys()
             ]))
 
+        override_rules(self)
 
     def create_item(self, name: str) -> FactorioItem:
         technology = technologies[name]
