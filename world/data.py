@@ -2,7 +2,7 @@ import pkgutil
 
 import orjson
 
-from .config import override_data
+from .config.data import override_data
 from .data_classes import Lab, Machine, Recipe, Surface, SurfaceCondition, Table, Technology
 
 
@@ -195,3 +195,31 @@ for technology in technologies:
 
 def technologies_by_recipe_unlocked(recipe: str) -> list[Technology]:
     return _technologies_by_recipe_unlocked.get(recipe, [])
+
+
+# Compute what is realy available
+unlockable_recipes = set()
+
+for recipe in recipes:
+    if recipe.name in recipes_unlocked_at_start or recipe.name in _technologies_by_recipe_unlocked:
+        unlockable_recipes.add(recipe.name)
+
+craftable_items = set()
+craftable_recipes = set()
+
+loop = True
+while loop:
+    loop = False
+
+    for recipe_name in unlockable_recipes:
+        if recipe_name in craftable_recipes:
+            continue
+
+        recipe = recipes[recipe_name]
+
+        if craftable_items.issuperset(recipe.ingredients.keys()):
+            craftable_items.update(recipe.products.keys())
+            craftable_recipes.add(recipe.name)
+
+            loop = True
+del loop

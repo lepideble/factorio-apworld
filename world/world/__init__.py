@@ -1,14 +1,13 @@
 from BaseClasses import Region, Location, Item, ItemClassification
-from rule_builder.rules import And, HasAny, Or
 from worlds.AutoWorld import World
 
-from ..config import game_name, override_rules
-from ..data import machines_by_category, recipes, recipes_by_product, science_packs, surfaces, surfaces_accessible_at_start, technologies, technologies_by_recipe_unlocked
+from ..config import game_name
+from ..data import craftable_recipes, machines_by_category, recipes, recipes_by_product, science_packs, surfaces, surfaces_accessible_at_start, technologies, technologies_by_recipe_unlocked
 
 from .items import item_ids
 from .locations import location_ids, science_location_pools
 from .options import FactorioOptions
-from .rules import CanAutomate, CanCraft, HasMachine, HasRecipe
+from .rules import All, Any, CanAutomate, CanCraft, HasMachine, HasRecipe
 
 class FactorioItem(Item):
     game = game_name
@@ -24,9 +23,10 @@ class FactorioScienceLocation(FactorioLocation):
 
     def __init__(self, player: int, name: str, address: int, parent: Region):
         super(FactorioScienceLocation, self).__init__(player, name, address, parent)
+
         # "AP-{Complexity}-{Cost}"
-        self.complexity = int(self.name[3]) - 1
-        self.cost = int(self.name[5:])
+        self.complexity = int(self.name.split('-')[1]) - 1
+        self.cost = int(self.name.split('-')[2])
 
         self.ingredients = {science_packs[self.complexity]: 1}
         for complexity in range(self.complexity):
@@ -61,9 +61,9 @@ class FactorioWorld(World):
             if surface.name in surfaces_accessible_at_start:
                 menu_region.connect(region)
 
-            for recipe in recipes:
-                region.add_event(f'Automate {recipe.name} on {surface.name}')
-                region.add_event(f'Craft {recipe.name} on {surface.name}')
+            for recipe_name in craftable_recipes:
+                region.add_event(f'Automate {recipe_name} on {surface.name}')
+                region.add_event(f'Craft {recipe_name} on {surface.name}')
 
             self.multiworld.regions.append(region)
 
@@ -77,6 +77,9 @@ class FactorioWorld(World):
         for science_location_name in self.random.sample(science_location_pool, len(technologies)):
             self.science_locations.append(FactorioScienceLocation(self.player, science_location_name, None, menu_region))
 
+        menu_region.locations.extend(self.science_locations)
+
+        # Attribute counts to science locations
         cost_distribution = self.options.tech_cost_distribution
         min_cost = self.options.min_tech_cost.value
         max_cost = self.options.max_tech_cost.value
@@ -101,38 +104,36 @@ class FactorioWorld(World):
         for i, location in enumerate(sorted(self.science_locations, key=sorter)):
             location.count = science_location_costs[i]
 
-        menu_region.locations.extend(self.science_locations)
-
     def create_items(self) -> None:
         for technology in technologies:
             self.multiworld.itempool.append(self.create_item(technology.name))
 
     def set_rules(self) -> None:
         for surface in surfaces:
-            for recipe in recipes:
+            for recipe_name in craftable_recipes:
+                recipe = recipes[recipe_name]
+
                 self.set_rule(
                     self.get_location(f'Craft {recipe.name} on {surface.name}'),
-                    And(
-                        HasRecipe(recipe.name),
-                        Or(*[HasMachine(machine.name, surface.name) for machine in machines_by_category(recipe.category) if machine.can_be_placed_on(surface)]),
-                        And(*[CanCraft(ingredient_name, surface.name) for ingredient_name in recipe.ingredients.keys()]),
-                    ),
+                    HasRecipe(recipe.name)
+                        & Any([HasMachine(machine.name, surface.name) for machine in machines_by_category(recipe.category) if machine.can_be_placed_on(surface)])
+                        & All([CanCraft(ingredient_name, surface.name) for ingredient_name in recipe.ingredients.keys()])
                 )
 
                 self.set_rule(
                     self.get_location(f'Automate {recipe.name} on {surface.name}'),
-                    And(
-                        HasRecipe(recipe.name),
-                        Or(*[HasMachine(machine.name, surface.name) for machine in machines_by_category(recipe.category) if machine.can_be_placed_on(surface) and machine.name != 'character']),
-                        And(*[CanAutomate(ingredient_name, surface.name) for ingredient_name in recipe.ingredients.keys()]),
-                    ),
+                    HasRecipe(recipe.name)
+                        & Any([HasMachine(machine.name, surface.name) for machine in machines_by_category(recipe.category) if machine.can_be_placed_on(surface) and machine.name != 'character'])
+                        & All([CanAutomate(ingredient_name, surface.name) for ingredient_name in recipe.ingredients.keys()])
                 )
 
         for science_location in self.science_locations:
-            self.set_rule(science_location, And(*[
-                HasAny(*[f'Automate {science_pack} on {surface.name}' for surface in surfaces])
+            self.set_rule(science_location, All([
+                Any([CanAutomate(science_pack, surface.name) for surface in surfaces])
                 for science_pack in science_location.ingredients.keys()
             ]))
+
+        from ..config.rules import override_rules
 
         override_rules(self)
 
