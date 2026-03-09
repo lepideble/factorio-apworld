@@ -2,37 +2,14 @@ from BaseClasses import Region, Location, Item, ItemClassification
 from worlds.AutoWorld import World
 
 from ..config import game_name
-from ..data import craftable_recipes, machines_by_category, recipes, recipes_by_product, science_packs, surfaces, surfaces_accessible_at_start, technologies, technologies_by_recipe_unlocked
+from ..data import craftable_recipes, space_locations, surfaces, surfaces_accessible_at_start, technologies
 
 from .items import item_ids
-from .locations import location_ids, science_location_pools
+from .locations import location_ids, science_location_pools, FactorioLocation, FactorioScienceLocation
 from .options import FactorioOptions
-from .rules import All, Any, CanAutomate, CanCraft, HasMachine, HasRecipe
 
 class FactorioItem(Item):
     game = game_name
-
-class FactorioLocation(Location):
-    game = game_name
-
-class FactorioScienceLocation(FactorioLocation):
-    complexity: int
-    cost: int
-    ingredients: dict[str, int]
-    count: int = 0
-
-    def __init__(self, player: int, name: str, address: int, parent: Region):
-        super(FactorioScienceLocation, self).__init__(player, name, address, parent)
-
-        # "AP-{Complexity}-{Cost}"
-        self.complexity = int(self.name.split('-')[1]) - 1
-        self.cost = int(self.name.split('-')[2])
-
-        self.ingredients = {science_packs[self.complexity]: 1}
-        for complexity in range(self.complexity):
-            if (parent.multiworld.worlds[self.player].options.tech_cost_mix >
-                    parent.multiworld.worlds[self.player].random.randint(0, 99)):
-                self.ingredients[science_packs[complexity]] = 1
 
 class FactorioWorld(World):
     game = game_name
@@ -64,6 +41,10 @@ class FactorioWorld(World):
             for recipe_name in craftable_recipes:
                 region.add_event(f'Automate {recipe_name} on {surface.name}')
                 region.add_event(f'Craft {recipe_name} on {surface.name}')
+
+            if surface.is_space_platform:
+                for space_location in space_locations:
+                    region.add_event(f'Reach {space_location.name} with {surface.name}')
 
             self.multiworld.regions.append(region)
 
@@ -109,33 +90,10 @@ class FactorioWorld(World):
             self.multiworld.itempool.append(self.create_item(technology.name))
 
     def set_rules(self) -> None:
-        for surface in surfaces:
-            for recipe_name in craftable_recipes:
-                recipe = recipes[recipe_name]
+        from .rules import get_rules
 
-                self.set_rule(
-                    self.get_location(f'Craft {recipe.name} on {surface.name}'),
-                    HasRecipe(recipe.name)
-                        & Any([HasMachine(machine.name, surface.name) for machine in machines_by_category(recipe.category) if machine.can_be_placed_on(surface)])
-                        & All([CanCraft(ingredient_name, surface.name) for ingredient_name in recipe.ingredients.keys()])
-                )
-
-                self.set_rule(
-                    self.get_location(f'Automate {recipe.name} on {surface.name}'),
-                    HasRecipe(recipe.name)
-                        & Any([HasMachine(machine.name, surface.name) for machine in machines_by_category(recipe.category) if machine.can_be_placed_on(surface) and machine.name != 'character'])
-                        & All([CanAutomate(ingredient_name, surface.name) for ingredient_name in recipe.ingredients.keys()])
-                )
-
-        for science_location in self.science_locations:
-            self.set_rule(science_location, All([
-                Any([CanAutomate(science_pack, surface.name) for surface in surfaces])
-                for science_pack in science_location.ingredients.keys()
-            ]))
-
-        from ..config.rules import override_rules
-
-        override_rules(self)
+        for location_name, rule in get_rules(self.get_locations()).items():
+            self.set_rule(self.get_location(location_name), rule)
 
     def create_item(self, name: str) -> FactorioItem:
         technology = technologies[name]

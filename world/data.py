@@ -3,13 +3,13 @@ import pkgutil
 import orjson
 
 from .config.data import override_data
-from .data_classes import Lab, Machine, Recipe, Surface, SurfaceCondition, Table, Technology
+from .data_classes import Lab, Machine, Recipe, SpaceLocation, Surface, SurfaceCondition, Table, Technology
 
 
 data = orjson.loads(pkgutil.get_data(__name__, 'config/data.json'))
 
 def get_data(type: str):
-    return ((k, v) for k, v in data[type].items() if not v.get('parameter', False))
+    return ((k, v) for k, v in data[type].items() if not v.get('hidden', False) and not v.get('parameter', False))
 
 
 # Surfaces
@@ -21,6 +21,52 @@ for surface_name, surface_data in get_data('surface'):
 
 for planet_name, planet_data in get_data('planet'):
     surfaces.add(Surface(planet_name, planet_data['surface_properties']))
+
+
+# Space locations
+_asteroid_to_chunks = {}
+_asteroid_to_asteroid = {}
+
+for asteroid_name, asteroid_data in get_data('asteroid'):
+    for dying_trigger_effect in asteroid_data.get('dying_trigger_effect', []):
+        if dying_trigger_effect['type'] == 'create-asteroid-chunk':
+            if not asteroid_name in _asteroid_to_chunks:
+                _asteroid_to_chunks[asteroid_name] = list()
+
+            _asteroid_to_chunks[asteroid_name].append(dying_trigger_effect['asteroid_name'])
+
+        if dying_trigger_effect['type'] == 'create-entity':
+            if not asteroid_name in _asteroid_to_asteroid:
+                _asteroid_to_asteroid[asteroid_name] = list()
+
+            _asteroid_to_asteroid[asteroid_name].append(dying_trigger_effect['entity_name'])
+
+def _recursive_asteroid_to_chunks(asteroid_name: str):
+    asteroid_chunks = set(_asteroid_to_chunks.get(asteroid_name, []))
+
+    for asteroid_name in _asteroid_to_asteroid.get(asteroid_name, []):
+        asteroid_chunks.update(_recursive_asteroid_to_chunks(asteroid_name))
+
+    return asteroid_chunks
+
+space_locations = Table()
+space_locations_unlocked_at_start = {'nauvis'}
+space_locations_accessible_at_start = {'nauvis'}
+
+for space_location_name, space_location_data in [*get_data('space-location'), *get_data('planet')]:
+    asteroid_chunks = set()
+
+    for asteroid_spawn_definition in space_location_data.get('asteroid_spawn_definitions', []):
+        if asteroid_spawn_definition.get('type', 'entity') == 'asteroid-chunk':
+            asteroid_chunks.add(asteroid_spawn_definition['asteroid'])
+        else:
+            asteroid_chunks.update(_recursive_asteroid_to_chunks(asteroid_spawn_definition['asteroid']))
+
+    space_locations.add(SpaceLocation(space_location_name, asteroid_chunks))
+
+for space_connection_name, space_connection_data in get_data('space-connection'):
+    space_locations[space_connection_data['from']].connections.add(space_connection_data['to'])
+    space_locations[space_connection_data['to']].connections.add(space_connection_data['from'])
 
 
 # Machines
@@ -36,7 +82,7 @@ for machine_name, machine_data in get_data("assembling-machine"):
 for machine_name, machine_data in get_data("asteroid-collector"):
     machines.add(Machine(
         machine_name,
-        {'asteroid'},
+        {'asteroid-chunk'},
         [SurfaceCondition.from_data(surface_condition) for surface_condition in machine_data.get('surface_conditions', [])],
     ))
 
@@ -73,7 +119,7 @@ for asteroid_chunk_name, asteroid_chunk_data in get_data('asteroid-chunk'):
     if not 'minable' in asteroid_chunk_data:
         continue
 
-    recipes.add(Recipe(asteroid_chunk_name, 'asteroid', {}, {asteroid_chunk_data['minable']['result']: 1}, 0))
+    recipes.add(Recipe(asteroid_chunk_name, 'asteroid-chunk', {}, {asteroid_chunk_data['minable']['result']: 1}, 0))
     recipes_unlocked_at_start.add(asteroid_chunk_name)
 
 for recipe_name, recipe_data in get_data('recipe'):
@@ -127,14 +173,14 @@ technologies = Table()
 for technology_name, technology_data in get_data('technology'):
     technology = Technology(technology_name)
 
-    for effect in technology_data.get("effects", []):
+    for effect in technology_data.get('effects', []):
         match effect["type"]:
             case "unlock-recipe":
                 technology.unlocked_recipes.add(effect["recipe"])
             case "mining-with-fluid":
                 technology.unlocked_recipes.update(recipes_mining_with_fluid)
-            case "unlock-space-location":
-                technology.unlocked_space_locations.add(effect["space_location"])
+            case 'unlock-space-location':
+                technology.unlocked_space_locations.add(effect['space_location'])
             case _:
                 technology.modifiers.append(effect["type"])
 
@@ -185,6 +231,7 @@ def recipes_by_product(product: str) -> list[Recipe]:
 
 
 _technologies_by_recipe_unlocked: dict[str, list[Technology]] = {}
+_technologies_by_space_location_unlocked: dict[str, list[Technology]] = {}
 
 for technology in technologies:
     for recipe_name in technology.unlocked_recipes:
@@ -193,8 +240,17 @@ for technology in technologies:
 
         _technologies_by_recipe_unlocked[recipe_name].append(technology)
 
+    for space_location_name in technology.unlocked_space_locations:
+        if not space_location_name in _technologies_by_space_location_unlocked:
+            _technologies_by_space_location_unlocked[space_location_name] = list()
+
+        _technologies_by_space_location_unlocked[space_location_name].append(technology)
+
 def technologies_by_recipe_unlocked(recipe: str) -> list[Technology]:
     return _technologies_by_recipe_unlocked.get(recipe, [])
+
+def technologies_by_space_location_unlocked(space_location: str) -> list[Technology]:
+    return _technologies_by_space_location_unlocked.get(space_location, [])
 
 
 # Compute what is realy available
