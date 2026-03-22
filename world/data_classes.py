@@ -42,6 +42,20 @@ class Surface(Base):
         super().__init__(name)
         self.properties = properties
 
+    @property
+    def is_space_platform(self) -> bool:
+        return self.name == 'space-platform'
+
+
+class SpaceLocation(Base):
+    asteroid_chunks: set[str]
+    connections: set[str]
+
+    def __init__(self, name: str, asteroid_chunks: set[str] = None, connections: set[str] = None):
+        super().__init__(name)
+        self.asteroid_chunks = asteroid_chunks if asteroid_chunks is not None else set()
+        self.connections = connections if connections is not None else set()
+
 
 @dataclass
 class SurfaceCondition:

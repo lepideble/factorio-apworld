@@ -28,9 +28,6 @@ def override_data(machines, recipes, recipes_unlocked_at_start, surfaces, surfac
     surfaces_accessible_at_start.add('space-platform')
 
     # Removed machines
-    del machines['burner-mining-drill']
-    del machines['electric-mining-drill']
-    del machines['big-mining-drill']
     del machines['stone-furnace']
     del machines['steel-furnace']
 
