@@ -5,7 +5,7 @@ from ..config import game_name
 from ..data import craftable_recipes, space_locations, surfaces, surfaces_accessible_at_start, technologies
 
 from .items import item_ids
-from .locations import location_ids, science_location_pools, FactorioLocation, FactorioScienceLocation
+from .locations import get_locations, location_ids
 from .options import FactorioOptions
 
 class FactorioItem(Item):
@@ -19,8 +19,6 @@ class FactorioWorld(World):
 
     options_dataclass = FactorioOptions
     options: FactorioOptions
-
-    science_locations: list[FactorioScienceLocation]
 
     def __init__(self, multiworld, player: int):
         super().__init__(multiworld, player)
@@ -48,42 +46,11 @@ class FactorioWorld(World):
 
             self.multiworld.regions.append(region)
 
-        # Create science locations
-        science_location_pool = []
+        for location in get_locations(self.options, self.random):
+            location.player = self.player
+            location.parent_region = menu_region
 
-        for pack in self.options.max_science_pack.get_allowed_packs():
-            science_location_pool.extend(science_location_pools[pack])
-
-        self.science_locations = []
-        for science_location_name in self.random.sample(science_location_pool, len(technologies)):
-            self.science_locations.append(FactorioScienceLocation(self.player, science_location_name, None, menu_region))
-
-        menu_region.locations.extend(self.science_locations)
-
-        # Attribute counts to science locations
-        cost_distribution = self.options.tech_cost_distribution
-        min_cost = self.options.min_tech_cost.value
-        max_cost = self.options.max_tech_cost.value
-
-        match cost_distribution:
-            case cost_distribution.option_even:
-                science_location_costs = (self.random.randint(min_cost, max_cost) for _ in self.science_locations)
-            case cost_distribution.option_low:
-                science_location_costs = (self.random.triangular(min_cost, max_cost, min_cost) for _ in self.science_locations)
-            case cost_distribution.option_middle:
-                science_location_costs = (self.random.triangular(min_cost, max_cost, (min_cost + max_cost) // 2) for _ in self.science_locations)
-            case cost_distribution.option_high:
-                science_location_costs = (self.random.triangular(min_cost, max_cost, max_cost) for _ in self.science_locations)
-
-        science_location_costs = sorted(science_location_costs)
-
-        if self.options.ramping_tech_costs:
-            sorter = lambda location: location.complexity, location.cost
-        else:
-            sorter = lambda location: location.cost
-
-        for i, location in enumerate(sorted(self.science_locations, key=sorter)):
-            location.count = science_location_costs[i]
+            menu_region.locations.append(location)
 
     def create_items(self) -> None:
         for technology in technologies:
