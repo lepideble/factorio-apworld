@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Literal
 
 class Base:
     name: str
@@ -118,12 +119,16 @@ class Recipe(Base):
 
 
 class Technology(Base):
+    upgrade: bool
+    max_level: int | None | Literal['infinite']
     unlocked_recipes: set[str]
     unlocked_space_locations: set[str]
     modifiers: list[str]
 
-    def __init__(self, name: str, unlocked_recipes: set[str] = None, unlocked_space_locations: set[str] = None, modifiers: list[str] = None):
+    def __init__(self, name: str, upgrade = False, max_level = None, unlocked_recipes: set[str] = None, unlocked_space_locations: set[str] = None, modifiers: list[str] = None):
         super().__init__(name)
+        self.upgrade = upgrade
+        self.max_level = max_level
         self.unlocked_recipes = unlocked_recipes if unlocked_recipes is not None else set()
         self.unlocked_space_locations = unlocked_space_locations if unlocked_space_locations is not None else set()
         self.modifiers = modifiers if modifiers is not None else []

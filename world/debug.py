@@ -49,7 +49,10 @@ def print_technologies():
     from .data import technologies
 
     for technology in technologies:
-        print(f'Technologies: {technology.name}')
+        print(f'Technology: {technology.name}')
+        print(f'  upgrade: {technology.upgrade}')
+        if technology.max_level is not None:
+            print(f'  upgrade: {technology.max_level}')
         if len(technology.unlocked_recipes) > 0:
             print(f'  unlocked_recipes: {', '.join(technology.unlocked_recipes)}')
         if len(technology.unlocked_space_locations) > 0:
@@ -61,7 +64,7 @@ def print_technologies():
 def create_world():
     from BaseClasses import MultiWorld
     from .world import FactorioWorld
-    from .world.options import FactorioOptions, MaxSciencePack, MaxTechCost, MinTechCost, RampingTechCosts, TechCostDistribution, TechCostMix
+    from .world.options import FactorioOptions, Goal, MaxSciencePack, MaxTechCost, MinTechCost, RampingTechCosts, TechCostDistribution, TechCostMix
 
     multiworld = MultiWorld(1)
     world = FactorioWorld(multiworld, 1)
@@ -84,6 +87,7 @@ def create_world():
         tech_cost_distribution=TechCostDistribution.from_any(TechCostDistribution.default),
         tech_cost_mix=TechCostMix.from_any(TechCostMix.default),
         ramping_tech_costs=RampingTechCosts.from_any(RampingTechCosts.default),
+        goal=Goal.from_any(Goal.default),
     )
 
     world.create_regions()

@@ -184,6 +184,9 @@ for technology_name, technology_data in get_data('technology'):
             case _:
                 technology.modifiers.append(effect["type"])
 
+    technology.upgrade = technology_data.get('upgrade', False)
+    technology.max_level = technology_data.get('max_level')
+
     technologies.add(technology)
 
 

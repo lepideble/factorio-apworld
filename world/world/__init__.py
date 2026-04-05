@@ -5,12 +5,9 @@ from worlds.AutoWorld import World
 from ..config import game_name
 from ..data import craftable_recipes, science_packs, space_locations, space_locations_accessible_at_start, surfaces, surfaces_accessible_at_start, technologies
 
-from .items import item_ids
+from .items import create_item, create_items, item_ids, FactorioItem
 from .locations import get_locations, location_ids
 from .options import FactorioOptions
-
-class FactorioItem(Item):
-    game = game_name
 
 class FactorioWorld(World):
     game = game_name
@@ -54,8 +51,8 @@ class FactorioWorld(World):
             menu_region.locations.append(location)
 
     def create_items(self) -> None:
-        for technology in technologies:
-            self.multiworld.itempool.append(self.create_item(technology.name))
+        for item in create_items(self.player):
+            self.multiworld.itempool.append(item)
 
     def set_rules(self) -> None:
         from .rules import get_rules
@@ -70,13 +67,4 @@ class FactorioWorld(World):
                 raise Error('Invalid victory condition')
 
     def create_item(self, name: str) -> FactorioItem:
-        technology = technologies[name]
-
-        if len(technology.unlocked_recipes) > 0 or len(technology.unlocked_space_locations) > 0:
-            classification = ItemClassification.progression
-        elif len(technology.modifiers) > 0:
-            classification = ItemClassification.useful
-        else:
-            classification = ItemClassification.filler
-
-        return FactorioItem(name, classification, item_ids[name], self.player)
+        return create_item(self.player, name)

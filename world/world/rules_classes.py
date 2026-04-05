@@ -1,9 +1,12 @@
 from dataclasses import dataclass
 
-from rule_builder.rules import And, HasAny, Or, Rule, True_
+from rule_builder.rules import And, Has, HasAny, Or, Rule, True_
 
 from ..config import game_name
-from ..data import recipes_by_product, recipes_unlocked_at_start, space_locations_unlocked_at_start, technologies_by_recipe_unlocked, technologies_by_space_location_unlocked
+from ..data import recipes_by_product, recipes_unlocked_at_start, space_locations_unlocked_at_start, technologies, technologies_by_recipe_unlocked, technologies_by_space_location_unlocked
+
+from .items import upgrades_map, upgrades_levels
+
 
 @dataclass()
 class All(Rule['FactorioWorld'], game=game_name):
@@ -65,6 +68,22 @@ class CanAutomate(Rule['FactorioWorld'], game=game_name):
 
 
 @dataclass()
+class HasTechnology(Rule['FactorioWorld'], game=game_name):
+    name: str
+
+    def _instantiate(self, world: 'FactorioWorld') -> Rule.Resolved:
+        technology = technologies[self.name]
+
+        if technology.name in upgrades_map:
+            item_name = upgrades_map[technology.name]
+            level = upgrades_levels[item_name].index(technology) + 1
+
+            return Has(item_name, level).resolve(world)
+        else:
+            return Has(technology.name).resolve(world)
+
+
+@dataclass()
 class UnlockedRecipe(Rule['FactorioWorld'], game=game_name):
     name: str
 
@@ -77,7 +96,7 @@ class UnlockedRecipe(Rule['FactorioWorld'], game=game_name):
         if len(technologies) == 0:
             raise Exception(f'No technology unlocks recipe "{self.name}"')
 
-        return HasAny(*[technology.name for technology in technologies]).resolve(world)
+        return Any([HasTechnology(technology.name) for technology in technologies]).resolve(world)
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.name})"
@@ -96,7 +115,7 @@ class UnlockedSpaceLocation(Rule['FactorioWorld'], game=game_name):
         if len(technologies) == 0:
             raise Exception(f'No technology unlocks space location "{self.name}"')
 
-        return HasAny(*[technology.name for technology in technologies]).resolve(world)
+        return Any([HasTechnology(technology.name) for technology in technologies]).resolve(world)
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.name})"
