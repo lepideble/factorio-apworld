@@ -1,13 +1,12 @@
 from dataclasses import dataclass
 
-from Options import Choice, PerGameCommonOptions, Range, Toggle
+from Options import Choice, PerGameCommonOptions, Range, Toggle, Visibility
 
+from ..config import victory_conditions
 from ..data import science_packs
 
 class MaxSciencePack(Choice):
-    """Maximum level of science pack required to complete the game.
-    This also affects the relative cost of silo and satellite recipes if they are randomized.
-    That is the only thing in which the Utility Science Pack and Space Science Pack settings differ."""
+    """Maximum level of science pack required to complete the game."""
     display_name = "Maximum Required Science Pack"
     default = len(science_packs) - 1
 
@@ -15,7 +14,7 @@ class MaxSciencePack(Choice):
         return {option.replace("_", "-") for option, value in self.options.items() if value <= self.value}
 
 MaxSciencePack.options = {name: index for index, name in enumerate(science_packs)}
-MaxSciencePack.name_lookup = {option_id: name for name, option_id in MaxSciencePack.options.items()}
+MaxSciencePack.name_lookup = {option_id: option_name for option_name, option_id in MaxSciencePack.options.items()}
 
 
 class MinTechCost(Range):
@@ -56,11 +55,23 @@ class TechCostMix(Range):
 
 
 class RampingTechCosts(Toggle):
-    """Forces the amount of Science Packs required to ramp up with the highest involved Pack. Average is preserved.
-    For example:
-    off: Automation (red)/Logistics (green) sciences can range from 1 to 1000 Science Packs,
-    on: Automation (red) ranges to ~500 packs and Logistics (green) from ~500 to 1000 Science Packs"""
+    """Forces the amount of Science Packs required to ramp up with the highest involved Pack. Average is preserved."""
     display_name = "Ramping Tech Costs"
+
+
+class Goal(Choice):
+    """Goal required to complete the game."""
+    display_name = "Goal"
+    default = 0
+
+    def get_victory_condition(self):
+        return victory_conditions[self.value]
+
+Goal.options = {victory_condition['name']: index for index, victory_condition in enumerate(victory_conditions)}
+Goal.name_lookup = {option_id: option_name for option_name, option_id in Goal.options.items()}
+
+if len(victory_conditions) == 1:
+    Goal.visibility = Visibility.none
 
 
 @dataclass
@@ -71,3 +82,4 @@ class FactorioOptions(PerGameCommonOptions):
     tech_cost_distribution: TechCostDistribution
     tech_cost_mix: TechCostMix
     ramping_tech_costs: RampingTechCosts
+    goal: Goal

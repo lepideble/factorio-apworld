@@ -1,7 +1,7 @@
 # Technologies that we don't want to be randomized
 ignored_technologies = ['automation', 'automation-science-pack', 'electronics', 'engine', 'space-platform', 'steel-processing']
 
-# Stuff be is only hidden by platformer but should be considered removed
+# Stuff be is only disabled by platformer but should be considered removed
 removed_technologies = [
     'discharge-defense-equipment',
     'energy-shield-equipment',

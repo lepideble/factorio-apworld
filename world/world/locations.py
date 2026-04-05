@@ -84,4 +84,4 @@ def get_locations(options: FactorioOptions, random: Random) -> list[FactorioLoca
     for i, location in enumerate(sorted(science_locations, key=sorter)):
         location.count = science_location_costs[i]
 
-    return science_locations
+    return sorted(science_locations, key=lambda location: (location.complexity, location.cost))

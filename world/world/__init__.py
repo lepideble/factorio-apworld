@@ -1,8 +1,9 @@
 from BaseClasses import Region, Location, Item, ItemClassification
+from rule_builder.rules import Has
 from worlds.AutoWorld import World
 
 from ..config import game_name
-from ..data import craftable_recipes, space_locations, surfaces, surfaces_accessible_at_start, technologies
+from ..data import craftable_recipes, science_packs, space_locations, space_locations_accessible_at_start, surfaces, surfaces_accessible_at_start, technologies
 
 from .items import item_ids
 from .locations import get_locations, location_ids
@@ -37,12 +38,12 @@ class FactorioWorld(World):
                 menu_region.connect(region)
 
             for recipe_name in craftable_recipes:
-                region.add_event(f'Automate {recipe_name} on {surface.name}')
-                region.add_event(f'Craft {recipe_name} on {surface.name}')
+                region.add_event(f'Automate {recipe_name} on {surface.name}', show_in_spoiler=False)
+                region.add_event(f'Craft {recipe_name} on {surface.name}', show_in_spoiler=False)
 
             if surface.is_space_platform:
                 for space_location in space_locations:
-                    region.add_event(f'Reach {space_location.name} with {surface.name}')
+                    region.add_event(f'Reach {space_location.name} with {surface.name}', show_in_spoiler=False)
 
             self.multiworld.regions.append(region)
 
@@ -61,6 +62,12 @@ class FactorioWorld(World):
 
         for location_name, rule in get_rules(self.get_locations()).items():
             self.set_rule(self.get_location(location_name), rule)
+
+        match (self.options.goal.get_victory_condition()):
+            case {'type': 'reach-space-location', 'space_location': space_location}:
+                self.set_completion_rule(Has(f'Reach {space_location} with space-platform'))
+            case _:
+                raise Error('Invalid victory condition')
 
     def create_item(self, name: str) -> FactorioItem:
         technology = technologies[name]
