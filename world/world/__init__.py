@@ -68,3 +68,9 @@ class FactorioWorld(World):
 
     def create_item(self, name: str) -> FactorioItem:
         return create_item(self.player, name)
+
+    def generate_output(self, output_directory: str) -> None:
+        from ..mod.data import get_mod_data, get_mod_name, get_mod_version
+        from ..mod.generate import generate_mod
+
+        generate_mod(get_mod_name(self), get_mod_version(self), get_mod_data(self), self, output_directory)

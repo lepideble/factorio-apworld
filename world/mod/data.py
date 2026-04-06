@@ -1,0 +1,35 @@
+from ..world import FactorioWorld
+from ..world.items import upgrades_levels
+from ..data import technologies
+
+
+def get_mod_name(world: FactorioWorld) -> str:
+    return f'AP-{world.multiworld.seed_name}-P{world.player}-{world.multiworld.get_file_safe_player_name(world.player)}'
+
+
+def get_mod_version(world: FactorioWorld) -> str:
+    return '.'.join(map(str, world.world_version))
+
+
+def get_mod_data(world: FactorioWorld) -> dict:
+    return {
+        'custom_recipes': {},
+        'energy_link': 0,
+        'evolution_trap_increase': 10,
+        'free_samples': 0,
+        'free_sample_blacklist': {},
+        'free_sample_quality_name': 'normal',
+        'locations': [(location.data, location.item) for location in world.get_locations() if not location.is_event],
+        'max_science_pack': world.options.max_science_pack.value,
+        'mod_name': get_mod_name(world),
+        'player_names': world.multiworld.player_name,
+        'progressive_technology_table': { name: [level.name for level in levels] for name, levels in upgrades_levels.items() },
+        'seed_name': world.multiworld.seed_name,
+        'slot_name': world.player_name,
+        'slot_player': world.player,
+        'starting_items': {},
+        'tech_tree_information': world.options.tech_tree_information.value,
+        'technologies': [technology.name for technology in technologies],
+        'victory_condition': world.options.goal.get_victory_condition(),
+        'world_generation': world.options.world_generation.value,
+    }

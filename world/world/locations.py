@@ -33,12 +33,23 @@ class FactorioScienceLocation(FactorioLocation):
     ingredients: dict[str, int]
     count: int = 0
 
-    def __init__(self, player: int, name: str, address: int | None = None, parent: Region | None = None):
-        super(FactorioScienceLocation, self).__init__(player, name, address, parent)
+    def __init__(self, player: int, name: str, parent: Region | None = None):
+        super(FactorioScienceLocation, self).__init__(player, name, location_ids[name], parent)
 
         # "AP-{Complexity}-{Cost}"
         self.complexity = int(self.name.split('-')[1]) - 1
         self.cost = int(self.name.split('-')[2])
+
+    @property
+    def data(self):
+        return {
+            'id': f'ap-{self.address}-',
+            'name': self.name,
+            'unit': {
+                'count': self.count,
+                'ingredients': [(name, count) for name, count in self.ingredients.items()],
+            },
+        }
 
 
 def get_locations(options: FactorioOptions, random: Random) -> list[FactorioLocation]:
@@ -57,7 +68,7 @@ def get_locations(options: FactorioOptions, random: Random) -> list[FactorioLoca
         science_location.ingredients = {science_packs[science_location.complexity]: 1}
         for complexity in range(science_location.complexity):
             if (options.tech_cost_mix > random.randint(0, 99)):
-                science_location.ingredients[science_packs[science_location.complexity]] = 1
+                science_location.ingredients[science_packs[complexity]] = 1
 
     # Attribute counts to science locations
     cost_distribution = options.tech_cost_distribution

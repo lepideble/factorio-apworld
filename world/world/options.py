@@ -1,9 +1,29 @@
 from dataclasses import dataclass
 
-from Options import Choice, PerGameCommonOptions, Range, Toggle, Visibility
+from schema import Schema, Optional, And, Or, SchemaError
+
+from Options import Choice, PerGameCommonOptions, OptionDict, Range, Toggle, Visibility
 
 from ..config import victory_conditions
 from ..data import science_packs
+
+
+# schema helpers
+class FloatRange:
+    def __init__(self, low, high):
+        self._low = low
+        self._high = high
+
+    def validate(self, value) -> float:
+        if not isinstance(value, (float, int)):
+            raise SchemaError(f"should be instance of float or int, but was {value!r}")
+        if not self._low <= value <= self._high:
+            raise SchemaError(f"{value} is not between {self._low} and {self._high}")
+        return float(value)
+
+
+LuaBool = Or(bool, And(int, lambda n: n in (0, 1)))
+
 
 class MaxSciencePack(Choice):
     """Maximum level of science pack required to complete the game."""
@@ -59,6 +79,19 @@ class RampingTechCosts(Toggle):
     display_name = "Ramping Tech Costs"
 
 
+class TechTreeInformation(Choice):
+    """How much information should be displayed in the tech tree.
+    None: No indication of what a research unlocks.
+    Advancement: Indicates if a research unlocks an item that is considered logical advancement, but not who it is for.
+    Full: Labels with exact names and recipients of unlocked items; all researches are prefilled into the !hint command.
+    """
+    display_name = "Technology Tree Information"
+    option_none = 0
+    option_advancement = 1
+    option_full = 2
+    default = 2
+
+
 class Goal(Choice):
     """Goal required to complete the game."""
     display_name = "Goal"
@@ -74,6 +107,92 @@ if len(victory_conditions) == 1:
     Goal.visibility = Visibility.none
 
 
+class WorldGeneration(OptionDict):
+    """World Generation settings. Overview of options at https://wiki.factorio.com/Map_generator,
+    with in-depth documentation at https://lua-api.factorio.com/latest/concepts/MapGenSettings.html"""
+    display_name = 'World Generation'
+    value: dict[str, dict]
+    default = {}
+    schema = Schema({
+        'basic': {
+            Optional('autoplace_controls'): {
+                str: {
+                    'frequency': FloatRange(0, 6),
+                    'size': FloatRange(0, 6),
+                    'richness': FloatRange(0.166, 6)
+                }
+            },
+            Optional('seed'): Or(None, And(int, lambda n: n >= 0)),
+            Optional('width'): And(int, lambda n: n >= 0),
+            Optional('height'): And(int, lambda n: n >= 0),
+            Optional('starting_area'): FloatRange(0.166, 6),
+            Optional('peaceful_mode'): LuaBool,
+            Optional('no_enemies_mode'): LuaBool,
+            Optional('cliff_settings'): {
+                'name': str, 'cliff_elevation_0': FloatRange(0, 99),
+                'cliff_elevation_interval': FloatRange(0.066, 241),  # 40/frequency
+                'richness': FloatRange(0, 6)
+            },
+            Optional('property_expression_names'): Schema({
+                Optional('control-setting:moisture:bias'): FloatRange(-0.5, 0.5),
+                Optional('control-setting:moisture:frequency:multiplier'): FloatRange(0.166, 6),
+                Optional('control-setting:aux:bias'): FloatRange(-0.5, 0.5),
+                Optional('control-setting:aux:frequency:multiplier'): FloatRange(0.166, 6),
+                Optional(str): object  # allow overriding all properties
+            }),
+        },
+        'advanced': {
+            Optional('pollution'): {
+                Optional('enabled'): LuaBool,
+                Optional('diffusion_ratio'): FloatRange(0, 0.25),
+                Optional('ageing'): FloatRange(0.1, 4),
+                Optional('enemy_attack_pollution_consumption_modifier'): FloatRange(0.1, 4),
+                Optional('min_pollution_to_damage_trees'): FloatRange(0, 9999),
+                Optional('pollution_restored_per_tree_damage'): FloatRange(0, 9999)
+            },
+            Optional('enemy_evolution'): {
+                Optional('enabled'): LuaBool,
+                Optional('time_factor'): FloatRange(0, 1000e-7),
+                Optional('destroy_factor'): FloatRange(0, 1000e-5),
+                Optional('pollution_factor'): FloatRange(0, 1000e-7),
+            },
+            Optional('enemy_expansion'): {
+                Optional('enabled'): LuaBool,
+                Optional('max_expansion_distance'): FloatRange(2, 20),
+                Optional('settler_group_min_size'): FloatRange(1, 20),
+                Optional('settler_group_max_size'): FloatRange(1, 50),
+                Optional('min_expansion_cooldown'): FloatRange(3600, 216000),
+                Optional('max_expansion_cooldown'): FloatRange(18000, 648000)
+            }
+        }
+    })
+
+    def __init__(self, value: dict):
+        advanced = {'pollution', 'enemy_evolution', 'enemy_expansion'}
+        self.value = {
+            'basic': {k: v for k, v in value.items() if k not in advanced},
+            'advanced': {k: v for k, v in value.items() if k in advanced}
+        }
+
+        # verify min_values <= max_values
+        def optional_min_lte_max(container, min_key, max_key):
+            min_val = container.get(min_key, None)
+            max_val = container.get(max_key, None)
+            if min_val is not None and max_val is not None and min_val > max_val:
+                raise ValueError(f'{min_key} can\'t be bigger than {max_key}')
+
+        enemy_expansion = self.value['advanced'].get('enemy_expansion', {})
+        optional_min_lte_max(enemy_expansion, 'settler_group_min_size', 'settler_group_max_size')
+        optional_min_lte_max(enemy_expansion, 'min_expansion_cooldown', 'max_expansion_cooldown')
+
+    @classmethod
+    def from_any(cls, data: dict):
+        if type(data) == dict:
+            return cls(data)
+        else:
+            raise NotImplementedError(f'Cannot Convert from non-dictionary, got {type(data)}')
+
+
 @dataclass
 class FactorioOptions(PerGameCommonOptions):
     max_science_pack: MaxSciencePack
@@ -82,4 +201,6 @@ class FactorioOptions(PerGameCommonOptions):
     tech_cost_distribution: TechCostDistribution
     tech_cost_mix: TechCostMix
     ramping_tech_costs: RampingTechCosts
+    tech_tree_information: TechTreeInformation
     goal: Goal
+    world_generation: WorldGeneration

@@ -1,6 +1,11 @@
 game_name = 'Factorio: Platformer'
 
 
+dependencies = [
+    'platformer',
+]
+
+
 victory_conditions = [
     {
         'type': 'reach-space-location',
