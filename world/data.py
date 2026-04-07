@@ -190,6 +190,12 @@ for technology_name, technology_data in get_data('technology'):
     technologies.add(technology)
 
 
+fluids = set()
+
+for fluid_name, fluid_data in get_data('fluid'):
+    fluids.add(fluid_name)
+
+
 # Cleanup
 del recipes_mining_with_fluid
 
@@ -263,8 +269,8 @@ for recipe in recipes:
     if recipe.name in recipes_unlocked_at_start or recipe.name in _technologies_by_recipe_unlocked:
         unlockable_recipes.add(recipe.name)
 
-craftable_items = set()
-craftable_recipes = set()
+craftable_items: set[str] = set()
+craftable_recipes: set[str] = set()
 
 loop = True
 while loop:

@@ -2,10 +2,11 @@ from dataclasses import dataclass
 
 from schema import Schema, Optional, And, Or, SchemaError
 
-from Options import Choice, PerGameCommonOptions, OptionDict, Range, Toggle, Visibility
+from Options import Choice, OptionDict, PerGameCommonOptions, Range, Toggle, Visibility
 
-from ..config import victory_conditions
-from ..data import science_packs
+from ..config import craftsanity_filter, victory_conditions
+from ..data import craftable_items, science_packs
+from .locations import craftsanity_item_pool
 
 
 # schema helpers
@@ -107,6 +108,15 @@ if len(victory_conditions) == 1:
     Goal.visibility = Visibility.none
 
 
+class CraftSanity(Range):
+    """Choose a number of researches to require crafting a specific item rather than with science packs.
+    May be capped based on the total number of locations."""
+    display_name = "CraftSanity"
+    default = 0
+    range_start = 0
+    range_end = len(craftsanity_item_pool)
+
+
 class WorldGeneration(OptionDict):
     """World Generation settings. Overview of options at https://wiki.factorio.com/Map_generator,
     with in-depth documentation at https://lua-api.factorio.com/latest/concepts/MapGenSettings.html"""
@@ -203,4 +213,5 @@ class FactorioOptions(PerGameCommonOptions):
     ramping_tech_costs: RampingTechCosts
     tech_tree_information: TechTreeInformation
     goal: Goal
+    craftsanity: CraftSanity
     world_generation: WorldGeneration
