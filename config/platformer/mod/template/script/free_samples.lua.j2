@@ -3,17 +3,8 @@
 FREE_SAMPLES = {{ free_samples }}
 FREE_SAMPLE_BLACKLIST = {{ dict_to_lua(free_sample_blacklist) }}
 
--- Updates a player, attempting to send them any pending samples (if relevant)
-local send_items = function(index)
-    local player = game.players[index]
-    if not player or not player.valid then     -- Do nothing if we reference an invalid player somehow
-        return
-    end
-    local character = player.character or player.cutscene_character
-    if not character or not character.valid then
-        return
-    end
-    local data = storage.free_samples.players[player.index]
+local send_items = function(platform)
+    local data = storage.free_samples.platforms[platform.index]
     local samples = data.pending_samples
     local sent
     local stack = {}
@@ -25,18 +16,18 @@ local send_items = function(index)
             stack.quality = "{{ free_sample_quality_name }}"
         end
         if prototypes.item[name] then
-            if character.can_insert(stack) then
-                sent = character.insert(stack)
+            if platform.hub.can_insert(stack) then
+                sent = platform.hub.insert(stack)
             else
                 sent = 0
             end
             if sent > 0 then
-                player.print("Received " .. sent .. "x [item=" .. name .. ",quality={{ free_sample_quality_name }}]")
+                platform.force.print("Received " .. sent .. "x [item=" .. name .. ",quality={{ free_sample_quality_name }}]")
                 data.suppress_full_inventory_message = false
             end
             if sent ~= count then               -- Couldn't full send.
                 if not data.suppress_full_inventory_message then
-                    player.print("Additional items will be sent when inventory space is available.", {r=1, g=1, b=0.25})
+                    platform.force.print("Additional items will be sent when inventory space is available.", {r=1, g=1, b=0.25})
                 end
                 data.suppress_full_inventory_message = true -- Avoid spamming them with repeated full inventory messages.
                 samples[name] = count - sent    -- Buffer the remaining items
@@ -45,7 +36,7 @@ local send_items = function(index)
                 samples[name] = nil             -- Remove from the list
             end
         else
-            player.print("Unable to receive " .. count .. "x [item=" .. name .. "] as this item does not exist.")
+            platform.force.print("Unable to receive " .. count .. "x [item=" .. name .. "] as this item does not exist.")
             samples[name] = nil
         end
     end
@@ -60,34 +51,49 @@ local queue_samples = function(force, name, count)
         t[name] = (t[name] or 0) + count
     end
     -- Add to storage table of earned samples for future new players
-    add_to_table(storage.forcedata[force.name]['earned_samples'])
-    -- Add to existing players
-    for _, player in pairs(force.players) do
-        add_to_table(storage.free_samples.players[player.index].pending_samples)
-        send_items(player.index)
+    add_to_table(storage.forcedata[force.name]["earned_samples"])
+    -- Add to existing platforms
+    for _, platform in pairs(force.platforms) do
+        add_to_table(storage.free_samples.platforms[platform.index].pending_samples)
+        send_items(platform)
     end
 end
 
--- Initialize player data, either from them joining the game or them already being part of the game when the mod was
--- added.`
-local on_player_created = function(event)
-    local player = game.players[event.player_index]
-    -- FIXME: This (probably) fires before any other mod has a chance to change the player's force
-    -- For now, they will (probably) always be on the 'player' force when this event fires.
-    storage.free_samples.players[player.index] = {
-        pending_samples = table.deepcopy(storage.forcedata[player.force.name]['earned_samples']),
+local on_surface_created = function(event)
+    local surface = game.surfaces[event.surface_index]
+    local platform = surface.platform
+
+    if platform == nil then
+        return
+    end
+
+    storage.free_samples.platforms[platform.index] = {
+        pending_samples = table.deepcopy(storage.forcedata[platform.force.name]["earned_samples"]),
     }
 
-    send_items(player.index)
+    send_items(platform)
 end
 
-local on_player_removed = function(event)
-    storage.free_samples.players[player.index] = nil
+local on_surface_deleted = function(event)
+    local surface = game.surfaces[event.surface_index]
+    local platform = surface.platform
+
+    if platform == nil then
+        return
+    end
+
+    storage.free_samples.platforms[platform.index] = nil
 end
 
-local update_player_event = function(event)
-    send_items(event.player_index)
+-- Try to resend items after building in case the platform inventory was full
+local on_space_platform_built_entity = function(event)
+    send_items(event.platform)
 end
+
+local on_space_platform_built_tile = function(event)
+    send_items(event.platform)
+end
+
 
 local on_research_finished = function(event)
     local technology = event.research
@@ -130,25 +136,24 @@ local on_research_finished = function(event)
 end
 
 local on_init = function ()
+    -- Free samples waiting to be sent by platform
     storage.free_samples = {
-        players = {},
+        platforms = {},
     }
 
-    -- Fire dummy events for all currently existing players.
-    for index, _ in pairs(game.players) do
-        on_player_created({ player_index = index })
+    -- Fire dummy events for all currently existing surfaces.
+    for _, surface in pairs(game.surfaces) do
+        on_surface_created({ surface_index = surface.index })
     end
 end
 
 return {
     on_init = on_init,
     events = {
-        [defines.events.on_player_created] = on_player_created,
-        [defines.events.on_player_removed] = on_player_removed,
-        [defines.events.on_player_joined_game] = update_player_event,
-        [defines.events.on_player_main_inventory_changed] = update_player_event,
-        [defines.events.on_cutscene_cancelled] = update_player_event,
-        [defines.events.on_cutscene_finished] = update_player_event,
+        [defines.events.on_surface_created] = on_surface_created,
+        [defines.events.on_surface_deleted] = on_surface_deleted,
+        [defines.events.on_space_platform_built_entity] = on_space_platform_built_entity,
+        [defines.events.on_space_platform_built_tile] = on_space_platform_built_tile,
         [defines.events.on_research_finished] = on_research_finished,
     },
 }

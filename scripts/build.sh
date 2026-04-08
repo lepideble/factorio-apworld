@@ -24,6 +24,11 @@ rm "build/$WORLD/debug.py"
 rm --force "build/$WORLD/config"
 cp --recursive "config/$CONFIG" "build/$WORLD/config"
 
+if [ -d "build/$WORLD/config/mod" ]; then
+    rsync --recursive "build/$WORLD/config/mod/" "build/$WORLD/mod/"
+    rm -r "build/$WORLD/config/mod"
+fi
+
 GAME_NAME=$(PYTHONPATH="build/$WORLD" python3 -c "from config import game_name ; print(game_name)")
 
 cat << EOF > "build/$WORLD/archipelago.json"

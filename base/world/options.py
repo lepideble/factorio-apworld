@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from schema import Schema, Optional, And, Or, SchemaError
 
-from Options import Choice, OptionDict, PerGameCommonOptions, Range, Toggle, Visibility
+from Options import Choice, OptionDict, OptionSet, PerGameCommonOptions, Range, Toggle, Visibility
 
 from ..config import craftsanity_filter, victory_conditions
 from ..data import craftable_items, science_packs
@@ -117,6 +117,50 @@ class CraftSanity(Range):
     range_end = len(craftsanity_item_pool)
 
 
+class FactorioStartItems(OptionDict):
+    """Mapping of Factorio internal item-name to amount granted on start."""
+    display_name = "Starting Items"
+    default = {}
+    schema = Schema(
+        {
+            str: And(int, lambda n: n > 0,
+                     error="amount of starting items has to be a positive integer"),
+        }
+    )
+
+
+class FreeSamples(Choice):
+    """Get free items with your technologies."""
+    display_name = "Free Samples"
+    option_none = 0
+    option_single_craft = 1
+    option_half_stack = 2
+    option_stack = 3
+    default = 3
+
+
+class FreeSamplesQuality(Choice):
+    """If free samples are on, determine the quality of the granted items.
+    Requires the quality mod, which is part of the Space Age DLC. Without it, normal quality is given."""
+    display_name = "Free Samples Quality"
+    option_normal = 0
+    option_uncommon = 1
+    option_rare = 2
+    option_epic = 3
+    option_legendary = 4
+    default = 0
+
+
+class FactorioFreeSampleBlacklist(OptionSet):
+    """Set of items that should never be granted from Free Samples"""
+    display_name = "Free Sample Blacklist"
+
+
+class FactorioFreeSampleWhitelist(OptionSet):
+    """Overrides any free sample blacklist present. This may ruin the balance of the mod, be warned."""
+    display_name = "Free Sample Whitelist"
+
+
 class WorldGeneration(OptionDict):
     """World Generation settings. Overview of options at https://wiki.factorio.com/Map_generator,
     with in-depth documentation at https://lua-api.factorio.com/latest/concepts/MapGenSettings.html"""
@@ -214,4 +258,9 @@ class FactorioOptions(PerGameCommonOptions):
     tech_tree_information: TechTreeInformation
     goal: Goal
     craftsanity: CraftSanity
+    starting_items: FactorioStartItems
+    free_samples: FreeSamples
+    free_samples_quality: FreeSamplesQuality
+    free_sample_blacklist: FactorioFreeSampleBlacklist
+    free_sample_whitelist: FactorioFreeSampleWhitelist
     world_generation: WorldGeneration
