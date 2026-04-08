@@ -3,10 +3,10 @@ from collections.abc import Iterable
 from rule_builder.rules import HasAny, Rule, True_
 
 from ..config.rules import override_rules
-from ..data import craftable_recipes, machines_by_category, recipes, space_locations, space_locations_accessible_at_start, surfaces
+from ..data import craftable_recipes, machines_by_category, recipes, space_locations, surfaces
 
 from .locations import FactorioLocation, FactorioScienceLocation
-from .rules_classes import All, Any, CanAutomate, CanCraft, HasMachine, UnlockedRecipe, UnlockedSpaceLocation
+from .rules_classes import All, Any, CanAutomate, CanCraft, HasMachine, ReachedSpaceLocation, UnlockedRecipe, UnlockedSpaceLocation
 
 
 def get_rules(locations: Iterable[FactorioLocation]) -> dict[str, Rule]:
@@ -27,7 +27,7 @@ def get_rules(locations: Iterable[FactorioLocation]) -> dict[str, Rule]:
                 if surface.is_space_platform:
                     space_locations_with_chunk = [space_location for space_location in space_locations if recipe.name in space_location.asteroid_chunks]
 
-                    reached_location = HasAny(*[f'Reach {space_location.name} with {surface.name}' for space_location in space_locations_with_chunk])
+                    reached_location = Any([ReachedSpaceLocation(space_location, surface) for space_location in space_locations_with_chunk])
 
                     rules[f'Craft {recipe.name} on {surface.name}'] = unlocked_recipe & has_machine_for_craft & reached_location
                     rules[f'Automate {recipe.name} on {surface.name}'] = unlocked_recipe & has_machine_for_automation & reached_location
@@ -40,12 +40,10 @@ def get_rules(locations: Iterable[FactorioLocation]) -> dict[str, Rule]:
 
         if surface.is_space_platform:
             for space_location in space_locations:
-                if space_location.name in space_locations_accessible_at_start:
-                    rules[f'Reach {space_location.name} with {surface.name}'] = True_()
-                else:
+                if not space_location.accessible_at_start:
                     rules[f'Reach {space_location.name} with {surface.name}'] = (
                         UnlockedSpaceLocation(space_location.name)
-                            & HasAny(*[f'Reach {connection} with {surface.name}' for connection in space_location.connections])
+                            & Any([ReachedSpaceLocation(connection, surface) for connection in space_location.connections])
                     )
 
     for location in locations:

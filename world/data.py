@@ -50,8 +50,6 @@ def _recursive_asteroid_to_chunks(asteroid_name: str):
     return asteroid_chunks
 
 space_locations = Table()
-space_locations_unlocked_at_start = {'nauvis'}
-space_locations_accessible_at_start = {'nauvis'}
 
 for space_location_name, space_location_data in [*get_data('space-location'), *get_data('planet')]:
     asteroid_chunks = set()
@@ -62,7 +60,12 @@ for space_location_name, space_location_data in [*get_data('space-location'), *g
         else:
             asteroid_chunks.update(_recursive_asteroid_to_chunks(asteroid_spawn_definition['asteroid']))
 
-    space_locations.add(SpaceLocation(space_location_name, asteroid_chunks))
+    space_locations.add(SpaceLocation(
+        name=space_location_name,
+        asteroid_chunks=asteroid_chunks,
+        unlocked_at_start=space_location_name == 'nauvis',
+        accessible_at_start=space_location_name == 'nauvis',
+    ))
 
 for space_connection_name, space_connection_data in get_data('space-connection'):
     space_locations[space_connection_data['from']].connections.add(space_connection_data['to'])

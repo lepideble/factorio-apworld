@@ -1,14 +1,12 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal
 
+@dataclass
 class Base:
     name: str
 
-    def __init__(self, name: str):
-        self.name = name
-
     def __repr__(self):
-        return f"{self.__class__.__name__}({self.name})"
+        return f'{self.__class__.__name__}({self.name})'
 
     def __hash__(self):
         return hash(self.name)
@@ -48,14 +46,12 @@ class Surface(Base):
         return self.name == 'space-platform'
 
 
+@dataclass
 class SpaceLocation(Base):
-    asteroid_chunks: set[str]
-    connections: set[str]
-
-    def __init__(self, name: str, asteroid_chunks: set[str] = None, connections: set[str] = None):
-        super().__init__(name)
-        self.asteroid_chunks = asteroid_chunks if asteroid_chunks is not None else set()
-        self.connections = connections if connections is not None else set()
+    asteroid_chunks: set[str] = field(default_factory=set)
+    connections: set[str] = field(default_factory=set)
+    unlocked_at_start: bool = False
+    accessible_at_start: bool = False
 
 
 @dataclass

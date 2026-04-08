@@ -3,7 +3,7 @@ from rule_builder.rules import Has
 from worlds.AutoWorld import World
 
 from ..config import game_name
-from ..data import craftable_recipes, science_packs, space_locations, space_locations_accessible_at_start, surfaces, surfaces_accessible_at_start, technologies
+from ..data import craftable_recipes, science_packs, space_locations, surfaces, surfaces_accessible_at_start, technologies
 
 from .items import create_item, create_items, item_ids, FactorioItem
 from .locations import get_locations, location_ids
@@ -40,7 +40,8 @@ class FactorioWorld(World):
 
             if surface.is_space_platform:
                 for space_location in space_locations:
-                    region.add_event(f'Reach {space_location.name} with {surface.name}', show_in_spoiler=False)
+                    if not space_location.accessible_at_start:
+                        region.add_event(f'Reach {space_location.name} with {surface.name}', show_in_spoiler=False)
 
             self.multiworld.regions.append(region)
 

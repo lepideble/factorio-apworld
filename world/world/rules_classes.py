@@ -3,7 +3,8 @@ from dataclasses import dataclass
 from rule_builder.rules import And, Has, HasAny, Or, Rule, True_
 
 from ..config import game_name
-from ..data import machines_available_at_start, recipes_by_product, recipes_unlocked_at_start, space_locations_unlocked_at_start, technologies, technologies_by_recipe_unlocked, technologies_by_space_location_unlocked
+from ..data import machines_available_at_start, recipes_by_product, recipes_unlocked_at_start, space_locations, technologies, technologies_by_recipe_unlocked, technologies_by_space_location_unlocked
+from ..data_classes import SpaceLocation, Surface
 
 from .items import upgrades_map, upgrades_levels
 
@@ -107,7 +108,7 @@ class UnlockedSpaceLocation(Rule['FactorioWorld'], game=game_name):
     name: str
 
     def _instantiate(self, world: 'FactorioWorld') -> Rule.Resolved:
-        if self.name in space_locations_unlocked_at_start:
+        if space_locations[self.name].unlocked_at_start:
             return True_().resolve(world)
 
         technologies = technologies_by_space_location_unlocked(self.name)
@@ -119,3 +120,22 @@ class UnlockedSpaceLocation(Rule['FactorioWorld'], game=game_name):
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.name})"
+
+
+class ReachedSpaceLocation(Rule['FactorioWorld'], game=game_name):
+    space_location_name: str
+    surface_name: str
+
+    def __init__(self, space_location: SpaceLocation | str, surface: Surface | str):
+        super().__init__()
+        self.space_location_name = space_location.name if isinstance(space_location, SpaceLocation) else space_location
+        self.surface_name = surface.name if isinstance(surface, Surface) else surface
+
+    def _instantiate(self, world: 'FactorioWorld') -> Rule.Resolved:
+        if space_locations[self.space_location_name].accessible_at_start:
+            return True_().resolve(world)
+
+        return Has(f'Reach {self.space_location_name} with {self.surface_name}').resolve(world)
+
+    def __str__(self) -> str:
+        return f"{self.__class__.__name__}(space_location={self.space_location_name}, surface={self.surface_name})"
