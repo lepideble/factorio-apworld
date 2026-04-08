@@ -1,11 +1,13 @@
 game_name = 'Factorio: Platformer'
 
 
+# Mod dependencies
 dependencies = [
     'platformer',
 ]
 
 
+# Possible victory conditions
 victory_conditions = [
     {
         'type': 'reach-space-location',
@@ -13,3 +15,7 @@ victory_conditions = [
         'space_location': 'solar-system-edge',
     },
 ]
+
+# Item that should be included in craftsanity
+def craftsanity_filter(item_name: str):
+    return not item_name.endswith('-barrel') and item_name != 'iron-plate' and item_name != 'copper-plate'

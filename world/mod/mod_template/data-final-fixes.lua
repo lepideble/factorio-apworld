@@ -136,8 +136,15 @@ technologies["{{ original_tech_name }}"].hidden_in_factoriopedia = true
 {#- the tech researched by the local player #}
 new_tree_copy = table.deepcopy(template_tech)
 new_tree_copy.name = "{{ location.id }}"
+{% if location.unit is not none %}
 new_tree_copy.unit.count = {{ location.unit.count }}
 new_tree_copy.unit.ingredients = {{ variable_to_lua(location.unit.ingredients) }}
+{% else %}
+new_tree_copy.unit = nil
+{% endif %}
+{% if location.research_trigger is not none %}
+new_tree_copy.research_trigger = {{ variable_to_lua(location.research_trigger) }}
+{% endif %}
 {%- if tech_tree_information == 2 and item.name in technologies -%}
 {#- copy Factorio Technology Icon #}
 copy_factorio_icon(new_tree_copy, "{{ item.name }}")
