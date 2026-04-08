@@ -98,6 +98,8 @@ for machine_name, machine_data in get_data("furnace"):
 for machine_name, machine_data in get_data("rocket-silo"):
     machines.add(Machine(machine_name, set(machine_data["crafting_categories"])))
 
+machines_available_at_start = {'character'}
+
 
 # Science lab
 labs = Table()
@@ -197,6 +199,7 @@ del recipes_mining_with_fluid
 # Override
 override_data(
     machines=machines,
+    machines_available_at_start=machines_available_at_start,
     recipes=recipes,
     recipes_unlocked_at_start=recipes_unlocked_at_start,
     science_packs=science_packs,

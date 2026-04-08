@@ -81,7 +81,7 @@ removed_technologies = [
     'rocket-silo',
 ]
 
-def override_data(machines, recipes, recipes_unlocked_at_start, surfaces, surfaces_accessible_at_start, technologies, **args):
+def override_data(machines, machines_available_at_start, recipes, recipes_unlocked_at_start, surfaces, surfaces_accessible_at_start, technologies, **args):
     # Remove mining
     for recipe in recipes:
         if recipe.name.startswith("mining-"):
@@ -98,8 +98,16 @@ def override_data(machines, recipes, recipes_unlocked_at_start, surfaces, surfac
     surfaces_accessible_at_start.add('space-platform')
 
     # Removed machines
+    del machines['character']
     del machines['stone-furnace']
     del machines['steel-furnace']
+
+    # Starting machines
+    machines_available_at_start.clear()
+    machines_available_at_start.add('assembling-machine-1')
+    machines_available_at_start.add('asteroid-collector')
+    machines_available_at_start.add('crusher')
+    machines_available_at_start.add('electric-furnace')
 
     # Ignored technologies
     for technology_name in ignored_technologies:
