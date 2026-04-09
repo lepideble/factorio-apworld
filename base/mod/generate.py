@@ -1,14 +1,26 @@
+import collections.abc
+import importlib.resources
 import json
 import os
-import pkgutil
 import zipfile
 
 from jinja2 import Environment, FunctionLoader
 
 from worlds.Files import APPlayerContainer
-from Utils import get_text_after
 
 from ..config import dependencies
+
+
+def _recursive_list_files(traversable) -> collections.abc.Iterator[str]:
+    for file in traversable.iterdir():
+        if file.is_dir():
+            for name in _recursive_list_files(file):
+                yield file.name + '/' + name
+        else:
+            yield file.name
+
+
+template_files = list(_recursive_list_files(importlib.resources.files(__name__).joinpath('template')))
 
 
 base_info = {
@@ -48,7 +60,11 @@ class FactorioModFile(APPlayerContainer):
 
 
 def load_template(name: str):
-    return pkgutil.get_data(__name__, f'mod_template/{name}').decode(), name, lambda: False
+    for path in ['lib', 'template']:
+        if importlib.resources.is_resource(__name__, path, name):
+            return importlib.resources.read_text(__name__, path, name, encoding='utf-8'), name, lambda: False
+
+    return None
 
 
 template_env = Environment(loader=FunctionLoader(load_template))
@@ -60,32 +76,11 @@ def generate_mod(mod_name: str, mod_version: str, mod_data: dict, world, output_
     zf_path = os.path.join(output_directory, f'{versioned_mod_name}.zip')
     mod = FactorioModFile(zf_path, player=world.player, player_name=world.player_name)
 
-    if world.zip_path:
-        with zipfile.ZipFile(world.zip_path) as zf:
-            for file in zf.infolist():
-                if not file.is_dir() and "/mod/mod/" in file.filename:
-                    path_part = get_text_after(file.filename, "/mod/mod/")
-                    mod.writing_tasks.append(lambda arcpath=versioned_mod_name+"/"+path_part, content=zf.read(file):
-                                             (arcpath, content))
-    else:
-        basepath = os.path.join(os.path.dirname(__file__), "mod")
-        for dirpath, dirnames, filenames in os.walk(basepath):
-            base_arc_path = (versioned_mod_name+"/"+os.path.relpath(dirpath, basepath)).rstrip("/.\\")
-            for filename in filenames:
-                mod.writing_tasks.append(lambda arcpath=base_arc_path+"/"+filename,
-                                                file_path=os.path.join(dirpath, filename):
-                                         (arcpath, open(file_path, "rb").read()))
-
-    mod.writing_tasks.append(lambda: (versioned_mod_name + "/data.lua",
-                                      template_env.get_template("data.lua").render(**mod_data)))
-    mod.writing_tasks.append(lambda: (versioned_mod_name + "/data-final-fixes.lua",
-                                      template_env.get_template("data-final-fixes.lua").render(**mod_data)))
-    mod.writing_tasks.append(lambda: (versioned_mod_name + "/control.lua",
-                                      template_env.get_template("control.lua").render(**mod_data)))
-    mod.writing_tasks.append(lambda: (versioned_mod_name + "/settings.lua",
-                                      template_env.get_template("settings.lua").render(**mod_data)))
-    mod.writing_tasks.append(lambda: (versioned_mod_name + "/locale/en/locale.cfg",
-                                      template_env.get_template(r"locale/en/locale.cfg").render(**mod_data)))
+    for file in template_files:
+        if file.endswith('.j2'):
+            mod.writing_tasks.append(lambda path=file: (versioned_mod_name + '/' + path.removesuffix('.j2'), template_env.get_template(path).render(**mod_data)))
+        else:
+            mod.writing_tasks.append(lambda path=file: (versioned_mod_name + '/' + path, importlib.resources.read_binary(__name__, 'template', path)))
 
     info = base_info.copy()
     info['name'] = mod_name

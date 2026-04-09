@@ -1,3 +1,5 @@
-/world/config
+/base/config
+/build/
+/output/
 
 __pycache__

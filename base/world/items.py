@@ -16,7 +16,7 @@ for technology in technologies:
     if not technology.upgrade and technology.max_level is None:
         continue
 
-    match = re.match('^(?P<name>.+)-(?P<level>\d+)$', technology.name)
+    match = re.match(r'^(?P<name>.+)-(?P<level>\d+)$', technology.name)
     if match:
         name = match.group('name')
         level = int(match.group('level'))
