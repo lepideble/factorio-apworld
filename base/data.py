@@ -194,6 +194,8 @@ for technology_name, technology_data in get_data('technology'):
 
     technologies.add(technology)
 
+technologies_required_for_research = set() # Will be placed on craftsanity
+technologies_required_for_automation = set() # Will be placed on early science locations
 
 fluids = set()
 
@@ -215,6 +217,8 @@ override_data(
     surfaces=surfaces,
     surfaces_accessible_at_start=surfaces_accessible_at_start,
     technologies=technologies,
+    technologies_required_for_research=technologies_required_for_research,
+    technologies_required_for_automation=technologies_required_for_automation,
 )
 
 
@@ -274,23 +278,3 @@ unlockable_recipes = set()
 for recipe in recipes:
     if recipe.name in recipes_unlocked_at_start or recipe.name in _technologies_by_recipe_unlocked:
         unlockable_recipes.add(recipe.name)
-
-craftable_items: set[str] = set()
-craftable_recipes: set[str] = set()
-
-loop = True
-while loop:
-    loop = False
-
-    for recipe_name in unlockable_recipes:
-        if recipe_name in craftable_recipes:
-            continue
-
-        recipe = recipes[recipe_name]
-
-        if craftable_items.issuperset(recipe.ingredients.keys()):
-            craftable_items.update(recipe.products.keys())
-            craftable_recipes.add(recipe.name)
-
-            loop = True
-del loop

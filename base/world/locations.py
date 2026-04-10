@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING
 from BaseClasses import Location, Region
 
 from ..config import craftsanity_filter, game_name
-from ..data import craftable_items, fluids, technologies, science_packs
+from ..data import fluids, technologies, technologies_required_for_automation, technologies_required_for_research, science_packs
+from ..data_utils import craftable_items, craftable_items_at_start
 
 if TYPE_CHECKING:
     from .options import FactorioOptions
@@ -90,22 +91,36 @@ class FactorioCraftLocation(FactorioLocation):
 def get_locations(options: FactorioOptions, random: Random) -> list[FactorioLocation]:
     locations_to_create = len(technologies)
 
-    # Crate craftsanity locations
-    craftsanity_location_count = min(options.craftsanity.value, locations_to_create)
-    craftsanity_items = random.sample(craftsanity_item_pool, craftsanity_location_count)
-    craftsanity_locations = [FactorioCraftLocation(0, item_name) for item_name in craftsanity_items]
+    early_craftsanity_count = len(technologies_required_for_research)
+    early_science_location_count = len(technologies_required_for_automation)
+    craftsanity_count = min(options.craftsanity.value - early_craftsanity_count, locations_to_create - early_craftsanity_count - early_science_location_count)
+    science_location_count = locations_to_create - early_craftsanity_count - early_science_location_count - craftsanity_count
 
-    locations_to_create -= len(craftsanity_locations)
+    # Ensure enough early craftsanity location exists
+    early_craftsanity_items = random.sample([item_name for item_name in craftsanity_item_pool if item_name in craftable_items_at_start], early_craftsanity_count)
 
+    craftsanity_locations = [FactorioCraftLocation(0, item_name) for item_name in early_craftsanity_items]
 
-    # Create science locations
+    # Create remaining craftsanity locations
+    craftsanity_items = random.sample([item_name for item_name in craftsanity_item_pool if item_name not in early_craftsanity_items], craftsanity_count)
+
+    for item_name in craftsanity_items:
+        craftsanity_locations.append(FactorioCraftLocation(0, item_name))
+
+    # Ensure enough early science locations exists
+    early_science_locations_names = random.sample(_science_location_pools[science_packs[0]], early_science_location_count)
+
+    science_locations = [FactorioScienceLocation(0, science_location_name) for science_location_name in early_science_locations_names]
+
+    # Create remaining science locations
     science_location_pool = []
 
     for pack in options.max_science_pack.get_allowed_packs():
-        science_location_pool.extend(_science_location_pools[pack])
+        for science_location_name in _science_location_pools[pack]:
+            if science_location_name not in early_science_locations_names:
+                science_location_pool.append(science_location_name)
 
-    science_locations = []
-    for science_location_name in random.sample(science_location_pool, locations_to_create):
+    for science_location_name in random.sample(science_location_pool, science_location_count):
         science_locations.append(FactorioScienceLocation(0, science_location_name))
 
     # Attribute ingredients to science locations

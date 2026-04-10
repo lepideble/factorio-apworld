@@ -16,6 +16,7 @@ victory_conditions = [
     },
 ]
 
+
 # Item that should be included in craftsanity
 def craftsanity_filter(item_name: str):
-    return not item_name.endswith('-barrel') and item_name != 'iron-plate' and item_name != 'copper-plate'
+    return not item_name.endswith('-barrel')
