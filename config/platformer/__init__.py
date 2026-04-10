@@ -16,6 +16,15 @@ victory_conditions = [
     },
 ]
 
+progressive_technologies = {
+    'progressive automation': ['automation', 'automation-2', 'automation-3'],
+    'progressive circuit': ['electronics', 'advanced-circuit', 'processing-unit', 'quantum-processor'],
+    'progressive circuit-network': ['circuit-network', 'advanced-combinators'],
+    'progressive logistics': ['logistics', 'logistics-2', 'logistics-3', 'turbo-transport-belt'],
+    'progressive military': ['military', 'military-2', 'military-3', 'military-4'],
+    'progressive quality': ['epic-quality', 'legendary-quality'],
+    'progressive wall': ['stone-wall', 'gate'],
+}
 
 # Item that should be included in craftsanity
 def craftsanity_filter(item_name: str):

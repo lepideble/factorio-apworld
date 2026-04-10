@@ -1,8 +1,10 @@
-from BaseClasses import Region, Location, Item, ItemClassification
+import collections
+
+from BaseClasses import CollectionState, Item, Region
 from rule_builder.rules import Has
 from worlds.AutoWorld import World
 
-from ..config import game_name
+from ..config import game_name, progressive_technologies
 from ..data import science_packs, space_locations, surfaces, surfaces_accessible_at_start, technologies, technologies_required_for_automation, technologies_required_for_research
 from ..data_utils import craftable_recipes
 
@@ -19,8 +21,18 @@ class FactorioWorld(World):
     options_dataclass = FactorioOptions
     options: FactorioOptions
 
+    progressive_levels: dict[str, list[str]]
+
     def __init__(self, multiworld, player: int):
         super().__init__(multiworld, player)
+
+    def generate_early(self) -> None:
+        self.progressive_levels = {
+            'progressive science-pack': science_packs,
+        }
+
+        if self.options.progressive:
+            self.progressive_levels.update(progressive_technologies)
 
     def create_regions(self) -> None:
         # Menu region holds all locations that are not tied to a specific surface
@@ -53,8 +65,17 @@ class FactorioWorld(World):
             menu_region.locations.append(location)
 
     def create_items(self) -> None:
-        for item in create_items(self.player):
-            if item.name in technologies_required_for_automation:
+        progressive_counts = collections.Counter()
+
+        for item in create_items(self.player, self.progressive_levels):
+            if item.name in self.progressive_levels:
+                item_name = self.progressive_levels[item.name][progressive_counts[item.name]]
+
+                progressive_counts[item.name] += 1
+            else:
+                item_name = item.name
+
+            if item_name in technologies_required_for_automation:
                 # Early science locations are always placed at the start
                 for location in self.get_locations():
                     if isinstance(location, FactorioScienceLocation) and location.item is None:
@@ -62,7 +83,7 @@ class FactorioWorld(World):
                         location.place_locked_item(item)
 
                         break
-            elif item.name in technologies_required_for_research:
+            elif item_name in technologies_required_for_research:
                 # Early craft locations are always placed at the start
                 for location in self.get_locations():
                     if isinstance(location, FactorioCraftLocation) and location.item is None:
@@ -85,7 +106,29 @@ class FactorioWorld(World):
                 raise Error('Invalid victory condition')
 
     def create_item(self, name: str) -> FactorioItem:
-        return create_item(self.player, name)
+        return create_item(self.player, self.progressive_levels, name)
+
+    def collect(self, state: CollectionState, item: Item) -> bool:
+        if super().collect(state, item):
+            if item.name in self.progressive_levels:
+                current_count = state.prog_items[self.player][item.name]
+                item_name = self.progressive_levels[item.name][current_count - 1]
+                state.prog_items[self.player][item_name] = 1
+
+            return True
+
+        return False
+
+    def remove(self, state: CollectionState, item: Item) -> bool:
+        if super().collect(state, item):
+            if item.name in self.progressive_levels:
+                current_count = state.prog_items[self.player][item.name]
+                item_name = self.progressive_levels[item.name][current_count]
+                state.prog_items[self.player][item_name] = 0
+
+            return True
+
+        return False
 
     def generate_basic(self) -> None:
         world_generation = self.options.world_generation.value

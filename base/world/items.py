@@ -1,9 +1,10 @@
+import itertools
 import re
 
 from BaseClasses import Item, ItemClassification
 
-from ..config import game_name
-from ..data import technologies
+from ..config import game_name, progressive_technologies
+from ..data import science_packs, technologies
 from ..data_classes import Technology
 
 
@@ -41,23 +42,43 @@ for technology in technologies:
 
 # Generate ids
 item_ids = {}
-next_id = 1
+
+ids = itertools.count(start=1)
+
+item_ids['progressive science-pack'] = next(ids)
+
 for technology in technologies:
+    if technology.name in science_packs:
+        continue
+
     if technology.name in upgrades_map:
         if upgrades_map[technology.name] in item_ids:
             continue
-        item_ids[upgrades_map[technology.name]] = next_id
+        item_ids[upgrades_map[technology.name]] = next(ids)
     else:
-        item_ids[technology.name] = next_id
-    next_id += 1
-del next_id
+        item_ids[technology.name] = next(ids)
+
+for progressive_name in progressive_technologies:
+    item_ids[progressive_name] = next(ids)
+
+del ids
 
 
 class FactorioItem(Item):
     game = game_name
 
+    def __init__(self, name: str, classification: ItemClassification, player: int):
+        super().__init__(name, classification, item_ids[name], player)
 
-def _create_item_for_technology(player: int, item_name: str, technology: Technology) -> FactorioItem:
+
+def create_item(player: int, progressive_levels: dict[str, list[str]], item_name: str) -> FactorioItem:
+    if item_name in upgrades_levels:
+        technology = upgrades_levels[item_name][-1]
+    elif item_name in progressive_levels:
+        technology = progressive_levels[item_name][-1]
+    else:
+        technology = technologies[name]
+
     if len(technology.unlocked_recipes) > 0 or len(technology.unlocked_space_locations) > 0:
         classification = ItemClassification.progression
     elif len(technology.modifiers) > 0:
@@ -65,27 +86,48 @@ def _create_item_for_technology(player: int, item_name: str, technology: Technol
     else:
         classification = ItemClassification.filler
 
-    return FactorioItem(item_name, classification, item_ids[item_name], player)
+    return FactorioItem(item_name, classification, player)
 
 
-def create_item(player: int, item_name: str) -> FactorioItem:
-    if item_name in upgrades_levels:
-        technology = upgrades_levels[item_name][-1]
-    else:
-        technology = technologies[name]
+def create_items(player: int, progressive_levels: dict[str, list[str]]) -> list[FactorioItem]:
+    # Build reverse progressive lookup map
+    progressive_map: dict[str, str] = {}
+    for name, levels in progressive_levels.items():
+        for level in levels:
+            progressive_map[level] = name
 
-    return _create_item_for_technology(player, item_name, technoloy)
 
-
-def create_items(player: int) -> list[FactorioItem]:
     items = []
 
     for technology in technologies:
         if technology.name in upgrades_map:
             item_name = upgrades_map[technology.name]
+            index = upgrades_levels[item_name].index(technology)
+            levels = upgrades_levels[item_name][index:]
+        elif technology.name in progressive_map:
+            item_name = progressive_map[technology.name]
+            index = progressive_levels[item_name].index(technology.name)
+            levels = [technologies[name] for name in progressive_levels[item_name][index:]]
         else:
             item_name = technology.name
+            levels = [technology]
 
-        items.append(_create_item_for_technology(player, item_name, technology))
+        has_unlock = False
+        has_modifier = False
+
+        for level in levels:
+            if len(level.unlocked_recipes) > 0 or len(level.unlocked_space_locations) > 0:
+                has_unlock = True
+            if len(level.modifiers) > 0:
+                has_modifier = True
+
+        if has_unlock:
+            classification = ItemClassification.progression
+        elif has_modifier:
+            classification = ItemClassification.useful
+        else:
+            classification = ItemClassification.filler
+
+        items.append(FactorioItem(item_name, classification, player))
 
     return items

@@ -1,5 +1,6 @@
 # Stuff that is only disabled by platformer but should be considered removed
 removed_technologies = [
+    # Technologies explicitely removed by platformer
     'heavy-armor',
     'battery-equipment',
     'belt-immunity-equipment',
@@ -52,10 +53,10 @@ removed_technologies = [
     'battery-mk2-equipment',
     'battery-mk3-equipment',
     'fission-reactor-equipment',
-    'electric-weapons-damage-1',
-    'electric-weapons-damage-2',
-    'electric-weapons-damage-3',
-    'electric-weapons-damage-4',
+    # 'electric-weapons-damage-1',
+    # 'electric-weapons-damage-2',
+    # 'electric-weapons-damage-3',
+    # 'electric-weapons-damage-4',
     'destroyer',
     'power-armor-mk2',
     'logistic-system',
@@ -76,6 +77,9 @@ removed_technologies = [
     'artillery',
     'logistic-robotics',
     'rocket-silo',
+    # Technologies pruned by platformer because they have no remaining modifiers
+    'big-mining-drill',
+    'electric-mining-drill',
 ]
 
 def override_data(machines, machines_available_at_start, recipes, recipes_unlocked_at_start, surfaces, surfaces_accessible_at_start, technologies, technologies_required_for_research, technologies_required_for_automation, **args):

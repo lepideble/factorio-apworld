@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from schema import Schema, Optional, And, Or, SchemaError
 
-from Options import Choice, OptionDict, OptionSet, PerGameCommonOptions, Range, Toggle, Visibility
+from Options import Choice, DefaultOnToggle, OptionDict, OptionSet, PerGameCommonOptions, Range, Toggle, Visibility
 
 from ..config import craftsanity_filter, victory_conditions
 from ..data import science_packs, technologies_required_for_research
@@ -115,6 +115,12 @@ class CraftSanity(Range):
     default = len(technologies_required_for_research)
     range_start = len(technologies_required_for_research)
     range_end = len(craftsanity_item_pool)
+
+
+class Progressive(DefaultOnToggle):
+    """Merges together some technologies into progressive items which awards them in order.
+    Upgrades and science packs are always progressive."""
+    display_name = "Progressive Technologies"
 
 
 class FactorioStartItems(OptionDict):
@@ -258,6 +264,7 @@ class FactorioOptions(PerGameCommonOptions):
     tech_tree_information: TechTreeInformation
     goal: Goal
     craftsanity: CraftSanity
+    progressive: Progressive
     starting_items: FactorioStartItems
     free_samples: FreeSamples
     free_samples_quality: FreeSamplesQuality

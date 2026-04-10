@@ -17,6 +17,10 @@ def get_mod_data(world: FactorioWorld) -> dict:
     free_sample_blacklist.update({item: 1 for item in world.options.free_sample_blacklist.value})
     free_sample_blacklist.update({item: 0 for item in world.options.free_sample_whitelist.value})
 
+    progressive_technology_table = {}
+    progressive_technology_table.update({ name: [level.name for level in levels] for name, levels in upgrades_levels.items() })
+    progressive_technology_table.update(world.progressive_levels)
+
     return {
         'custom_recipes': {},
         'energy_link': 0,
@@ -28,7 +32,7 @@ def get_mod_data(world: FactorioWorld) -> dict:
         'max_science_pack': world.options.max_science_pack.value,
         'mod_name': get_mod_name(world),
         'player_names': world.multiworld.player_name,
-        'progressive_technology_table': { name: [level.name for level in levels] for name, levels in upgrades_levels.items() },
+        'progressive_technology_table': progressive_technology_table,
         'seed_name': world.multiworld.seed_name,
         'slot_name': world.player_name,
         'slot_player': world.player,
