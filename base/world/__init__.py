@@ -70,6 +70,11 @@ class FactorioWorld(World):
     def create_item(self, name: str) -> FactorioItem:
         return create_item(self.player, name)
 
+    def generate_basic(self) -> None:
+        world_generation = self.options.world_generation.value
+        if world_generation['basic'].get('seed', None) is None:
+            world_generation['basic']['seed'] = self.random.randint(0, 2 ** 32 - 1) # 32 bit uint
+
     def generate_output(self, output_directory: str) -> None:
         from ..mod.data import get_mod_data, get_mod_name, get_mod_version
         from ..mod.generate import generate_mod
