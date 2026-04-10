@@ -1,0 +1,66 @@
+{%- from "macros.lua" import dict_to_lua -%}
+
+local on_init = function()
+    if remote.interfaces["silo_script"] then
+        remote.call("silo_script", "set_no_victory", true)
+    end
+
+    if remote.interfaces["space_finish_script"] then
+        remote.call("space_finish_script", "set_no_victory", true)
+    end
+end
+
+{% if victory_condition.type == 'launch-rocket' %}
+local on_rocket_launched = function(event)
+    if event.rocket and event.rocket.valid and storage.forcedata[event.rocket.force.name]['victory'] == 0 then
+        satellite_count = 0
+        cargo_pod = event.rocket.cargo_pod
+        if cargo_pod then
+            satellite_count = cargo_pod.get_item_count("satellite")
+        end
+        if satellite_count > 0 or GOAL == 0 then
+            storage.forcedata[event.rocket.force.name]['victory'] = 1
+            dumpInfo(event.rocket.force)
+            game.set_game_state
+            {
+                game_finished = true,
+                player_won = true,
+                can_continue = true,
+                victorious_force = event.rocket.force
+            }
+        end
+    end
+end
+{% endif %}
+{% if victory_condition.type == 'reach-space-location' %}
+local on_space_platform_changed_state = function(event)
+    local platform = event.platform
+    if not (platform and platform.valid) then return end
+
+    local last_visited_location = platform.last_visited_space_location
+    if not last_visited_location then return end
+    if last_visited_location.name ~= '{{ victory_condition.space_location }}' then return end
+
+    storage.forcedata[platform.force.name]['victory'] = 1
+    dumpInfo(platform.force)
+    game.set_game_state
+    {
+        game_finished = true,
+        player_won = true,
+        can_continue = true,
+        victorious_force = platform.force
+    }
+end
+{% endif %}
+
+return {
+    on_init = on_init,
+    events = {
+        {% if victory_condition.type == 'launch-rocket' %}
+        [defines.events.on_rocket_launched] = on_rocket_launched,
+        {% endif %}
+        {% if victory_condition.type == 'reach-space-location' %}
+        [defines.events.on_space_platform_changed_state] = on_space_platform_changed_state,
+        {% endif %}
+    },
+}

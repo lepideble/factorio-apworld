@@ -1,0 +1,149 @@
+{%- from "macros.lua" import dict_to_lua -%}
+
+FREE_SAMPLES = {{ free_samples }}
+FREE_SAMPLE_BLACKLIST = {{ dict_to_lua(free_sample_blacklist) }}
+
+-- Updates a player, attempting to send them any pending samples (if relevant)
+local update_player = function(index)
+    local player = game.players[index]
+    if not player or not player.valid then     -- Do nothing if we reference an invalid player somehow
+        return
+    end
+    local character = player.character or player.cutscene_character
+    if not character or not character.valid then
+        return
+    end
+    local samples = storage.free_samples_pending[index]
+    local sent
+    local stack = {}
+
+    for name, count in pairs(samples) do
+        stack.name = name
+        stack.count = count
+        if script.active_mods["quality"] then
+            stack.quality = "{{ free_sample_quality_name }}"
+        end
+        if prototypes.item[name] then
+            if character.can_insert(stack) then
+                sent = character.insert(stack)
+            else
+                sent = 0
+            end
+            if sent > 0 then
+                player.print("Received " .. sent .. "x [item=" .. name .. ",quality={{ free_sample_quality_name }}]")
+                data.suppress_full_inventory_message = false
+            end
+            if sent ~= count then               -- Couldn't full send.
+                if not data.suppress_full_inventory_message then
+                    player.print("Additional items will be sent when inventory space is available.", {r=1, g=1, b=0.25})
+                end
+                data.suppress_full_inventory_message = true -- Avoid spamming them with repeated full inventory messages.
+                samples[name] = count - sent    -- Buffer the remaining items
+                break                           -- Stop trying to send other things
+            else
+                samples[name] = nil             -- Remove from the list
+            end
+        else
+            player.print("Unable to receive " .. count .. "x [item=" .. name .. "] as this item does not exist.")
+            samples[name] = nil
+        end
+    end
+end
+
+-- Initialize player data, either from them joining the game or them already being part of the game when the mod was
+-- added.`
+local on_player_created = function(event)
+    local player = game.players[event.player_index]
+    -- FIXME: This (probably) fires before any other mod has a chance to change the player's force
+    -- For now, they will (probably) always be on the 'player' force when this event fires.
+    storage.free_samples_pending[player.index] = table.deepcopy(storage.forcedata[player.force.name]['earned_samples'])
+    update_player(player.index)  -- Attempt to send pending free samples, if relevant.
+end
+
+local on_player_removed = function(event)
+    storage.free_samples_pending[event.player_index] = nil
+end
+
+local update_player_event = function(event)
+    update_player(event.player_index)
+end
+
+local add_samples = function(force, name, count)
+    local function add_to_table(t)
+        if count <= 0 then
+            -- Fixes a bug with single craft, if a recipe gives 0 of a given item.
+            return
+        end
+        t[name] = (t[name] or 0) + count
+    end
+    -- Add to storage table of earned samples for future new players
+    add_to_table(storage.forcedata[force.name]['earned_samples'])
+    -- Add to existing players
+    for _, player in pairs(force.players) do
+        add_to_table(storage.free_samples_pending[player.index])
+        update_player(player.index)
+    end
+end
+
+local on_research_finished = function(event)
+    local technology = event.research
+    if string.find(technology.force.name, "EE_TESTFORCE") == 1 then
+        --Don't acknowledge AP research as an Editor Extensions test force
+        --Also no need for free samples in the Editor extensions testing surfaces, as these testing surfaces
+        --are worked on exclusively in editor mode.
+        return
+    end
+    if technology.researched and string.find(technology.name, "ap%-") ~= 1 then
+        if FREE_SAMPLES == 0 then
+            return  -- Nothing else to do
+        end
+        if not technology.prototype.effects then
+            return  -- No technology effects, so nothing to do.
+        end
+        for _, effect in pairs(technology.prototype.effects) do
+            if effect.type == "unlock-recipe" then
+                local recipe = prototypes.recipe[effect.recipe]
+                for _, result in pairs(recipe.products) do
+                    if result.type == "item" and result.amount then
+                        local name = result.name
+                        if FREE_SAMPLE_BLACKLIST[name] ~= 1 then
+                            local count
+                            if FREE_SAMPLES == 1 then
+                                count = result.amount
+                            else
+                                count = get_any_stack_size(result.name)
+                                if FREE_SAMPLES == 2 then
+                                    count = math.ceil(count / 2)
+                                end
+                            end
+                            add_samples(technology.force, name, count)
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+local on_init = function ()
+    -- Free samples waiting to be sent by player
+    storage.free_samples_pending = {}
+
+    -- Fire dummy events for all currently existing players.
+    for index, _ in pairs(game.players) do
+        on_player_created({ player_index = index })
+    end
+end
+
+return {
+    on_init = on_init,
+    events = {
+        [defines.events.on_player_created] = on_player_created,
+        [defines.events.on_player_removed] = on_player_removed,
+        [defines.events.on_player_joined_game] = update_player_event,
+        [defines.events.on_player_main_inventory_changed] = update_player_event,
+        [defines.events.on_cutscene_cancelled] = update_player_event,
+        [defines.events.on_cutscene_finished] = update_player_event,
+        [defines.events.on_research_finished] = on_research_finished,
+    },
+}

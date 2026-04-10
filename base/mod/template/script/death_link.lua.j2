@@ -1,0 +1,75 @@
+ARCHIPELAGO_DEATH_LINK_SETTING = "archipelago-death-link-{{ slot_player }}-{{ seed_name }}"
+
+if settings.global[ARCHIPELAGO_DEATH_LINK_SETTING].value then
+    DEATH_LINK = 1
+else
+    DEATH_LINK = 0
+end
+
+CURRENTLY_DEATH_LOCK = 0
+
+local on_runtime_mod_setting_changed = function(event)
+    local force
+    if event.player_index == nil then
+        force = game.forces.player
+    else
+        force = game.players[event.player_index].force
+    end
+
+    if event.setting == ARCHIPELAGO_DEATH_LINK_SETTING then
+        if settings.global[ARCHIPELAGO_DEATH_LINK_SETTING].value then
+            DEATH_LINK = 1
+        else
+            DEATH_LINK = 0
+        end
+        if force ~= nil then
+            dumpInfo(force)
+        end
+    end
+end
+
+local kill_players = function(force)
+    CURRENTLY_DEATH_LOCK = 1
+    local current_character = nil
+    for _, player in ipairs(force.players) do
+        current_character = player.character
+        if current_character ~= nil then
+            current_character.die()
+        end
+    end
+    CURRENTLY_DEATH_LOCK = 0
+end
+
+local on_entity_died = function(event)
+    if event.entity.name ~= "character" then
+        return
+    end
+    if DEATH_LINK == 0 then
+        return
+    end
+    if CURRENTLY_DEATH_LOCK == 1 then -- don't re-trigger on same event
+        return
+    end
+
+    local force = event.entity.force
+    storage.forcedata[force.name].death_link_tick = game.tick
+    dumpInfo(force)
+    kill_players(force)
+end
+
+local deathlink_command = function(call)
+    local force = game.forces["player"]
+    local source = call.parameter or "Archipelago"
+    kill_players(force)
+    game.print("Death was granted by " .. source)
+end
+
+return {
+    add_commands = function()
+        commands.add_command("ap-deathlink", "Kill all players", deathlink_command)
+    end,
+    events = {
+        [defines.events.on_runtime_mod_setting_changed] = on_runtime_mod_setting_changed,
+        [defines.events.on_entity_died] = on_entity_died,
+    },
+}
