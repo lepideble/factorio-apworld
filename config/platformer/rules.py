@@ -13,7 +13,11 @@ def override_rules(locations: Iterable[FactorioLocation], rules: dict[str, Rule]
     can_destroy_big_asterorid = CanCraft('rocket-turret', 'space-platform') & CanAutomate('rocket', 'space-platform') & can_destroy_medium_asterorid
     can_destroy_huge_asterorid = CanCraft('railgun-turret', 'space-platform') & CanAutomate('railgun-ammo', 'space-platform') & can_destroy_big_asterorid
 
-    has_truster_and_propellants = CanCraft('thruster', 'space-platform') & CanAutomate('thruster-fuel', 'space-platform') & CanAutomate('thruster-oxidizer', 'space-platform')
+    has_truster_and_propellants = (
+        CanCraft('thruster', 'space-platform')
+            & CanAutomate('thruster-fuel', 'space-platform') & CanAutomate('thruster-oxidizer', 'space-platform')
+            & CanCraft('pipe', 'space-platform') & CanCraft('pipe-to-ground', 'space-platform')
+    )
 
     rules['Reach fulgora with space-platform'] &= can_destroy_medium_asterorid & has_truster_and_propellants
     rules['Reach gleba with space-platform'] &= can_destroy_medium_asterorid & has_truster_and_propellants
