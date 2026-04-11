@@ -3,10 +3,11 @@ from rule_builder.rules import Has
 from worlds.AutoWorld import World
 
 from ..config import game_name
-from ..data import craftable_recipes, science_packs, space_locations, surfaces, surfaces_accessible_at_start, technologies
+from ..data import science_packs, space_locations, surfaces, surfaces_accessible_at_start, technologies, technologies_required_for_automation, technologies_required_for_research
+from ..data_utils import craftable_recipes
 
 from .items import create_item, create_items, item_ids, FactorioItem
-from .locations import get_locations, location_ids
+from .locations import FactorioCraftLocation, FactorioScienceLocation, get_locations, location_ids
 from .options import FactorioOptions
 
 class FactorioWorld(World):
@@ -53,7 +54,23 @@ class FactorioWorld(World):
 
     def create_items(self) -> None:
         for item in create_items(self.player):
-            self.multiworld.itempool.append(item)
+            if item.name in technologies_required_for_automation:
+                # Early science locations are always placed at the start
+                for location in self.get_locations():
+                    if isinstance(location, FactorioScienceLocation) and location.item is None:
+                        location.count = min(location.count, 10)
+                        location.place_locked_item(item)
+
+                        break
+            elif item.name in technologies_required_for_research:
+                # Early craft locations are always placed at the start
+                for location in self.get_locations():
+                    if isinstance(location, FactorioCraftLocation) and location.item is None:
+                        location.place_locked_item(item)
+
+                        break
+            else:
+                self.multiworld.itempool.append(item)
 
     def set_rules(self) -> None:
         from .rules import get_rules

@@ -5,7 +5,7 @@ from schema import Schema, Optional, And, Or, SchemaError
 from Options import Choice, OptionDict, OptionSet, PerGameCommonOptions, Range, Toggle, Visibility
 
 from ..config import craftsanity_filter, victory_conditions
-from ..data import craftable_items, science_packs
+from ..data import science_packs, technologies_required_for_research
 from .locations import craftsanity_item_pool
 
 
@@ -112,8 +112,8 @@ class CraftSanity(Range):
     """Choose a number of researches to require crafting a specific item rather than with science packs.
     May be capped based on the total number of locations."""
     display_name = "CraftSanity"
-    default = 0
-    range_start = 0
+    default = len(technologies_required_for_research)
+    range_start = len(technologies_required_for_research)
     range_end = len(craftsanity_item_pool)
 
 

@@ -27,6 +27,9 @@ class Table:
     def __delitem__(self, key: str):
         del self.data[key]
 
+    def __contains__(self, key: str):
+        return key in self.data
+
     def __iter__(self):
         return map(lambda name: self.data[name], sorted(self.data.keys()))
 

@@ -1,6 +1,3 @@
-# Technologies that we don't want to be randomized
-ignored_technologies = ['automation', 'automation-science-pack', 'electronics', 'engine', 'solar-energy', 'space-platform', 'steel-processing']
-
 # Stuff that is only disabled by platformer but should be considered removed
 removed_technologies = [
     'heavy-armor',
@@ -81,7 +78,7 @@ removed_technologies = [
     'rocket-silo',
 ]
 
-def override_data(machines, machines_available_at_start, recipes, recipes_unlocked_at_start, surfaces, surfaces_accessible_at_start, technologies, **args):
+def override_data(machines, machines_available_at_start, recipes, recipes_unlocked_at_start, surfaces, surfaces_accessible_at_start, technologies, technologies_required_for_research, technologies_required_for_automation, **args):
     # Remove mining
     for recipe in recipes:
         if recipe.name.startswith("mining-"):
@@ -109,13 +106,13 @@ def override_data(machines, machines_available_at_start, recipes, recipes_unlock
     machines_available_at_start.add('crusher')
     machines_available_at_start.add('electric-furnace')
 
-    # Ignored technologies
-    for technology_name in ignored_technologies:
-        technology = technologies[technology_name]
+    # Space platform is automaticaly unlocked on game start
+    recipes_unlocked_at_start.update(technologies['space-platform'].unlocked_recipes)
+    del technologies['space-platform']
 
-        recipes_unlocked_at_start.update(technology.unlocked_recipes)
-
-        del technologies[technology_name]
+    # Early technologies
+    technologies_required_for_research.update({'automation-science-pack', 'electronics'})
+    technologies_required_for_automation.update({'automation', 'engine', 'logistics', 'solar-energy', 'steel-processing'})
 
     # Removed technologies
     for technology_name in removed_technologies:
