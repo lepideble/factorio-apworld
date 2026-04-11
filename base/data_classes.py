@@ -131,3 +131,11 @@ class Technology(Base):
         self.unlocked_recipes = unlocked_recipes if unlocked_recipes is not None else set()
         self.unlocked_space_locations = unlocked_space_locations if unlocked_space_locations is not None else set()
         self.modifiers = modifiers if modifiers is not None else []
+
+    @property
+    def has_unlock(self):
+        return len(self.unlocked_recipes) > 0 or len(self.unlocked_space_locations) > 0
+
+    @property
+    def has_modifier(self):
+        return self.has_unlock or len(self.modifiers) > 0

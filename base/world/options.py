@@ -2,10 +2,11 @@ from dataclasses import dataclass
 
 from schema import Schema, Optional, And, Or, SchemaError
 
-from Options import Choice, DefaultOnToggle, OptionDict, OptionSet, PerGameCommonOptions, Range, Toggle, Visibility
+from Options import Choice, DefaultOnToggle, OptionCounter, OptionDict, OptionSet, PerGameCommonOptions, Range, Toggle, Visibility
 
 from ..config import craftsanity_filter, victory_conditions
 from ..data import science_packs, technologies_required_for_research
+from ..data_utils import upgrades_levels, upgrades_max_level, upgrades_min_level
 from .locations import craftsanity_item_pool
 
 
@@ -21,6 +22,19 @@ class FloatRange:
         if not self._low <= value <= self._high:
             raise SchemaError(f"{value} is not between {self._low} and {self._high}")
         return float(value)
+
+
+class SchemaRange:
+    def __init__(self, low, high):
+        self.low = low
+        self.high = high
+
+    def validate(self, value):
+        if self.low is not None and value < self.low:
+            raise SchemaError(f"{value} should be higher than {self.low}")
+        if self.high is not None and value > self.high:
+            raise SchemaError(f"{value} should be lower than {self.high}")
+        return value
 
 
 LuaBool = Or(bool, And(int, lambda n: n in (0, 1)))
@@ -123,16 +137,20 @@ class Progressive(DefaultOnToggle):
     display_name = "Progressive Technologies"
 
 
-class FactorioStartItems(OptionDict):
+class FactorioUpgradesCount(OptionDict):
+    """Number of upgrade levels added to the item pool."""
+    display_name = "Upgrades counts"
+    default = { key: len(levels) for key, levels in upgrades_levels.items() }
+    schema = Schema({ Optional(key): And(int, SchemaRange(upgrades_min_level[key], upgrades_max_level[key])) for key in upgrades_levels.keys() })
+
+    def __getitem__(self, item: str) -> int:
+        return self.value.get(item, len(upgrades_levels[item]))
+
+
+class FactorioStartItems(OptionCounter):
     """Mapping of Factorio internal item-name to amount granted on start."""
     display_name = "Starting Items"
-    default = {}
-    schema = Schema(
-        {
-            str: And(int, lambda n: n > 0,
-                     error="amount of starting items has to be a positive integer"),
-        }
-    )
+    min = 0
 
 
 class FreeSamples(Choice):
@@ -167,7 +185,7 @@ class FactorioFreeSampleWhitelist(OptionSet):
     display_name = "Free Sample Whitelist"
 
 
-class WorldGeneration(OptionDict):
+class WorldGen(OptionDict):
     """World Generation settings. Overview of options at https://wiki.factorio.com/Map_generator,
     with in-depth documentation at https://lua-api.factorio.com/latest/concepts/MapGenSettings.html"""
     display_name = 'World Generation'
@@ -265,9 +283,10 @@ class FactorioOptions(PerGameCommonOptions):
     goal: Goal
     craftsanity: CraftSanity
     progressive: Progressive
+    upgrades_count: FactorioUpgradesCount
     starting_items: FactorioStartItems
     free_samples: FreeSamples
     free_samples_quality: FreeSamplesQuality
     free_sample_blacklist: FactorioFreeSampleBlacklist
     free_sample_whitelist: FactorioFreeSampleWhitelist
-    world_generation: WorldGeneration
+    world_gen: WorldGen

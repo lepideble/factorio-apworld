@@ -1,6 +1,6 @@
 from ..world import FactorioWorld
-from ..world.items import upgrades_levels
 from ..data import science_packs, technologies
+from ..data_utils import upgrades_levels
 
 
 def get_mod_name(world: FactorioWorld) -> str:
@@ -40,5 +40,5 @@ def get_mod_data(world: FactorioWorld) -> dict:
         'tech_tree_information': world.options.tech_tree_information.value,
         'technologies': [technology.name for technology in technologies],
         'victory_condition': world.options.goal.get_victory_condition(),
-        'world_generation': world.options.world_generation.value,
+        'world_gen': world.options.world_gen.value,
     }

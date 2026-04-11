@@ -67,7 +67,7 @@ class FactorioWorld(World):
     def create_items(self) -> None:
         progressive_counts = collections.Counter()
 
-        for item in create_items(self.player, self.progressive_levels):
+        for item in create_items(self.options, self.progressive_levels, self.player):
             if item.name in self.progressive_levels:
                 item_name = self.progressive_levels[item.name][progressive_counts[item.name]]
 
@@ -106,7 +106,7 @@ class FactorioWorld(World):
                 raise Error('Invalid victory condition')
 
     def create_item(self, name: str) -> FactorioItem:
-        return create_item(self.player, self.progressive_levels, name)
+        return create_item(self.progressive_levels, self.player, name)
 
     def collect(self, state: CollectionState, item: Item) -> bool:
         if super().collect(state, item):
@@ -131,9 +131,9 @@ class FactorioWorld(World):
         return False
 
     def generate_basic(self) -> None:
-        world_generation = self.options.world_generation.value
-        if world_generation['basic'].get('seed', None) is None:
-            world_generation['basic']['seed'] = self.random.randint(0, 2 ** 32 - 1) # 32 bit uint
+        world_gen = self.options.world_gen.value
+        if world_gen['basic'].get('seed', None) is None:
+            world_gen['basic']['seed'] = self.random.randint(0, 2 ** 32 - 1) # 32 bit uint
 
     def generate_output(self, output_directory: str) -> None:
         from ..mod.data import get_mod_data, get_mod_name, get_mod_version

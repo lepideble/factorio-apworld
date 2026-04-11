@@ -1,14 +1,16 @@
 from __future__ import annotations
-from random import Random
-from typing import TYPE_CHECKING
+
+import typing
 
 from BaseClasses import Location, Region
 
 from ..config import craftsanity_filter, game_name
 from ..data import fluids, technologies, technologies_required_for_automation, technologies_required_for_research, science_packs
-from ..data_utils import craftable_items, craftable_items_at_start
+from ..data_utils import craftable_items, craftable_items_at_start, upgrades_levels, upgrades_map
 
-if TYPE_CHECKING:
+if typing.TYPE_CHECKING:
+    import random
+
     from .options import FactorioOptions
 
 
@@ -88,8 +90,15 @@ class FactorioCraftLocation(FactorioLocation):
         }
 
 
-def get_locations(options: FactorioOptions, random: Random) -> list[FactorioLocation]:
-    locations_to_create = len(technologies)
+def get_locations(options: FactorioOptions, random: random.Random) -> list[FactorioLocation]:
+    locations_to_create = 0
+
+    for technology in technologies:
+        if technology.name not in upgrades_map:
+            locations_to_create += 1
+
+    for item_name in upgrades_levels.keys():
+        locations_to_create += options.upgrades_count[item_name]
 
     early_craftsanity_count = len(technologies_required_for_research)
     early_science_location_count = len(technologies_required_for_automation)

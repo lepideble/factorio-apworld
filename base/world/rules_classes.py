@@ -5,8 +5,7 @@ from rule_builder.rules import And, Has, HasAny, Or, Rule, True_
 from ..config import game_name
 from ..data import machines_available_at_start, recipes_by_product, recipes_unlocked_at_start, space_locations, technologies, technologies_by_recipe_unlocked, technologies_by_space_location_unlocked
 from ..data_classes import SpaceLocation, Surface
-
-from .items import upgrades_map, upgrades_levels
+from ..data_utils import upgrades_map, upgrades_levels
 
 
 @dataclass()

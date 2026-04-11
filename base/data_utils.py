@@ -1,4 +1,6 @@
-from .data import machines, machines_available_at_start, recipes, recipes_unlocked_at_start, space_locations, unlockable_recipes
+import re
+
+from .data import machines, machines_available_at_start, recipes, recipes_unlocked_at_start, space_locations, technologies, unlockable_recipes
 from .data_classes import Recipe
 
 
@@ -48,3 +50,40 @@ for recipe_name in recipes_unlocked_at_start:
     _starting_recipes.append(recipe)
 
 craftable_items_at_start, craftable_recipes_at_start = _get_craftable(_starting_recipes)
+
+
+# Compute upgrades
+upgrades_levels = {}
+upgrades_min_level = {}
+upgrades_max_level = {}
+upgrades_map = {}
+
+for technology in technologies:
+    if not technology.upgrade and technology.max_level is None:
+        continue
+
+    match = re.match(r'^(?P<name>.+)-(?P<level>\d+)$', technology.name)
+    if match:
+        name = match.group('name')
+        level = int(match.group('level'))
+    else:
+        name = technology.name
+        level = 1
+
+    if name not in upgrades_levels:
+        upgrades_levels[name] = []
+        upgrades_min_level[name] = 0
+        upgrades_max_level[name] = 0
+
+    upgrades_levels[name].append(technology)
+
+    if technology.has_unlock:
+        upgrades_min_level[name] = max(upgrades_min_level[name], level)
+
+    if upgrades_max_level[name] is not None:
+        if technology.max_level is not None:
+            upgrades_max_level[name] = None if technology.max_level == 'infinite' else technology.max_level
+        else:
+            upgrades_max_level[name] = max(upgrades_max_level[name], level)
+
+    upgrades_map[technology.name] = name

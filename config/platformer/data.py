@@ -80,6 +80,9 @@ removed_technologies = [
     # Technologies pruned by platformer because they have no remaining modifiers
     'big-mining-drill',
     'electric-mining-drill',
+    # Technologies that are not removed by platformer but gives useless bonuses
+    'rail-support-foundations',
+    'rocket-part-productivity',
 ]
 
 def override_data(machines, machines_available_at_start, recipes, recipes_unlocked_at_start, surfaces, surfaces_accessible_at_start, technologies, technologies_required_for_research, technologies_required_for_automation, **args):
@@ -121,3 +124,12 @@ def override_data(machines, machines_available_at_start, recipes, recipes_unlock
     # Removed technologies
     for technology_name in removed_technologies:
         del technologies[technology_name]
+
+    # Cap productivity infine techs
+    technologies['asteroid-productivity'].max_level = 30
+    technologies['low-density-structure-productivity'].max_level = 30
+    technologies['plastic-bar-productivity'].max_level = 30
+    technologies['processing-unit-productivity'].max_level = 30
+    technologies['rocket-fuel-productivity'].max_level = 30
+    technologies['scrap-recycling-productivity'].max_level = 30
+    technologies['steel-plate-productivity'].max_level = 30
