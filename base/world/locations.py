@@ -157,7 +157,7 @@ def get_locations(options: FactorioOptions, random: random.Random) -> list[Facto
     science_location_costs = sorted(science_location_costs)
 
     if options.ramping_tech_costs:
-        sorter = lambda location: location.complexity, location.cost
+        sorter = lambda location: (location.complexity, location.cost)
     else:
         sorter = lambda location: location.cost
 
