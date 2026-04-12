@@ -135,6 +135,11 @@ class FactorioWorld(World):
         if world_gen['basic'].get('seed', None) is None:
             world_gen['basic']['seed'] = self.random.randint(0, 2 ** 32 - 1) # 32 bit uint
 
+        if self.options.tech_tree_information.value == self.options.tech_tree_information.option_full:
+            for location in self.get_locations():
+                 if not location.is_event:
+                    self.options.start_location_hints.value.add(location.name)
+
     def generate_output(self, output_directory: str) -> None:
         from ..mod.data import get_mod_data, get_mod_name, get_mod_version
         from ..mod.generate import generate_mod
