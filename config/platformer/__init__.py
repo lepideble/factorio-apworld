@@ -14,6 +14,11 @@ victory_conditions = [
         'name': 'reach-solar-system-edge',
         'space_location': 'solar-system-edge',
     },
+    {
+        'type': 'reach-space-location',
+        'name': 'reach-aquilo',
+        'space_location': 'aquilo',
+    },
 ]
 
 progressive_technologies = {
