@@ -29,6 +29,8 @@ if [ -d "build/$WORLD/config/mod" ]; then
     rm -r "build/$WORLD/config/mod"
 fi
 
+cp LICENSE "build/$WORLD"
+
 GAME_NAME=$(PYTHONPATH="build/$WORLD" python3 -c "from config import game_name ; print(game_name)")
 
 cat << EOF > "build/$WORLD/archipelago.json"

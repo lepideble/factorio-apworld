@@ -82,6 +82,8 @@ def generate_mod(mod_name: str, mod_version: str, mod_data: dict, world, output_
         else:
             mod.writing_tasks.append(lambda path=file: (versioned_mod_name + '/' + path, importlib.resources.read_binary(__name__, 'template', path)))
 
+    mod.writing_tasks.append(lambda: (versioned_mod_name + '/LICENSE', importlib.resources.files(__name__).parent.joinpath('LICENSE').read_bytes()))
+
     info = base_info.copy()
     info['name'] = mod_name
     info['version'] = mod_version
