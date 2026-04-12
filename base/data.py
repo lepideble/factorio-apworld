@@ -192,6 +192,10 @@ for technology_name, technology_data in get_data('technology'):
     technology.upgrade = technology_data.get('upgrade', False)
     technology.max_level = technology_data.get('max_level')
 
+    unit = technology_data.get('unit')
+    if unit is not None:
+        technology.unit_count = unit.get('count')
+
     technologies.add(technology)
 
 technologies_required_for_research = set() # Will be placed on craftsanity

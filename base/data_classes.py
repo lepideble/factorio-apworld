@@ -117,20 +117,14 @@ class Recipe(Base):
         self.time = time
 
 
+@dataclass
 class Technology(Base):
-    upgrade: bool
-    max_level: int | None | Literal['infinite']
-    unlocked_recipes: set[str]
-    unlocked_space_locations: set[str]
-    modifiers: list[str]
-
-    def __init__(self, name: str, upgrade = False, max_level = None, unlocked_recipes: set[str] = None, unlocked_space_locations: set[str] = None, modifiers: list[str] = None):
-        super().__init__(name)
-        self.upgrade = upgrade
-        self.max_level = max_level
-        self.unlocked_recipes = unlocked_recipes if unlocked_recipes is not None else set()
-        self.unlocked_space_locations = unlocked_space_locations if unlocked_space_locations is not None else set()
-        self.modifiers = modifiers if modifiers is not None else []
+    upgrade: bool = False
+    max_level: int | None | Literal['infinite'] = None
+    unlocked_recipes: set[str] = field(default_factory=set)
+    unlocked_space_locations: set[str] = field(default_factory=set)
+    modifiers: list[str] = field(default_factory=list)
+    unit_count: int | None = None
 
     @property
     def has_unlock(self):

@@ -69,21 +69,21 @@ class FactorioWorld(World):
 
         for item in create_items(self.options, self.progressive_levels, self.player):
             if item.name in self.progressive_levels:
-                item_name = self.progressive_levels[item.name][progressive_counts[item.name]]
+                technology_name = self.progressive_levels[item.name][progressive_counts[item.name]]
 
                 progressive_counts[item.name] += 1
             else:
-                item_name = item.name
+                technology_name = item.name
 
-            if item_name in technologies_required_for_automation:
+            if technology_name in technologies_required_for_automation:
                 # Early science locations are always placed at the start
                 for location in self.get_locations():
                     if isinstance(location, FactorioScienceLocation) and location.item is None:
-                        location.count = min(location.count, 10)
+                        location.count = min(location.count, technologies[technology_name].unit_count)
                         location.place_locked_item(item)
 
                         break
-            elif item_name in technologies_required_for_research:
+            elif technology_name in technologies_required_for_research:
                 # Early craft locations are always placed at the start
                 for location in self.get_locations():
                     if isinstance(location, FactorioCraftLocation) and location.item is None:
