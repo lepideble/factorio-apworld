@@ -4,7 +4,7 @@ import pprint
 import data.classes
 import data.raw
 
-printer = pprint.PrettyPrinter(width=1000)
+printer = pprint.PrettyPrinter(width=1000000)
 
 def format_value(value):
     if dataclasses.is_dataclass(value):
@@ -36,4 +36,4 @@ print_data('science_packs')
 print_data('technologies')
 print_data('technologies_required_for_research')
 print_data('technologies_required_for_automation')
-print_data('fluids')
+print_data('items')

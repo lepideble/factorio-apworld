@@ -8,7 +8,7 @@ from .override import override_data
 data = json.loads(importlib.resources.files(__name__).parent.joinpath('config', 'data.json').read_text())
 
 def get_data(type: str):
-    return ((k, v) for k, v in data[type].items() if not v.get('hidden', False) and not v.get('parameter', False))
+    return ((k, v) for k, v in data.get(type, {}).items() if not v.get('hidden', False) and not v.get('parameter', False))
 
 
 # Surfaces
@@ -189,10 +189,36 @@ for technology_name, technology_data in get_data('technology'):
 technologies_required_for_research = set() # Will be placed on craftsanity
 technologies_required_for_automation = set() # Will be placed on early science locations
 
-fluids = set()
 
-for fluid_name, fluid_data in get_data('fluid'):
-    fluids.add(fluid_name)
+_item_types = [
+    'item',
+    'ammo',
+    'capsule',
+    'gun',
+    'item-with-entity-data',
+    'item-with-label',
+    'item-with-inventory',
+    'blueprint-book',
+    'item-with-tags',
+    'selection-tool',
+    'blueprint',
+    'copy-paste-tool',
+    'deconstruction-item',
+    'spidertron-remote',
+    'upgrade-item',
+    'module',
+    'rail-planner',
+    'space-platform-starter-pack',
+    'tool',
+    'armor',
+    'repair-tool',
+]
+
+items = set()
+
+for item_type in _item_types:
+    for item_name, item_data in get_data(item_type):
+        items.add(item_name)
 
 
 # Cleanup

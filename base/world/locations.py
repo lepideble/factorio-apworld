@@ -5,7 +5,7 @@ import typing
 from BaseClasses import Location, Region
 
 from ..config import craftsanity_filter, game_name
-from ..data.raw import fluids, technologies, technologies_required_for_automation, technologies_required_for_research, science_packs
+from ..data.raw import items, technologies, technologies_required_for_automation, technologies_required_for_research, science_packs
 from ..data.utils import craftable_items, craftable_items_at_start, upgrades_levels, upgrades_map
 
 if typing.TYPE_CHECKING:
@@ -84,8 +84,8 @@ class FactorioCraftLocation(FactorioLocation):
             'name': self.name,
             'unit': None,
             'research_trigger': {
-                'type': 'craft-fluid' if self.item_name in fluids else 'craft-item',
-                'fluid' if self.item_name in fluids else 'item': self.item_name,
+                'type': 'craft-item' if self.item_name in items else 'craft-fluid',
+                'item' if self.item_name in items else 'fluid': self.item_name,
             },
         }
 

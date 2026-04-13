@@ -5,7 +5,7 @@ from schema import Schema, Optional, And, Or, SchemaError
 from Options import Choice, DefaultOnToggle, OptionCounter, OptionDict, OptionSet, PerGameCommonOptions, Range, Toggle, Visibility
 
 from ..config import craftsanity_filter, victory_conditions
-from ..data.raw import science_packs, technologies_required_for_research
+from ..data.raw import items, science_packs, technologies_required_for_research
 from ..data.utils import upgrades_levels, upgrades_max_level, upgrades_min_level
 from .locations import craftsanity_item_pool
 
@@ -150,6 +150,7 @@ class FactorioUpgradesCount(OptionDict):
 class FactorioStartItems(OptionCounter):
     """Mapping of Factorio internal item-name to amount granted on start."""
     display_name = "Starting Items"
+    valid_keys = items
     min = 0
 
 
@@ -178,11 +179,13 @@ class FreeSamplesQuality(Choice):
 class FactorioFreeSampleBlacklist(OptionSet):
     """Set of items that should never be granted from Free Samples"""
     display_name = "Free Sample Blacklist"
+    valid_keys = items
 
 
 class FactorioFreeSampleWhitelist(OptionSet):
     """Overrides any free sample blacklist present. This may ruin the balance of the mod, be warned."""
     display_name = "Free Sample Whitelist"
+    valid_keys = items
 
 
 class WorldGen(OptionDict):
