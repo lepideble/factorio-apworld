@@ -1,7 +1,65 @@
 import re
 
-from .data import machines, machines_available_at_start, recipes, recipes_unlocked_at_start, space_locations, technologies, unlockable_recipes
-from .data_classes import Recipe
+from .data import machines, machines_available_at_start, recipes, recipes_unlocked_at_start, space_locations, technologies
+from .data_classes import Machine, Recipe, Technology
+
+
+# Create lookup tables
+_machines_by_category: dict[str, list[Machine]] = {}
+
+for machine in machines:
+    for category in machine.categories:
+        if not category in _machines_by_category:
+            _machines_by_category[category] = list()
+
+        _machines_by_category[category].append(machine)
+
+def machines_by_category(category: str) -> list[Machine]:
+    return _machines_by_category.get(category, [])
+
+
+_recipes_by_product: dict[str, list[Recipe]] = {}
+
+for recipe in recipes:
+    for product in recipe.products.keys():
+        if not product in _recipes_by_product:
+            _recipes_by_product[product] = list()
+
+        _recipes_by_product[product].append(recipe)
+
+def recipes_by_product(product: str) -> list[Recipe]:
+    return _recipes_by_product.get(product, [])
+
+
+_technologies_by_recipe_unlocked: dict[str, list[Technology]] = {}
+_technologies_by_space_location_unlocked: dict[str, list[Technology]] = {}
+
+for technology in technologies:
+    for recipe_name in technology.unlocked_recipes:
+        if not recipe_name in _technologies_by_recipe_unlocked:
+            _technologies_by_recipe_unlocked[recipe_name] = list()
+
+        _technologies_by_recipe_unlocked[recipe_name].append(technology)
+
+    for space_location_name in technology.unlocked_space_locations:
+        if not space_location_name in _technologies_by_space_location_unlocked:
+            _technologies_by_space_location_unlocked[space_location_name] = list()
+
+        _technologies_by_space_location_unlocked[space_location_name].append(technology)
+
+def technologies_by_recipe_unlocked(recipe: str) -> list[Technology]:
+    return _technologies_by_recipe_unlocked.get(recipe, [])
+
+def technologies_by_space_location_unlocked(space_location: str) -> list[Technology]:
+    return _technologies_by_space_location_unlocked.get(space_location, [])
+
+
+# Compute what is realy available
+unlockable_recipes = set()
+
+for recipe in recipes:
+    if recipe.name in recipes_unlocked_at_start or recipe.name in _technologies_by_recipe_unlocked:
+        unlockable_recipes.add(recipe.name)
 
 
 def _get_craftable(recipes: list[Recipe]) -> tuple[set[str], set[str]]:
