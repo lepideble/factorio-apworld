@@ -131,7 +131,7 @@ end
 {%- for original_tech_name in technologies -%}
 technologies["{{ original_tech_name }}"].hidden = true
 technologies["{{ original_tech_name }}"].unit = nil
-technologies["{{ original_tech_name }}"].research_trigger = {type = "craft-item", item = "item-unknown"}
+technologies["{{ original_tech_name }}"].research_trigger = {type = "scripted"}
 {% endfor %}
 {%- for location, item in locations %}
 {#- the tech researched by the local player #}
