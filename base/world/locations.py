@@ -5,8 +5,8 @@ import typing
 from BaseClasses import Location, Region
 
 from ..config import craftsanity_filter, game_name
-from ..data import fluids, technologies, technologies_required_for_automation, technologies_required_for_research, science_packs
-from ..data_utils import craftable_items, craftable_items_at_start, upgrades_levels, upgrades_map
+from ..data.raw import fluids, technologies, technologies_required_for_automation, technologies_required_for_research, science_packs
+from ..data.utils import craftable_items, craftable_items_at_start, upgrades_levels, upgrades_map
 
 if typing.TYPE_CHECKING:
     import random

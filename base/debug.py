@@ -1,5 +1,5 @@
 def print_labs():
-    from .data import labs
+    from .data.raw import labs
 
     for lab in labs:
         print(f'Lab: {lab.name}')
@@ -11,7 +11,7 @@ def print_labs():
 
 
 def print_machines():
-    from .data import machines
+    from .data.raw import machines
 
     for machine in machines:
         print(f'Machine: {machine.name}')
@@ -19,7 +19,7 @@ def print_machines():
 
 
 def print_recipes():
-    from .data import recipes
+    from .data.raw import recipes
 
     for recipe in recipes:
         print(f'Recipe: {recipe.name}')
@@ -29,14 +29,14 @@ def print_recipes():
 
 
 def print_science_packs():
-    from .data import science_packs
+    from .data.raw import science_packs
 
     for science_pack in science_packs:
         print(f'Science pack: {science_pack}')
 
 
 def print_surfaces():
-    from .data import surfaces
+    from .data.raw import surfaces
 
     for surface in surfaces:
         print(f'Surface: {surface.name}')
@@ -46,7 +46,7 @@ def print_surfaces():
 
 
 def print_technologies():
-    from .data import technologies
+    from .data.raw import technologies
 
     for technology in technologies:
         print(f'Technology: {technology.name}')

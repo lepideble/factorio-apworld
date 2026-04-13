@@ -3,8 +3,8 @@ from collections.abc import Iterable
 from rule_builder.rules import HasAny, Rule, True_
 
 from ..config.rules import override_rules
-from ..data import recipes, space_locations, surfaces
-from ..data_utils import craftable_recipes, machines_by_category
+from ..data.raw import recipes, space_locations, surfaces
+from ..data.utils import craftable_recipes, machines_by_category
 from .locations import FactorioLocation, FactorioCraftLocation, FactorioScienceLocation
 from .rules_classes import All, Any, CanAutomate, CanCraft, HasMachine, ReachedSpaceLocation, UnlockedRecipe, UnlockedSpaceLocation
 

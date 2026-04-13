@@ -5,8 +5,8 @@ from rule_builder.rules import Has
 from worlds.AutoWorld import World
 
 from ..config import game_name, progressive_technologies
-from ..data import science_packs, space_locations, surfaces, surfaces_accessible_at_start, technologies, technologies_required_for_automation, technologies_required_for_research
-from ..data_utils import craftable_recipes
+from ..data.raw import science_packs, space_locations, surfaces, surfaces_accessible_at_start, technologies, technologies_required_for_automation, technologies_required_for_research
+from ..data.utils import craftable_recipes
 
 from .items import create_item, create_items, item_ids, FactorioItem
 from .locations import FactorioCraftLocation, FactorioScienceLocation, get_locations, location_ids

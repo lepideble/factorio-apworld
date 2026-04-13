@@ -1,6 +1,6 @@
 from ..world import FactorioWorld
-from ..data import science_packs, technologies
-from ..data_utils import upgrades_levels
+from ..data.raw import science_packs, technologies
+from ..data.utils import upgrades_levels
 
 
 def get_mod_name(world: FactorioWorld) -> str:

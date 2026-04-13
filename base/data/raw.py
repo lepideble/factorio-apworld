@@ -1,12 +1,13 @@
-import pkgutil
+import importlib.resources
+import json
 
 import orjson
 
-from .config.data import override_data
-from .data_classes import Lab, Machine, Recipe, SpaceLocation, Surface, SurfaceCondition, Table, Technology
+from ..config.data import override_data
+from .classes import Lab, Machine, Recipe, SpaceLocation, Surface, SurfaceCondition, Table, Technology
 
 
-data = orjson.loads(pkgutil.get_data(__name__, 'config/data.json'))
+data = json.loads(importlib.resources.files(__name__).parent.joinpath('config', 'data.json').read_text())
 
 def get_data(type: str):
     return ((k, v) for k, v in data[type].items() if not v.get('hidden', False) and not v.get('parameter', False))

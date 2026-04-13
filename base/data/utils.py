@@ -1,7 +1,7 @@
 import re
 
-from .data import machines, machines_available_at_start, recipes, recipes_unlocked_at_start, space_locations, technologies
-from .data_classes import Machine, Recipe, Technology
+from .classes import Machine, Recipe, Technology
+from .raw import machines, machines_available_at_start, recipes, recipes_unlocked_at_start, space_locations, technologies
 
 
 # Create lookup tables

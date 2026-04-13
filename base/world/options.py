@@ -5,8 +5,8 @@ from schema import Schema, Optional, And, Or, SchemaError
 from Options import Choice, DefaultOnToggle, OptionCounter, OptionDict, OptionSet, PerGameCommonOptions, Range, Toggle, Visibility
 
 from ..config import craftsanity_filter, victory_conditions
-from ..data import science_packs, technologies_required_for_research
-from ..data_utils import upgrades_levels, upgrades_max_level, upgrades_min_level
+from ..data.raw import science_packs, technologies_required_for_research
+from ..data.utils import upgrades_levels, upgrades_max_level, upgrades_min_level
 from .locations import craftsanity_item_pool
 
 

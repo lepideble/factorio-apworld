@@ -6,9 +6,8 @@ import typing
 from BaseClasses import Item, ItemClassification
 
 from ..config import game_name, progressive_technologies
-from ..data import science_packs, technologies
-from ..data_utils import upgrades_levels, upgrades_map
-from ..data_classes import Technology
+from ..data.raw import science_packs, technologies
+from ..data.utils import upgrades_levels, upgrades_map
 
 if typing.TYPE_CHECKING:
     from .options import FactorioOptions

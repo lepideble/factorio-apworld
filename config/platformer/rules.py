@@ -2,7 +2,7 @@ from collections.abc import Iterable
 
 from rule_builder.rules import Rule
 
-from ..data import recipes, space_locations
+from ..data.raw import recipes, space_locations
 from ..world.locations import FactorioLocation
 from ..world.rules_classes import CanAutomate, CanCraft
 
