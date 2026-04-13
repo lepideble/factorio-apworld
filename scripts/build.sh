@@ -24,6 +24,8 @@ rm "build/$WORLD/debug.py"
 rm --force "build/$WORLD/config"
 cp --recursive "config/$CONFIG" "build/$WORLD/config"
 
+mv "build/$WORLD/config/data.py" "build/$WORLD/data/override.py"
+
 if [ -d "build/$WORLD/config/mod" ]; then
     rsync --recursive "build/$WORLD/config/mod/" "build/$WORLD/mod/"
     rm -r "build/$WORLD/config/mod"
@@ -31,6 +33,13 @@ fi
 
 cp LICENSE "build/$WORLD"
 
+# Dump data
+PYTHONPATH="build/$WORLD/" python3 scripts/dump_data.py > "build/$WORLD/data/generated.py"
+
+rm "build/$WORLD/config/data.json" "build/$WORLD/data/raw.py" "build/$WORLD/data/override.py"
+mv "build/$WORLD/data/generated.py" "build/$WORLD/data/raw.py"
+
+# Create archipelago.json
 GAME_NAME=$(PYTHONPATH="build/$WORLD" python3 -c "from config import game_name ; print(game_name)")
 
 cat << EOF > "build/$WORLD/archipelago.json"
@@ -41,4 +50,5 @@ cat << EOF > "build/$WORLD/archipelago.json"
 }
 EOF
 
+# Create .apworld
 (cd build && zip --recurse-paths "../output/$WORLD.apworld" "$WORLD" --exclude \*__pycache__\*)

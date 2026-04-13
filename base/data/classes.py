@@ -1,7 +1,7 @@
-from dataclasses import dataclass, field
-from typing import Literal
+import dataclasses
+import typing
 
-@dataclass
+@dataclasses.dataclass
 class Base:
     name: str
 
@@ -37,27 +37,24 @@ class Table:
         self.data[item.name] = item
 
 
+@dataclasses.dataclass
 class Surface(Base):
     properties: dict[str, float]
-
-    def __init__(self, name: str, properties: dict[str, float]):
-        super().__init__(name)
-        self.properties = properties
 
     @property
     def is_space_platform(self) -> bool:
         return self.name == 'space-platform'
 
 
-@dataclass
+@dataclasses.dataclass
 class SpaceLocation(Base):
-    asteroid_chunks: set[str] = field(default_factory=set)
-    connections: set[str] = field(default_factory=set)
+    asteroid_chunks: set[str] = dataclasses.field(default_factory=set)
+    connections: set[str] = dataclasses.field(default_factory=set)
     unlocked_at_start: bool = False
     accessible_at_start: bool = False
 
 
-@dataclass
+@dataclasses.dataclass
 class SurfaceCondition:
     property: str
     min: float | None
@@ -80,29 +77,16 @@ class SurfaceCondition:
         return cls(data['property'], data.get('min'), data.get('max'))
 
 
-class Lab(Base):
-    inputs: set[str]
-    surface_conditions: list[SurfaceCondition]
-
-    def __init__(self, name: str, inputs: set[str], surface_conditions: list[SurfaceCondition]):
-        super().__init__(name)
-        self.inputs = inputs
-        self.surface_conditions = surface_conditions
-
-
+@dataclasses.dataclass
 class Machine(Base):
     categories: set[str]
-    surface_conditions: list[SurfaceCondition]
-
-    def __init__(self, name: str, categories: set[str], surface_conditions: list[SurfaceCondition] = None):
-        super().__init__(name)
-        self.categories = categories
-        self.surface_conditions = surface_conditions if surface_conditions is not None else list()
+    surface_conditions: list[SurfaceCondition] = dataclasses.field(default_factory=list)
 
     def can_be_placed_on(self, surface: Surface) -> bool:
         return all(map(lambda surface_condition: surface_condition.accept(surface), self.surface_conditions))
 
 
+@dataclasses.dataclass
 class Recipe(Base):
     category: str
     ingredients: dict[str, int]
@@ -117,13 +101,13 @@ class Recipe(Base):
         self.time = time
 
 
-@dataclass
+@dataclasses.dataclass
 class Technology(Base):
     upgrade: bool = False
-    max_level: int | None | Literal['infinite'] = None
-    unlocked_recipes: set[str] = field(default_factory=set)
-    unlocked_space_locations: set[str] = field(default_factory=set)
-    modifiers: list[str] = field(default_factory=list)
+    max_level: int | None | typing.Literal['infinite'] = None
+    unlocked_recipes: set[str] = dataclasses.field(default_factory=set)
+    unlocked_space_locations: set[str] = dataclasses.field(default_factory=set)
+    modifiers: list[str] = dataclasses.field(default_factory=list)
     unit_count: int | None = None
 
     @property

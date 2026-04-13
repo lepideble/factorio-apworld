@@ -119,7 +119,6 @@ def override_data(machines, machines_available_at_start, recipes, recipes_unlock
 
     # Removed machines
     del machines['character']
-    del machines['stone-furnace']
     del machines['steel-furnace']
 
     # Starting machines

@@ -1,4 +1,5 @@
 /base/config
+/base/data/override.py
 /build/
 /output/
 

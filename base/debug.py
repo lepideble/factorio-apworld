@@ -1,15 +1,3 @@
-def print_labs():
-    from .data.raw import labs
-
-    for lab in labs:
-        print(f'Lab: {lab.name}')
-        print(f'  input: {', '.join(lab.inputs)}')
-        if len(lab.surface_conditions) > 0:
-            print('  surface conditions:')
-            for surface_condition in lab.surface_conditions:
-                print(f'    {surface_condition.property}: {surface_condition.min}-{surface_condition.max}')
-
-
 def print_machines():
     from .data.raw import machines
 
@@ -114,8 +102,6 @@ def print_locations():
 
 def main(argv):
     # Data
-    if '--all' in argv or '--labs' in argv:
-        print_labs()
     if '--all' in argv or '--machines' in argv:
         print_machines()
     if '--all' in argv or '--recipes' in argv:

@@ -1,10 +1,8 @@
 import importlib.resources
 import json
 
-import orjson
-
-from ..config.data import override_data
-from .classes import Lab, Machine, Recipe, SpaceLocation, Surface, SurfaceCondition, Table, Technology
+from .classes import Machine, Recipe, SpaceLocation, Surface, SurfaceCondition, Table, Technology
+from .override import override_data
 
 
 data = json.loads(importlib.resources.files(__name__).parent.joinpath('config', 'data.json').read_text())
@@ -103,17 +101,6 @@ for machine_name, machine_data in get_data("rocket-silo"):
     machines.add(Machine(machine_name, set(machine_data["crafting_categories"])))
 
 machines_available_at_start = {'character'}
-
-
-# Science lab
-labs = Table()
-
-for lab_name, lab_data in get_data('lab'):
-    labs.add(Lab(
-        lab_name,
-        set(lab_data['inputs']),
-        [SurfaceCondition.from_data(surface_condition) for surface_condition in lab_data.get('surface_conditions', [])],
-    ))
 
 
 # Recipes
