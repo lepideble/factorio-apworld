@@ -11,6 +11,10 @@ from worlds.Files import APPlayerContainer
 from ..config import dependencies
 
 
+resources_lib = importlib.resources.files(__name__).joinpath('lib')
+resources_template = importlib.resources.files(__name__).joinpath('template')
+
+
 def _recursive_list_files(traversable) -> collections.abc.Iterator[str]:
     for file in traversable.iterdir():
         if file.is_dir():
@@ -19,8 +23,7 @@ def _recursive_list_files(traversable) -> collections.abc.Iterator[str]:
         else:
             yield file.name
 
-
-template_files = list(_recursive_list_files(importlib.resources.files(__name__).joinpath('template')))
+template_files = list(_recursive_list_files(resources_template))
 
 
 base_info = {
@@ -60,9 +63,10 @@ class FactorioModFile(APPlayerContainer):
 
 
 def load_template(name: str):
-    for path in ['lib', 'template']:
-        if importlib.resources.is_resource(__name__, path, name):
-            return importlib.resources.read_text(__name__, path, name, encoding='utf-8'), name, lambda: False
+    for path in [resources_lib, resources_template]:
+        file = path.joinpath(name)
+        if file.is_file():
+            return file.read_text(), name, lambda: False
 
     return None
 
@@ -80,7 +84,7 @@ def generate_mod(mod_name: str, mod_version: str, mod_data: dict, world, output_
         if file.endswith('.j2'):
             mod.writing_tasks.append(lambda path=file: (versioned_mod_name + '/' + path.removesuffix('.j2'), template_env.get_template(path).render(**mod_data)))
         else:
-            mod.writing_tasks.append(lambda path=file: (versioned_mod_name + '/' + path, importlib.resources.read_binary(__name__, 'template', path)))
+            mod.writing_tasks.append(lambda path=file: (versioned_mod_name + '/' + path, resources_template.joinpath(path).read_bytes()))
 
     mod.writing_tasks.append(lambda: (versioned_mod_name + '/LICENSE', importlib.resources.files(__name__).parent.joinpath('LICENSE').read_bytes()))
 
