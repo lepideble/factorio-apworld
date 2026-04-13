@@ -27,11 +27,10 @@ class FactorioWorld(World):
         super().__init__(multiworld, player)
 
     def generate_early(self) -> None:
-        self.progressive_levels = {
-            'progressive science-pack': science_packs,
-        }
+        self.progressive_levels = {}
 
         if self.options.progressive:
+            self.progressive_levels['progressive science-pack'] = science_packs
             self.progressive_levels.update(progressive_technologies)
 
     def create_regions(self) -> None:

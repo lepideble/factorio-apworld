@@ -133,7 +133,7 @@ class CraftSanity(Range):
 
 class Progressive(DefaultOnToggle):
     """Merges together some technologies into progressive items which awards them in order.
-    Upgrades and science packs are always progressive."""
+    Upgrades and are always progressive."""
     display_name = "Progressive Technologies"
 
 
