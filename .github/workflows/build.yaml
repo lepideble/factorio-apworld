@@ -1,0 +1,22 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request: ~
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6.0.2
+      - uses: actions/setup-python@v6.2.0
+        with:
+          python-version: '~3.12.7'
+          check-latest: true
+      - run: ./scripts/build.sh platformer 0.0.0
+      - uses: actions/upload-artifact@v7
+        with:
+          path: output/*.apworld
+          archive: false
