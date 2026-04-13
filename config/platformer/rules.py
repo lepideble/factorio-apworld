@@ -8,6 +8,11 @@ from ..world.rules_classes import CanAutomate, CanCraft
 
 
 def override_rules(locations: Iterable[FactorioLocation], rules: dict[str, Rule]):
+    # Advanced oil processing need to have storage tanks to mesure output levels
+    rules['Automate advanced-oil-processing on space-platform'] &= CanCraft('storage-tank', 'space-platform')
+    rules['Automate heavy-oil-cracking on space-platform'] &= CanCraft('storage-tank', 'space-platform')
+    rules['Automate light-oil-cracking on space-platform'] &= CanCraft('storage-tank', 'space-platform')
+
     # Space location rules
     can_destroy_medium_asterorid = CanCraft('gun-turret', 'space-platform') & CanAutomate('firearm-magazine', 'space-platform')
     can_destroy_big_asterorid = CanCraft('rocket-turret', 'space-platform') & CanAutomate('rocket', 'space-platform') & can_destroy_medium_asterorid
