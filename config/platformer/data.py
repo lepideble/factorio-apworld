@@ -1,4 +1,3 @@
-# Stuff that is only disabled by platformer but should be considered removed
 removed_technologies = [
     # Technologies explicitely removed by platformer
     'heavy-armor',
@@ -53,10 +52,10 @@ removed_technologies = [
     'battery-mk2-equipment',
     'battery-mk3-equipment',
     'fission-reactor-equipment',
-    # 'electric-weapons-damage-1',
-    # 'electric-weapons-damage-2',
-    # 'electric-weapons-damage-3',
-    # 'electric-weapons-damage-4',
+    'electric-weapons-damage-1',
+    'electric-weapons-damage-2',
+    'electric-weapons-damage-3',
+    'electric-weapons-damage-4',
     'destroyer',
     'power-armor-mk2',
     'logistic-system',
@@ -78,9 +77,26 @@ removed_technologies = [
     'logistic-robotics',
     'rocket-silo',
     # Technologies pruned by platformer because they have no remaining modifiers
+    'advanced-material-processing',
+    'advanced-material-processing-2',
+    'artificial-soil',
+    'asteroid-reprocessing',
+    'automobilism',
     'big-mining-drill',
+    'biter-egg-handling',
     'electric-mining-drill',
-    # Technologies that are not removed by platformer but gives useless bonuses
+    'flammables',
+    'laser',
+    'lightning-collector',
+    'military',
+    'military-3',
+    'military-4',
+    'modules',
+    'overgrowth-soil',
+]
+
+# Technologies that are not removed by platformer but gives useless bonuses
+useless_technologies = [
     'rail-support-foundations',
     'rocket-part-productivity',
 ]
@@ -124,6 +140,10 @@ def override_data(machines, machines_available_at_start, recipes, recipes_unlock
     # Removed technologies
     for technology_name in removed_technologies:
         del technologies[technology_name]
+
+    # Useless technologies
+    for technology_name in useless_technologies:
+        technologies[technology_name].modifiers = []
 
     # Cap productivity infine techs
     technologies['asteroid-productivity'].max_level = 30

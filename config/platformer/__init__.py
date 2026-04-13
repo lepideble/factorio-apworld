@@ -27,7 +27,6 @@ progressive_technologies = {
     'progressive circuit-network': ['circuit-network', 'advanced-combinators'],
     'progressive inserter': ['fast-inserter', 'bulk-inserter', 'stack-inserter'],
     'progressive logistics': ['logistics', 'logistics-2', 'logistics-3', 'turbo-transport-belt'],
-    'progressive military': ['military', 'military-2', 'military-3', 'military-4'],
     'progressive quality': ['epic-quality', 'legendary-quality'],
     'progressive wall': ['stone-wall', 'gate'],
 }
