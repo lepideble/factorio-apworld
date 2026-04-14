@@ -140,7 +140,7 @@ class Progressive(DefaultOnToggle):
 class FactorioUpgradesCount(OptionDict):
     """Number of upgrade levels added to the item pool."""
     display_name = "Upgrades counts"
-    default = { key: len(levels) for key, levels in upgrades_levels.items() }
+    default = { key: len(levels) if levels[-1].max_level is None else (len(levels) - 1) for key, levels in upgrades_levels.items() }
     schema = Schema({ Optional(key): And(int, SchemaRange(upgrades_min_level[key], upgrades_max_level[key])) for key in upgrades_levels.keys() })
 
     def __getitem__(self, item: str) -> int:
