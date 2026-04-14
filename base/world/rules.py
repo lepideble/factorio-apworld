@@ -53,9 +53,9 @@ def get_rules(locations: Iterable[FactorioLocation]) -> dict[str, Rule]:
         if isinstance(location, FactorioScienceLocation):
             # Early science locations can be recognised by the fact that they already have an item
             if location.item is not None:
-                rules[location.name] = All([Any([CanCraft(science_pack, surface.name) for surface in surfaces]) for science_pack in location.ingredients.keys()])
+                rules[location.name] = All([CanCraft(science_pack) for science_pack in location.ingredients.keys()])
             else:
-                rules[location.name] = All([Any([CanAutomate(science_pack, surface.name) for surface in surfaces]) for science_pack in location.ingredients.keys()])
+                rules[location.name] = All([CanAutomate(science_pack) for science_pack in location.ingredients.keys()])
 
     override_rules(locations, rules)
 

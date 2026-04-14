@@ -4,7 +4,7 @@ from rule_builder.rules import And, Has, HasAny, Or, Rule, True_
 
 from ..config import game_name
 from ..data.classes import SpaceLocation, Surface
-from ..data.raw import machines_available_at_start, recipes_unlocked_at_start, space_locations, technologies
+from ..data.raw import machines_available_at_start, recipes_unlocked_at_start, space_locations, surfaces, technologies
 from ..data.utils import recipes_by_product, technologies_by_recipe_unlocked, technologies_by_space_location_unlocked, upgrades_map, upgrades_levels
 
 
@@ -46,10 +46,16 @@ class HasMachine(Rule['FactorioWorld'], game=game_name):
 @dataclass()
 class CanCraft(Rule['FactorioWorld'], game=game_name):
     item_name: str
-    surface_name: str
+    surface_name: str | None = None
 
     def _instantiate(self, world: 'FactorioWorld') -> Rule.Resolved:
-        return HasAny(*[f'Craft {recipe.name} on {self.surface_name}' for recipe in recipes_by_product(self.item_name)]).resolve(world)
+        events = []
+
+        for recipe in recipes_by_product(self.item_name):
+            for surface in [surfaces[self.surface_name]] if self.surface_name is not None else surfaces:
+                events.append(f'Craft {recipe.name} on {surface.name}')
+
+        return HasAny(*events).resolve(world)
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}(item={self.item_name}, surface={self.surface_name})"
@@ -58,10 +64,16 @@ class CanCraft(Rule['FactorioWorld'], game=game_name):
 @dataclass()
 class CanAutomate(Rule['FactorioWorld'], game=game_name):
     item_name: str
-    surface_name: str
+    surface_name: str | None = None
 
     def _instantiate(self, world: 'FactorioWorld') -> Rule.Resolved:
-        return HasAny(*[f'Automate {recipe.name} on {self.surface_name}' for recipe in recipes_by_product(self.item_name)]).resolve(world)
+        events = []
+
+        for recipe in recipes_by_product(self.item_name):
+            for surface in [surfaces[self.surface_name]] if self.surface_name is not None else surfaces:
+                events.append(f'Automate {recipe.name} on {surface.name}')
+
+        return HasAny(*events).resolve(world)
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}(item={self.item_name}, surface={self.surface_name})"
