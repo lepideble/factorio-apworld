@@ -21,22 +21,14 @@ cp --recursive base "build/$WORLD"
 
 rm "build/$WORLD/debug.py"
 
-rm --force "build/$WORLD/config"
-cp --recursive "config/$CONFIG" "build/$WORLD/config"
-
-mv "build/$WORLD/config/data.py" "build/$WORLD/data/override.py"
-
-if [ -d "build/$WORLD/config/mod" ]; then
-    rsync --recursive "build/$WORLD/config/mod/" "build/$WORLD/mod/"
-    rm -r "build/$WORLD/config/mod"
-fi
+rsync --recursive --ignore-times "config/$CONFIG/" "build/$WORLD/"
 
 cp LICENSE "build/$WORLD"
 
 # Dump data
 PYTHONPATH="build/$WORLD/" python3 scripts/dump_data.py > "build/$WORLD/data/generated.py"
 
-rm "build/$WORLD/config/data.json" "build/$WORLD/data/raw.py" "build/$WORLD/data/override.py"
+rm "build/$WORLD/data.json" "build/$WORLD/data/raw.py" "build/$WORLD/data/raw_base.py"
 mv "build/$WORLD/data/generated.py" "build/$WORLD/data/raw.py"
 
 # Create archipelago.json

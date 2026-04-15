@@ -1,4 +1,41 @@
-removed_technologies = [
+from .raw_base import *
+
+# Remove mining
+for recipe in recipes:
+    if recipe.name.startswith("mining-"):
+        del recipes[recipe.name]
+
+        recipes_unlocked_at_start.remove(recipe.name)
+
+# Keep only space platform surface
+for surface in surfaces:
+    if not surface.name == 'space-platform':
+        del surfaces[surface.name]
+
+surfaces_accessible_at_start.clear()
+surfaces_accessible_at_start.add('space-platform')
+
+# Removed machines
+del machines['character']
+del machines['steel-furnace']
+
+# Starting machines
+machines_available_at_start.clear()
+machines_available_at_start.add('assembling-machine-1')
+machines_available_at_start.add('asteroid-collector')
+machines_available_at_start.add('crusher')
+machines_available_at_start.add('electric-furnace')
+
+# Space platform is automaticaly unlocked on game start
+recipes_unlocked_at_start.update(technologies['space-platform'].unlocked_recipes)
+del technologies['space-platform']
+
+# Early technologies
+technologies_required_for_research.update({'automation-science-pack', 'electronics'})
+technologies_required_for_automation.update({'automation', 'engine', 'logistics', 'solar-energy', 'steel-processing'})
+
+# Removed technologies
+_removed_technologies = [
     # Technologies explicitely removed by platformer
     'heavy-armor',
     'battery-equipment',
@@ -95,60 +132,23 @@ removed_technologies = [
     'overgrowth-soil',
 ]
 
+for technology_name in _removed_technologies:
+    del technologies[technology_name]
+
 # Technologies that are not removed by platformer but gives useless bonuses
-useless_technologies = [
+_useless_technologies = [
     'rail-support-foundations',
     'rocket-part-productivity',
 ]
 
-def override_data(machines, machines_available_at_start, recipes, recipes_unlocked_at_start, surfaces, surfaces_accessible_at_start, technologies, technologies_required_for_research, technologies_required_for_automation, **args):
-    # Remove mining
-    for recipe in recipes:
-        if recipe.name.startswith("mining-"):
-           del recipes[recipe.name]
+for technology_name in _useless_technologies:
+    technologies[technology_name].modifiers = []
 
-           recipes_unlocked_at_start.remove(recipe.name)
-
-    # Keep only space platform surface
-    for surface in surfaces:
-        if not surface.name == 'space-platform':
-            del surfaces[surface.name]
-
-    surfaces_accessible_at_start.clear()
-    surfaces_accessible_at_start.add('space-platform')
-
-    # Removed machines
-    del machines['character']
-    del machines['steel-furnace']
-
-    # Starting machines
-    machines_available_at_start.clear()
-    machines_available_at_start.add('assembling-machine-1')
-    machines_available_at_start.add('asteroid-collector')
-    machines_available_at_start.add('crusher')
-    machines_available_at_start.add('electric-furnace')
-
-    # Space platform is automaticaly unlocked on game start
-    recipes_unlocked_at_start.update(technologies['space-platform'].unlocked_recipes)
-    del technologies['space-platform']
-
-    # Early technologies
-    technologies_required_for_research.update({'automation-science-pack', 'electronics'})
-    technologies_required_for_automation.update({'automation', 'engine', 'logistics', 'solar-energy', 'steel-processing'})
-
-    # Removed technologies
-    for technology_name in removed_technologies:
-        del technologies[technology_name]
-
-    # Useless technologies
-    for technology_name in useless_technologies:
-        technologies[technology_name].modifiers = []
-
-    # Cap productivity infine techs
-    technologies['asteroid-productivity'].max_level = 30
-    technologies['low-density-structure-productivity'].max_level = 30
-    technologies['plastic-bar-productivity'].max_level = 30
-    technologies['processing-unit-productivity'].max_level = 30
-    technologies['rocket-fuel-productivity'].max_level = 30
-    technologies['scrap-recycling-productivity'].max_level = 30
-    technologies['steel-plate-productivity'].max_level = 30
+# Cap productivity infine techs
+technologies['asteroid-productivity'].max_level = 30
+technologies['low-density-structure-productivity'].max_level = 30
+technologies['plastic-bar-productivity'].max_level = 30
+technologies['processing-unit-productivity'].max_level = 30
+technologies['rocket-fuel-productivity'].max_level = 30
+technologies['scrap-recycling-productivity'].max_level = 30
+technologies['steel-plate-productivity'].max_level = 30

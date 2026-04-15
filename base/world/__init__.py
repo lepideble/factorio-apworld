@@ -93,9 +93,13 @@ class FactorioWorld(World):
                 self.multiworld.itempool.append(item)
 
     def set_rules(self) -> None:
-        from .rules import get_rules
+        from .rules.events import get_events_rules
+        from .rules.locations import get_locations_rules
 
-        for location_name, rule in get_rules(self.get_locations()).items():
+        for location_name, rule in get_events_rules().items():
+            self.set_rule(self.get_location(location_name), rule)
+
+        for location_name, rule in get_locations_rules(self.get_locations()).items():
             self.set_rule(self.get_location(location_name), rule)
 
         match (self.options.goal.get_victory_condition()):
