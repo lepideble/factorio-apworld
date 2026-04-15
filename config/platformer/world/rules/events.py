@@ -1,4 +1,4 @@
-from rule_builder.rules import Rule
+from rule_builder.rules import Has, Rule
 
 from .classes import CanAutomate, CanCraft
 from .events_base import get_events_rules as base_get_events_rules
@@ -20,6 +20,23 @@ has_fusion_power = CanCraft('fusion-reactor') & CanCraft('fusion-generator') & C
 has_non_solar_power = has_boiler_power | has_heating_power | has_nuclear_power | has_fusion_power
 
 
+# Enemies
+can_destroy_medium_asterorid = CanCraft('gun-turret') & CanAutomate('firearm-magazine') & Has('physical-projectile-damage', 6)
+can_destroy_big_asterorid = CanCraft('rocket-turret') & CanAutomate('rocket') & Has('stronger-explosives', 6) & can_destroy_medium_asterorid
+can_destroy_huge_asterorid = CanCraft('railgun-turret') & CanAutomate('railgun-ammo') & can_destroy_big_asterorid
+
+
+# Thrusters
+has_truster_and_propellants = (
+    CanCraft('thruster')
+        & CanAutomate('thruster-fuel') & CanAutomate('thruster-oxidizer')
+        # Pipes are needed to transport propellants
+        & CanCraft('pipe') & CanCraft('pipe-to-ground')
+        # Pumps and storage tanks allow thruster throttling
+        & CanCraft('pump') & CanCraft('storage-tank')
+)
+
+
 def get_events_rules() -> dict[str, Rule]:
     rules = base_get_events_rules()
 
@@ -29,19 +46,6 @@ def get_events_rules() -> dict[str, Rule]:
     rules['Automate light-oil-cracking on space-platform'] &= CanCraft('storage-tank')
 
     # Space location rules
-    can_destroy_medium_asterorid = CanCraft('gun-turret') & CanAutomate('firearm-magazine')
-    can_destroy_big_asterorid = CanCraft('rocket-turret') & CanAutomate('rocket') & can_destroy_medium_asterorid
-    can_destroy_huge_asterorid = CanCraft('railgun-turret') & CanAutomate('railgun-ammo') & can_destroy_big_asterorid
-
-    has_truster_and_propellants = (
-        CanCraft('thruster')
-            & CanAutomate('thruster-fuel') & CanAutomate('thruster-oxidizer')
-            # Pipes are needed to transport propellants
-            & CanCraft('pipe') & CanCraft('pipe-to-ground')
-            # Pumps and storage tanks allow thruster throttling
-            & CanCraft('pump') & CanCraft('storage-tank')
-    )
-
     rules['Reach fulgora with space-platform'] &= can_destroy_medium_asterorid & has_truster_and_propellants
     rules['Reach gleba with space-platform'] &= can_destroy_medium_asterorid & has_truster_and_propellants
     rules['Reach vulcanus with space-platform'] &= can_destroy_medium_asterorid & has_truster_and_propellants
