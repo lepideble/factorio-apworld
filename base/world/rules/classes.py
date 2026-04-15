@@ -2,10 +2,10 @@ from dataclasses import dataclass
 
 from rule_builder.rules import And, Has, HasAny, Or, Rule, True_
 
-from ..config import game_name
-from ..data.classes import SpaceLocation, Surface
-from ..data.raw import machines_available_at_start, recipes_unlocked_at_start, space_locations, surfaces, technologies
-from ..data.utils import recipes_by_product, technologies_by_recipe_unlocked, technologies_by_space_location_unlocked, upgrades_map, upgrades_levels
+from ...config import game_name
+from ...data.classes import SpaceLocation, Surface
+from ...data.raw import machines_available_at_start, recipes_unlocked_at_start, space_locations, surfaces, technologies
+from ...data.utils import recipes_by_product, technologies_by_recipe_unlocked, technologies_by_space_location_unlocked, upgrades_map, upgrades_levels
 
 
 @dataclass()
