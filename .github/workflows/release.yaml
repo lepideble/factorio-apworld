@@ -1,0 +1,17 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*-*.*.*'
+
+jobs:
+  release:
+    steps:
+      - uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const tag = context.ref.slice('refs/tags/'.length);
+            const sha = context.sha;
+
+            console.log(tag, sha)
