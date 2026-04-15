@@ -16,7 +16,30 @@ jobs:
           python-version: '~3.12.7'
           check-latest: true
       - run: ./scripts/build.sh platformer 0.0.0
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7.0.1
         with:
           path: output/*.apworld
           archive: false
+          if-no-files-found: error
+      - name: Install archipelago
+        run: |
+          curl \
+            --fail \
+            --location \
+            --output /usr/local/bin/archipelago \
+            https://github.com/ArchipelagoMW/Archipelago/releases/download/0.6.7/Archipelago_0.6.7_linux-x86_64.AppImage
+
+          echo "6b951acf3a86bbbab8660d406079db42309340d75c35a2ff819523615dd19394 /usr/local/bin/archipelago" | sha256sum --check -
+
+          chmod +x /usr/local/bin/archipelago
+
+          mkdir --parents ~/.local/share/Archipelago/worlds/
+      - name: Install apworld
+        run: cp output/*.apworld ~/.local/share/Archipelago/worlds/
+      - name: Generate template
+        run: archipelago 'Generate Template Options'
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          path: ~/.local/share/Archipelago/Players/Templates/Factorio Platformer.yaml
+          archive: false
+          if-no-files-found: error
