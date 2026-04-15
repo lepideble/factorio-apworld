@@ -18,12 +18,7 @@ item_ids = {}
 
 ids = itertools.count(start=1)
 
-item_ids['progressive science-pack'] = next(ids)
-
 for technology in technologies:
-    if technology.name in science_packs:
-        continue
-
     if technology.name in upgrades_map:
         if upgrades_map[technology.name] in item_ids:
             continue
@@ -31,6 +26,7 @@ for technology in technologies:
     else:
         item_ids[technology.name] = next(ids)
 
+item_ids['progressive science-pack'] = next(ids)
 for progressive_name in progressive_technologies:
     item_ids[progressive_name] = next(ids)
 
