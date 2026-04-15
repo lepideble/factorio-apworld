@@ -50,4 +50,4 @@ jobs:
         run: |
           cp "$ARCHIPELAGO_USER_PATH/Players/Templates/Factorio Platformer.yaml" "$ARCHIPELAGO_USER_PATH/Players/"
 
-          archipelago Generate -- --seed 0
+          archipelago --executable ArchipelagoGenerate --seed 0
