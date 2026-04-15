@@ -6,7 +6,7 @@ from Options import Choice, DefaultOnToggle, OptionCounter, OptionDict, OptionSe
 
 from ..config import craftsanity_filter, victory_conditions
 from ..data.raw import items, science_packs, technologies_required_for_research
-from ..data.utils import upgrades_levels, upgrades_max_level, upgrades_min_level
+from .items.pool import upgrades_default_count, upgrades_min_count, upgrades_max_count
 from .locations import craftsanity_item_pool
 
 
@@ -140,11 +140,19 @@ class Progressive(DefaultOnToggle):
 class FactorioUpgradesCount(OptionDict):
     """Number of upgrade levels added to the item pool."""
     display_name = "Upgrades counts"
-    default = { key: len(levels) if levels[-1].max_level is None else (len(levels) - 1) for key, levels in upgrades_levels.items() }
-    schema = Schema({ Optional(key): And(int, SchemaRange(upgrades_min_level[key], upgrades_max_level[key])) for key in upgrades_levels.keys() })
+    default = {
+        key: default
+        for key, default in upgrades_default_count.items()
+        if upgrades_min_count[key] != upgrades_max_count[key]
+    }
+    schema = Schema({
+        Optional(key): And(int, SchemaRange(upgrades_min_count[key], upgrades_max_count[key]))
+        for key in upgrades_default_count.keys()
+        if upgrades_min_count[key] != upgrades_max_count[key]
+    })
 
     def __getitem__(self, item: str) -> int:
-        return self.value.get(item, len(upgrades_levels[item]))
+        return self.value.get(item, upgrades_default_count[item])
 
 
 class FactorioStartItems(OptionCounter):

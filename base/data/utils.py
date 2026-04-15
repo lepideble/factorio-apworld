@@ -112,8 +112,6 @@ craftable_items_at_start, craftable_recipes_at_start = _get_craftable(_starting_
 
 # Compute upgrades
 upgrades_levels = {}
-upgrades_min_level = {}
-upgrades_max_level = {}
 upgrades_map = {}
 
 for technology in technologies:
@@ -130,18 +128,7 @@ for technology in technologies:
 
     if name not in upgrades_levels:
         upgrades_levels[name] = []
-        upgrades_min_level[name] = 0
-        upgrades_max_level[name] = 0
 
     upgrades_levels[name].append(technology)
-
-    if technology.has_unlock:
-        upgrades_min_level[name] = max(upgrades_min_level[name], level)
-
-    if upgrades_max_level[name] is not None:
-        if technology.max_level is not None:
-            upgrades_max_level[name] = None if technology.max_level == 'infinite' else technology.max_level
-        else:
-            upgrades_max_level[name] = max(upgrades_max_level[name], level)
 
     upgrades_map[technology.name] = name
