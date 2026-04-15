@@ -34,12 +34,20 @@ jobs:
           chmod +x /usr/local/bin/archipelago
 
           mkdir --parents ~/.local/share/Archipelago/worlds/
+
+          echo "ARCHIPELAGO_USER_PATH=$HOME/.local/share/Archipelago/" >> "$GITHUB_ENV"
       - name: Install apworld
         run: cp output/*.apworld ~/.local/share/Archipelago/worlds/
       - name: Generate template
-        run: archipelago 'Generate Template Options'
+        run: archipelago 'Generate Template Options' -- --skip_open_folder
       - uses: actions/upload-artifact@v7.0.1
         with:
-          path: ~/.local/share/Archipelago/Players/Templates/Factorio Platformer.yaml
+          path: ${{ env.ARCHIPELAGO_USER_PATH }}/Players/Templates/Factorio Platformer.yaml
           archive: false
           if-no-files-found: error
+      - name: Test generation
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          cp "$ARCHIPELAGO_USER_PATH/Players/Templates/Factorio Platformer.yaml" "$ARCHIPELAGO_USER_PATH/Players/"
+
+          archipelago Generate -- --seed 0
