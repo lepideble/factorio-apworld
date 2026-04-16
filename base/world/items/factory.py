@@ -72,4 +72,19 @@ def create_items(options: FactorioOptions, progressive_levels: dict[str, list[st
 
             items.append(FactorioItem(item_name, classification, player))
 
+    assert len(items) == get_item_count(options), 'Unexpected item count'
+
     return items
+
+
+def get_item_count(options: FactorioOptions) -> int:
+    count = 0
+
+    for technology in technologies:
+        if technology.name not in upgrades_map:
+            count += 1
+
+    for item_name in upgrades_levels.keys():
+        count += options.upgrades_count[item_name]
+
+    return count

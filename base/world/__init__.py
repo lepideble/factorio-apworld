@@ -34,6 +34,8 @@ class FactorioWorld(World):
             self.progressive_levels.update(progressive_technologies)
 
     def create_regions(self) -> None:
+        from .items.factory import get_item_count
+
         # Menu region holds all locations that are not tied to a specific surface
         menu_region = Region('Menu', self.player, self.multiworld)
 
@@ -57,7 +59,7 @@ class FactorioWorld(World):
 
             self.multiworld.regions.append(region)
 
-        for location in get_locations(self.options, self.random):
+        for location in get_locations(self.options, self.random, get_item_count(self.options)):
             location.player = self.player
             location.parent_region = menu_region
 
