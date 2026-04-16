@@ -7,8 +7,8 @@ from worlds.AutoWorld import World
 from ..config import game_name, progressive_technologies
 from ..data.raw import science_packs, space_locations, surfaces, surfaces_accessible_at_start, technologies, technologies_required_for_automation, technologies_required_for_research
 from ..data.utils import craftable_recipes
-
-from .items import create_item, create_items, item_ids, FactorioItem
+from .items.classes import FactorioItem
+from .items.ids import item_ids
 from .locations import FactorioCraftLocation, FactorioScienceLocation, get_locations, location_ids
 from .options import FactorioOptions
 
@@ -64,6 +64,8 @@ class FactorioWorld(World):
             menu_region.locations.append(location)
 
     def create_items(self) -> None:
+        from .items.factory import create_items
+
         progressive_counts = collections.Counter()
 
         for item in create_items(self.options, self.progressive_levels, self.player):
@@ -93,8 +95,7 @@ class FactorioWorld(World):
                 self.multiworld.itempool.append(item)
 
     def set_rules(self) -> None:
-        from .rules.events import get_events_rules
-        from .rules.locations import get_locations_rules
+        from .rules.factory import get_events_rules, get_locations_rules
 
         for location_name, rule in get_events_rules().items():
             self.set_rule(self.get_location(location_name), rule)
@@ -109,6 +110,8 @@ class FactorioWorld(World):
                 raise Error('Invalid victory condition')
 
     def create_item(self, name: str) -> FactorioItem:
+        from .items.factory import create_item
+
         return create_item(self.progressive_levels, self.player, name)
 
     def collect(self, state: CollectionState, item: Item) -> bool:

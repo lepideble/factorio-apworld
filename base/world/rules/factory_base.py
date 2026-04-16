@@ -1,7 +1,10 @@
+import collections.abc
+
 from rule_builder.rules import Rule
 
 from ...data.raw import recipes, space_locations, surfaces
 from ...data.utils import craftable_recipes, machines_by_category
+from ..locations import FactorioLocation, FactorioCraftLocation, FactorioScienceLocation
 from .classes import All, Any, CanAutomate, CanCraft, HasMachine, ReachedSpaceLocation, UnlockedRecipe, UnlockedSpaceLocation
 
 
@@ -41,5 +44,22 @@ def get_events_rules() -> dict[str, Rule]:
                         UnlockedSpaceLocation(space_location.name)
                             & Any([ReachedSpaceLocation(connection, surface) for connection in space_location.connections])
                     )
+
+    return rules
+
+
+def get_locations_rules(locations: collections.abc.Iterable[FactorioLocation]) -> dict[str, Rule]:
+    rules = {}
+
+    for location in locations:
+        if isinstance(location, FactorioCraftLocation):
+            rules[location.name] = CanCraft(location.item_name)
+
+        if isinstance(location, FactorioScienceLocation):
+            # Early science locations can be recognised by the fact that they already have an item
+            if location.item is not None:
+                rules[location.name] = All([CanCraft(science_pack) for science_pack in location.ingredients.keys()])
+            else:
+                rules[location.name] = All([CanAutomate(science_pack) for science_pack in location.ingredients.keys()])
 
     return rules
