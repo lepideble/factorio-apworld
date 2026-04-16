@@ -35,4 +35,4 @@ progressive_technologies = {
 
 # Item that should be included in craftsanity
 def craftsanity_filter(item_name: str):
-    return not item_name.endswith('-barrel')
+    return not item_name.endswith('-barrel') and not item_name.endswith('-asteroid-chunk')
