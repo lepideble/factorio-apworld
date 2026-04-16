@@ -137,6 +137,7 @@ for technology_name in _removed_technologies:
 
 # Technologies that are not removed by platformer but gives useless bonuses
 _useless_technologies = [
+    'steel-axe',
     'rail-support-foundations',
     'rocket-part-productivity',
 ]
