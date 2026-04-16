@@ -4,7 +4,7 @@ import settings
 
 
 class FactorioSettings(settings.Group):
-    settings_key = 'factorio_apworld'
+    settings_key = 'factorio'
 
     class Executable(settings.UserFilePath):
         is_exe = True
