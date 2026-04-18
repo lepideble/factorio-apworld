@@ -1,5 +1,8 @@
 name: Release
 
+permissions:
+  contents: write
+
 on:
   push:
     tags:
@@ -7,11 +10,75 @@ on:
 
 jobs:
   release:
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/github-script@v9.0.0
         with:
           script: |
+            const { readFile, writeFile } = require('fs/promises');
+
+            const CONFIG = {
+              platformer: { name: 'Factorio: Platformer', templateName: 'Factorio Platformer.yaml' },
+            };
+
             const tag = context.ref.slice('refs/tags/'.length);
             const sha = context.sha;
 
-            console.log(tag, sha)
+            const { groups: { name, version } } = /^(?<name>[a-z]+)-(?<version>[0-9]+\.[0-9]+\.[0-9]+)/.exec(tag);
+
+            const { data: { workflow_runs: [workflowRun] } } = await github.rest.actions.listWorkflowRunsForRepo({
+              ...context.repo,
+              status: 'success',
+              head_sha: sha,
+            });
+
+            const { data: { artifacts } } = await github.rest.actions.listWorkflowRunArtifacts({
+              ...context.repo,
+              run_id: workflowRun.id,
+            });
+
+            const { data: apworld_data } = await octokit.rest.actions.downloadArtifact({
+              ...context.repo,
+              artifact_id: artifacts.find((artifact) => artifact.name === `factorio_${name}.apworld`).id,
+              archive_format: 'zip',
+            });
+
+            const { data: template_data } = await octokit.rest.actions.downloadArtifact({
+              ...context.repo,
+              artifact_id: artifacts.find((artifact) => artifact.name === CONFIG[name].templateName).id,
+              archive_format: 'zip',
+            });
+
+            await writeFile(`factorio_${name}.apworld`, Buffer.from(apworld_data));
+
+            await exec.exec('unzip', [`factorio_${name}.apworld`, `factorio_${name}/archipelago.json`]);
+
+            let manifest_content = await readFile(`factorio_${name}/archipelago.json`, { encoding: 'utf8' });
+            manifest_content = manifest_content.replace('"world_version": "0.0.0"', `"world_version": "${version}"`);
+            await writeFile(`factorio_${name}/archipelago.json`, manifest_content, { encoding: 'utf8' });
+
+            await exec.exec('zip', [`factorio_${name}.apworld`, `factorio_${name}/archipelago.json`]);
+
+            const updated_apworld_data = await readFile(`factorio_${name}.apworld`);
+
+            const { data: release } = await github.rest.repos.createRelease({
+              ...context.repo,
+              tag_name: tag,
+              name: `${CONFIG[name].name} v${version}`,
+              draft: true,
+              generate_release_notes: true,
+            });
+
+            await github.rest.repos.uploadReleaseAsset({
+              ...context.repo,
+              release_id: release.id,
+              name: `factorio_${name}.apworld`,
+              data: updated_apworld_data,
+            });
+
+            await github.rest.repos.uploadReleaseAsset({
+              ...context.repo,
+              release_id: release.id,
+              name: CONFIG[name].templateName,
+              data: template_data,
+            });
