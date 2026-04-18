@@ -38,7 +38,8 @@ cat << EOF > "build/$WORLD/archipelago.json"
 {
     "game": "$GAME_NAME",
     "world_version": "$VERSION",
-    "compatible_version": 7
+    "compatible_version": 7,
+    "minimum_ap_version": "0.6.7"
 }
 EOF
 
