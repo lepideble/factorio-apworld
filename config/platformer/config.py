@@ -41,6 +41,7 @@ progressive_items_with_split_technologies = {
     'progressive assembling machine': ['assembling-machine-1 recipe', 'assembling-machine-2 recipe', 'assembling-machine-3 recipe'],
     'progressive circuit': ['electronic-circuit recipe', 'advanced-circuit recipe', 'processing-unit recipe', 'quantum-processor recipe'],
     'progressive combinator': ['constant-combinator recipe', 'arithmetic-combinator recipe', 'decider-combinator recipe', 'selector-combinator recipe'],
+    'progressive concrete': ['concrete recipe', 'refined-concrete recipe'],
     'progressive inserter': ['inserter recipe', 'long-handed-inserter recipe', 'fast-inserter recipe', 'bulk-inserter recipe', 'stack-inserter recipe'],
     'progressive oil processing': ['basic-oil-processing recipe', 'advanced-oil-processing recipe'],
     'progressive quality': ['quality-module', 'epic-quality', 'legendary-quality'],
