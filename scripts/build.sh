@@ -18,8 +18,6 @@ rm --force "output/$WORLD.apworld"
 # Build
 cp --recursive base "build/$WORLD"
 
-rm "build/$WORLD/debug.py"
-
 rsync --recursive --ignore-times "config/$CONFIG/" "build/$WORLD/"
 
 cp LICENSE "build/$WORLD"
