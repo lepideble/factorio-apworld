@@ -1,5 +1,9 @@
+import argparse
+import sys
+import os.path
+
 def print_machines():
-    from .data.raw import machines
+    from factorio_platformer.data.raw import machines
 
     for machine in machines:
         print(f'Machine: {machine.name}')
@@ -7,7 +11,7 @@ def print_machines():
 
 
 def print_recipes():
-    from .data.raw import recipes
+    from factorio_platformer.data.raw import recipes
 
     for recipe in recipes:
         print(f'Recipe: {recipe.name}')
@@ -17,14 +21,14 @@ def print_recipes():
 
 
 def print_science_packs():
-    from .data.raw import science_packs
+    from factorio_platformer.data.raw import science_packs
 
     for science_pack in science_packs:
         print(f'Science pack: {science_pack}')
 
 
 def print_surfaces():
-    from .data.raw import surfaces
+    from factorio_platformer.data.raw import surfaces
 
     for surface in surfaces:
         print(f'Surface: {surface.name}')
@@ -34,7 +38,7 @@ def print_surfaces():
 
 
 def print_technologies():
-    from .data.raw import technologies
+    from factorio_platformer.data.raw import technologies
 
     for technology in technologies:
         print(f'Technology: {technology.name}')
@@ -49,34 +53,22 @@ def print_technologies():
             print(f'  modifiers: {technology.modifiers}')
 
 
+def create_options(options_dict):
+    from factorio_platformer.world.options import FactorioOptions
+    options = {}
+    for key, option in FactorioOptions.type_hints.items():
+        options[key] = option.from_any(options_dict.get(key, option.default))
+
+    return FactorioOptions(**options)
+
 def create_world():
     from BaseClasses import MultiWorld
-    from .world import FactorioWorld
-    from .world.options import FactorioOptions, Goal, MaxSciencePack, MaxTechCost, MinTechCost, RampingTechCosts, TechCostDistribution, TechCostMix
+    from factorio_platformer.world import FactorioWorld
 
     multiworld = MultiWorld(1)
     world = FactorioWorld(multiworld, 1)
     multiworld.worlds[1] = world
-    world.options = FactorioOptions(
-        progression_balancing=0,
-        accessibility=0,
-        local_items=0,
-        non_local_items=0,
-        start_inventory=0,
-        start_hints=0,
-        start_location_hints=0,
-        exclude_locations=0,
-        priority_locations=0,
-        item_links=0,
-        plando_items=0,
-        max_science_pack=MaxSciencePack.from_any(MaxSciencePack.default),
-        min_tech_cost=MinTechCost.from_any(MinTechCost.default),
-        max_tech_cost=MaxTechCost.from_any(MaxTechCost.default),
-        tech_cost_distribution=TechCostDistribution.from_any(TechCostDistribution.default),
-        tech_cost_mix=TechCostMix.from_any(TechCostMix.default),
-        ramping_tech_costs=RampingTechCosts.from_any(RampingTechCosts.default),
-        goal=Goal.from_any(Goal.default),
-    )
+    world.options = create_options()
 
     world.create_regions()
     world.create_items()
@@ -84,13 +76,23 @@ def create_world():
     return multiworld
 
 
-def print_items():
-    multiworld = create_world()
+def print_items(options_dict):
+    from factorio_platformer.config import progressive_items_with_split_technologies, progressive_items_without_split_technologies
+    from factorio_platformer.world.items.factory import create_items
 
-    for item in multiworld.get_items():
+    options = create_options(options_dict)
+
+    progressive_items = {}
+    if options.progressive:
+        if options.split_technologies:
+            progressive_items = progressive_items_with_split_technologies
+        else:
+            progressive_items = progressive_items_without_split_technologies
+
+    for item in create_items(options, progressive_items, 0):
         print(f'{item.name}:')
         print(f'  id: {item.code}')
-        print(f'  classification: {repr(item.classification)}')
+        print(f'  classification: {item.classification.name}')
 
 
 def print_locations():
@@ -100,28 +102,36 @@ def print_locations():
         print(f'{location.name}')
 
 
-def main(argv):
+def main(what, options):
+    options_dict = {}
+    for option in options:
+        [key, value] = option.split('=', 1)
+        options_dict[key] = value
+
     # Data
-    if '--all' in argv or '--machines' in argv:
+    if what == 'machines':
         print_machines()
-    if '--all' in argv or '--recipes' in argv:
+    if what == 'recipes':
         print_recipes()
-    if '--all' in argv or '--science-packs' in argv:
+    if what == 'science-packs':
         print_science_packs()
-    if '--all' in argv or '--surfaces' in argv:
+    if what == 'surfaces':
         print_surfaces()
-    if '--all' in argv or '--technologies' in argv:
+    if what == 'technologies':
         print_technologies()
 
     # World
-    if '--all' in argv or '--items' in argv:
-        print_items()
-    if '--all' in argv or '--locations' in argv:
+    if what == 'items':
+        print_items(options_dict)
+    if what == 'locations':
         print_locations()
 
+parser = argparse.ArgumentParser()
+parser.add_argument('what')
+parser.add_argument('-o', '--option', action='append', default=[], dest='options')
 
 # Debug
 if __name__ == '__main__':
-    import sys
+    sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'build'))
 
-    main(sys.argv)
+    main(**vars(parser.parse_args()))
