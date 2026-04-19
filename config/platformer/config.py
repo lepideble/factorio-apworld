@@ -52,11 +52,17 @@ progressive_items_with_split_technologies = {
     'progressive transport belt': ['fast-transport-belt recipe', 'express-transport-belt recipe', 'turbo-transport-belt recipe'],
     'progressive underground belt': ['underground-belt recipe', 'fast-underground-belt recipe', 'express-underground-belt recipe', 'turbo-underground-belt recipe'],
     'progressive wall': ['stone-wall recipe', 'gate recipe'],
+    # Bacteria
+    'progressive copper bacteria': ['copper-bacteria recipe', 'copper-bacteria-cultivation recipe'],
+    'progressive iron bacteria': ['iron-bacteria recipe', 'iron-bacteria-cultivation recipe'],
     # Modules
     'progressive efficiency module': ['efficiency-module recipe', 'efficiency-module-2 recipe', 'efficiency-module-3 recipe'],
     'progressive productivity module': ['productivity-module recipe', 'productivity-module-2 recipe', 'productivity-module-3 recipe'],
     'progressive quality module': ['quality-module recipe', 'quality-module-2 recipe', 'quality-module-3 recipe'],
     'progressive speed module': ['speed-module recipe', 'speed-module-2 recipe', 'speed-module-3 recipe'],
+    # Propellants
+    'progressive thruster fuel': ['thruster-fuel recipe', 'advanced-thruster-fuel recipe'],
+    'progressive thruster oxidizer': ['thruster-oxidizer recipe', 'advanced-thruster-oxidizer recipe'],
 }
 
 progressive_items_without_split_technologies = {
