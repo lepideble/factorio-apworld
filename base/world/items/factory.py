@@ -78,11 +78,14 @@ def create_items(options: FactorioOptions, progressive_levels: dict[str, list[st
             items.append(FactorioTechnologyItem(item_name, classification, player))
 
     if options.split_technologies:
-        for recipe_name in recipe_pool.elements():
-            if f'{recipe_name} recipe' in progressive_map:
-                items.append(FactorioItem(progressive_map[f'{recipe_name} recipe'], ItemClassification.progression, player))
-            else:
-                items.append(FactorioRecipeItem(recipe_name, player))
+        for recipe_name, recipe_count in recipe_pool.items():
+            for index in range(recipe_count):
+                classification = ItemClassification.progression if index == 0 else ItemClassification.useful
+
+                if f'{recipe_name} recipe' in progressive_map:
+                    items.append(FactorioItem(progressive_map[f'{recipe_name} recipe'], classification, player))
+                else:
+                    items.append(FactorioRecipeItem(recipe_name, classification, player))
 
     assert len(items) == get_item_count(options), 'Unexpected item count'
 

@@ -12,8 +12,8 @@ class FactorioItem(Item):
 
 
 class FactorioRecipeItem(FactorioItem):
-    def __init__(self, recipe_name: str, player: int):
-        super().__init__(f'{recipe_name} recipe', ItemClassification.progression, player)
+    def __init__(self, recipe_name: str, classification: ItemClassification, player: int):
+        super().__init__(f'{recipe_name} recipe', classification, player)
 
 
 class FactorioTechnologyItem(FactorioItem):
