@@ -136,7 +136,7 @@ class FactorioWorld(World):
         return False
 
     def remove(self, state: CollectionState, item: Item) -> bool:
-        if super().collect(state, item):
+        if super().remove(state, item):
             if item.name in self.progressive_items:
                 current_count = state.prog_items[self.player][item.name]
                 item_name = self.progressive_items[item.name][current_count]
