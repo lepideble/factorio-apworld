@@ -73,12 +73,13 @@ class FactorioWorld(World):
 
     def create_items(self) -> None:
         from .items.factory import create_items
+        from .items.progressive import make_progressive
 
         progressive_counts = collections.Counter()
         items_for_automation = items_required_for_automation(self.options)
         items_for_research = items_required_for_research(self.options)
 
-        for item in create_items(self.options, self.progressive_items, self.player):
+        for item in make_progressive(create_items(self.options, self.player), self.progressive_items):
             if item.name in self.progressive_items:
                 item_name = self.progressive_items[item.name][progressive_counts[item.name]]
 
@@ -122,7 +123,7 @@ class FactorioWorld(World):
     def create_item(self, name: str) -> FactorioItem:
         from .items.factory import create_item
 
-        return create_item(self.options, self.progressive_items, self.player, name)
+        return create_item(self.options, self.player, name)
 
     def collect(self, state: CollectionState, item: Item) -> bool:
         if super().collect(state, item):

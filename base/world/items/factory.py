@@ -9,15 +9,10 @@ from .classification import is_progression, is_usefull
 from .pool import recipe_pool
 
 
-def create_item(options: FactorioOptions, progressive_levels: dict[str, list[str]], player: int, item_name: str) -> FactorioItem:
-    if item_name in upgrades_levels:
-        name = item_name
-        level = len(upgrades_levels[item_name])
-    elif item_name in progressive_levels:
-        name = progressive_levels[item_name][-1]
-        level = None
+def create_item(options: FactorioOptions, player: int, name: str) -> FactorioItem:
+    if name in upgrades_levels:
+        level = len(upgrades_levels[name])
     else:
-        name = item_name
         level = None
 
     if is_progression(name, level, options.split_technologies):
@@ -27,16 +22,10 @@ def create_item(options: FactorioOptions, progressive_levels: dict[str, list[str
     else:
         classification = ItemClassification.filler
 
-    return FactorioItem(item_name, classification, player)
+    return FactorioItem(name, classification, player)
 
 
-def create_items(options: FactorioOptions, progressive_levels: dict[str, list[str]], player: int) -> list[FactorioItem]:
-    # Build reverse progressive lookup map
-    progressive_map: dict[str, str] = {}
-    for name, levels in progressive_levels.items():
-        for level in levels:
-            progressive_map[level] = name
-
+def create_items(options: FactorioOptions, player: int) -> list[FactorioItem]:
     items = []
 
     for technology in technologies:
@@ -47,22 +36,14 @@ def create_items(options: FactorioOptions, progressive_levels: dict[str, list[st
             if len(technology.unlocked_space_locations) == 0 and len(technology.modifiers) == 0:
                 continue
 
-        if technology.name in progressive_map:
-            item_name = progressive_map[technology.name]
-            index = progressive_levels[item_name].index(technology.name)
-            technologies_to_check = progressive_levels[item_name][index:]
-        else:
-            item_name = technology.name
-            technologies_to_check = [technology.name]
-
-        if any((is_progression(technology_to_check, None, options.split_technologies) for technology_to_check in technologies_to_check)):
+        if is_progression(technology.name, None, options.split_technologies):
             classification = ItemClassification.progression
-        elif any((is_usefull(technology_to_check, None, options.split_technologies) for technology_to_check in technologies_to_check)):
+        elif is_usefull(technology.name, None, options.split_technologies):
             classification = ItemClassification.useful
         else:
             classification = ItemClassification.filler
 
-        items.append(FactorioTechnologyItem(item_name, classification, player))
+        items.append(FactorioTechnologyItem(technology.name, classification, player))
 
     for item_name, levels in upgrades_levels.items():
         count = options.upgrades_count[item_name]
@@ -80,12 +61,11 @@ def create_items(options: FactorioOptions, progressive_levels: dict[str, list[st
     if options.split_technologies:
         for recipe_name, recipe_count in recipe_pool.items():
             for index in range(recipe_count):
-                classification = ItemClassification.progression if index == 0 else ItemClassification.useful
-
-                if f'{recipe_name} recipe' in progressive_map:
-                    items.append(FactorioItem(progressive_map[f'{recipe_name} recipe'], classification, player))
-                else:
-                    items.append(FactorioRecipeItem(recipe_name, classification, player))
+                items.append(FactorioRecipeItem(
+                    recipe_name,
+                    ItemClassification.progression if index == 0 else ItemClassification.useful,
+                    player,
+                ))
 
     assert len(items) == get_item_count(options), 'Unexpected item count'
 

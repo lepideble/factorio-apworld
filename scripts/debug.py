@@ -79,6 +79,7 @@ def create_world():
 def print_items(options_dict):
     from factorio_platformer.config import progressive_items_with_split_technologies, progressive_items_without_split_technologies
     from factorio_platformer.world.items.factory import create_items
+    from factorio_platformer.world.items.progressive import make_progressive
 
     options = create_options(options_dict)
 
@@ -89,7 +90,7 @@ def print_items(options_dict):
         else:
             progressive_items = progressive_items_without_split_technologies
 
-    for item in create_items(options, progressive_items, 0):
+    for item in make_progressive(create_items(options, 0), progressive_items):
         print(f'{item.name}:')
         print(f'  id: {item.code}')
         print(f'  classification: {item.classification.name}')
