@@ -2,7 +2,7 @@ from ...data.raw import technologies
 from ...data.utils import upgrades_levels, upgrades_map
 
 
-def is_progression(name: str, level: int | None = None, split_technologies: bool | None = None) -> bool:
+def is_advancement(name: str, level: int | None = None, split_technologies: bool | None = None) -> bool:
     if name in upgrades_levels:
         assert level is not None and level > 0, f'Invalid level: {level}'
 
@@ -22,7 +22,7 @@ def is_progression(name: str, level: int | None = None, split_technologies: bool
         return False
 
 
-def is_usefull(name: str, level: int | None = None, split_technologies: bool | None = None) -> bool:
+def is_useful(name: str, level: int | None = None, split_technologies: bool | None = None) -> bool:
     if name in upgrades_levels:
         assert level is not None and level > 0, f'Invalid level: {level}'
 

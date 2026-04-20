@@ -1,1 +1,1 @@
-from .classification_base import is_progression, is_usefull
+from .classification_base import is_advancement, is_useful

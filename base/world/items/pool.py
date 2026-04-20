@@ -3,7 +3,7 @@ import collections
 from ...data.raw import technologies
 from ...data.utils import upgrades_levels, upgrades_map
 from ...utils import range_inclusive
-from .classification import is_progression
+from .classification import is_advancement
 
 
 # Minimum, maximum and default count that can be added to the pool for each upgrade
@@ -14,7 +14,7 @@ upgrades_default_count: dict[str, int] = {}
 for name, levels in upgrades_levels.items():
     upgrades_min_count[name] = 0
     for level in range_inclusive(1, len(levels)):
-        if is_progression(name, level):
+        if is_advancement(name, level):
             upgrades_min_count[name] = level
 
     match levels[-1].max_level:
