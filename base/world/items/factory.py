@@ -5,7 +5,7 @@ from ...data.utils import upgrades_levels, upgrades_map
 from ...utils import range_inclusive
 from ..options import FactorioOptions
 from .classes import FactorioItem, FactorioRecipeItem, FactorioTechnologyItem
-from .classification import is_progression, is_usefull
+from .classification import is_advancement, is_useful
 from .pool import recipe_pool
 
 
@@ -15,9 +15,9 @@ def create_item(options: FactorioOptions, player: int, name: str) -> FactorioIte
     else:
         level = None
 
-    if is_progression(name, level, options.split_technologies):
+    if is_advancement(name, level, options.split_technologies):
         classification = ItemClassification.progression
-    elif is_usefull(name, level, options.split_technologies):
+    elif is_useful(name, level, options.split_technologies):
         classification = ItemClassification.useful
     else:
         classification = ItemClassification.filler
@@ -36,9 +36,9 @@ def create_items(options: FactorioOptions, player: int) -> list[FactorioItem]:
             if len(technology.unlocked_space_locations) == 0 and len(technology.modifiers) == 0:
                 continue
 
-        if is_progression(technology.name, None, options.split_technologies):
+        if is_advancement(technology.name, None, options.split_technologies):
             classification = ItemClassification.progression
-        elif is_usefull(technology.name, None, options.split_technologies):
+        elif is_useful(technology.name, None, options.split_technologies):
             classification = ItemClassification.useful
         else:
             classification = ItemClassification.filler
@@ -49,9 +49,9 @@ def create_items(options: FactorioOptions, player: int) -> list[FactorioItem]:
         count = options.upgrades_count[item_name]
 
         for level in range_inclusive(1, count):
-            if any((is_progression(item_name, level_to_check, options.split_technologies) for level_to_check in range_inclusive(level, count))):
+            if any((is_advancement(item_name, level_to_check, options.split_technologies) for level_to_check in range_inclusive(level, count))):
                 classification = ItemClassification.progression
-            elif any((is_usefull(item_name, level_to_check, options.split_technologies) for level_to_check in range_inclusive(level, count))):
+            elif any((is_useful(item_name, level_to_check, options.split_technologies) for level_to_check in range_inclusive(level, count))):
                 classification = ItemClassification.useful
             else:
                 classification = ItemClassification.filler
