@@ -24,8 +24,6 @@ def make_progressive(items: list[FactorioItem], progressive_chains: dict[str, li
 
         items_by_progressive_name[progressive_name].sort(key=lambda item: progressive_chain.index(item.name))
 
-        print(items_by_progressive_name[progressive_name])
-
         is_advancement = False
         is_useful = False
 
