@@ -57,4 +57,3 @@ jobs:
           yq '.["Factorio: Platformer"].split_technologies = true' "$ARCHIPELAGO_USER_PATH/Players/Templates/Factorio Platformer.yaml" > "$ARCHIPELAGO_USER_PATH/Players/Factorio Platformer.yaml"
 
           archipelago --executable ArchipelagoGenerate --seed 0
-        continue-on-error: true
