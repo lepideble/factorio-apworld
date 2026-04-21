@@ -65,7 +65,7 @@ local receive_item = function(item_name, source)
     local recipe_name = string_strip_prefix(item_name, "recipe: ")
     if recipe_name then
         local recipe = force.recipes[recipe_name]
-        if recipe ~= null then
+        if recipe ~= nil then
             if recipe.enabled then
                 return false
             end
@@ -96,7 +96,6 @@ local on_init = function()
 end
 
 local get_technology_command = function(call)
-    local tech
     local force = game.forces["player"]
     if call.parameter == nil then
         game.print("ap-get-technology is only to be used by the Archipelago Factorio Client")
@@ -113,7 +112,7 @@ local get_technology_command = function(call)
     end
 
     if index == "-1" then -- for coop sync and restoring from an older savegame
-        tech = force.technologies[item_name]
+        local tech = force.technologies[item_name]
         if tech.researched ~= true then
             game.print({"", "Received [technology=" .. tech.name .. "] as it is already checked."})
             game.play_sound({path="utility/research_completed"})
@@ -126,11 +125,12 @@ local get_technology_command = function(call)
         return
     end
 
+    local received
     if PROGRESSIVE_ITEMS[item_name] ~= nil then
         for _, item_name in ipairs(PROGRESSIVE_ITEMS[item_name]) do
             received = receive_item(item_name, source)
 
-            if recived ~= false then
+            if received ~= false then
                 break
             end
         end
