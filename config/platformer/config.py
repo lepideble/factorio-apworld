@@ -31,8 +31,8 @@ def items_required_for_research(options) -> set[str]:
 def items_required_for_automation(options) -> set[str]:
     if options.split_technologies:
         return {
-            'assembling-machine-1 recipe', 'engine-unit recipe', 'inserter recipe', 'solar-panel recipe',
-            'splitter recipe', 'steel-plate recipe', 'underground-belt recipe',
+            'assembling-machine-1 recipe', 'engine-unit recipe', 'inserter recipe', 'long-handed-inserter recipe',
+            'pipe recipe', 'solar-panel recipe', 'splitter recipe', 'steel-plate recipe', 'underground-belt recipe',
         }
     else:
         return {'automation', 'engine', 'logistics', 'solar-energy', 'steel-processing'}
