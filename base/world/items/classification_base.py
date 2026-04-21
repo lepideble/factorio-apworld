@@ -2,17 +2,25 @@ from ...data.raw import technologies
 from ...data.utils import upgrades_levels, upgrades_map
 
 
-def is_advancement(name: str, level: int | None = None, split_technologies: bool | None = None) -> bool:
+def is_advancement(name: str, index: int = 0, split_technologies: bool | None = None) -> bool:
+    """
+    Is the given item advancement.
+    index represent the item index (equivalent to how many of that item is already in the pool)
+    """
+
+    assert index >= 0, 'Invalid index'
+
     if name in upgrades_levels:
-        assert level is not None and level > 0, f'Invalid level: {level}'
-
-        if level > len(upgrades_levels[name]):
+        if index < len(upgrades_levels[name]):
+            return any((
+                upgrades_levels[name][index_to_check].has_unlock
+                for index_to_check in range(index, len(upgrades_levels[name]))
+            ))
+        else:
             return False
-
-        return upgrades_levels[name][level-1].has_unlock
+    elif name.startswith('recipe: '):
+        return index == 0
     else:
-        assert level is None, f'Invalid level: {level}'
-
         if len(technologies[name].unlocked_space_locations) > 0:
             return True
 
@@ -22,15 +30,23 @@ def is_advancement(name: str, level: int | None = None, split_technologies: bool
         return False
 
 
-def is_useful(name: str, level: int | None = None, split_technologies: bool | None = None) -> bool:
+def is_useful(name: str, index: int = 0, split_technologies: bool | None = None) -> bool:
+    """
+    Is the given item useful.
+    index represent the item index (equivalent to how many of that item is already in the pool)
+    """
+
+    assert index >= 0, 'Invalid index'
+
     if name in upgrades_levels:
-        assert level is not None and level > 0, f'Invalid level: {level}'
-
-        if level > len(upgrades_levels[name]):
+        if index < len(upgrades_levels[name]):
+            return any((
+                upgrades_levels[name][index_to_check].has_modifier
+                for index_to_check in range(index, len(upgrades_levels[name]))
+            ))
+        else:
             return upgrades_levels[name][-1].has_modifier
-
-        return upgrades_levels[name][level-1].has_modifier
+    elif name.startswith('recipe: '):
+        return True
     else:
-        assert level is None, f'Invalid level: {level}'
-
         return technologies[name].has_modifier

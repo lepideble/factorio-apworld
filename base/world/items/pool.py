@@ -1,8 +1,8 @@
 import collections
+import itertools
 
 from ...data.raw import technologies
 from ...data.utils import upgrades_levels, upgrades_map
-from ...utils import range_inclusive
 from .classification import is_advancement
 
 
@@ -12,10 +12,10 @@ upgrades_max_count: dict[str, int | None] = {}
 upgrades_default_count: dict[str, int] = {}
 
 for name, levels in upgrades_levels.items():
-    upgrades_min_count[name] = 0
-    for level in range_inclusive(1, len(levels)):
-        if is_advancement(name, level):
-            upgrades_min_count[name] = level
+    for index in itertools.count():
+        if not is_advancement(name, index):
+            upgrades_min_count[name] = index
+            break
 
     match levels[-1].max_level:
         case None:

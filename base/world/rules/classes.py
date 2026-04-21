@@ -111,7 +111,7 @@ class UnlockedRecipe(Rule['FactorioWorld'], game=game_name):
         if world.options.split_technologies:
             technologies = [technology for technology in technologies if technology.name in upgrades_map]
 
-        return (Has(f'{self.name} recipe') | Any([HasTechnology(technology.name) for technology in technologies])).resolve(world)
+        return (Has(f'recipe: {self.name}') | Any([HasTechnology(technology.name) for technology in technologies])).resolve(world)
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.name})"

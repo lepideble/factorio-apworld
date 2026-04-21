@@ -62,8 +62,9 @@ local receive_item = function(item_name, source)
         return true
     end
 
-    if string_ends_with(item_name, " recipe") then
-        local recipe = force.recipes[item_name:sub(0, -8)]
+    local recipe_name = string_strip_prefix(item_name, "recipe: ")
+    if recipe_name then
+        local recipe = force.recipes[recipe_name]
         if recipe ~= null then
             if recipe.enabled then
                 return false
