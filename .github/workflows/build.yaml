@@ -51,3 +51,10 @@ jobs:
           cp "$ARCHIPELAGO_USER_PATH/Players/Templates/Factorio Platformer.yaml" "$ARCHIPELAGO_USER_PATH/Players/"
 
           archipelago --executable ArchipelagoGenerate --seed 0
+      - name: Test generation with split technologies
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          yq '.["Factorio: Platformer"].split_technologies = true' "$ARCHIPELAGO_USER_PATH/Players/Templates/Factorio Platformer.yaml" > "$ARCHIPELAGO_USER_PATH/Players/Factorio Platformer.yaml"
+
+          archipelago --executable ArchipelagoGenerate --seed 0
+        continue-on-error: true
