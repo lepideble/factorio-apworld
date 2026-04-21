@@ -39,15 +39,15 @@ has_truster_and_propellants = (
 
 
 # Oil stuff
-can_crack_oil = CanCraft('chemical-plant') & UnlockedRecipe('heavy-oil-cracking') & UnlockedRecipe('light-oil-cracking')
-can_burn_oil = CanCraft('chemical-plant') & UnlockedRecipe('solid-fuel-from-heavy-oil') & UnlockedRecipe('solid-fuel-from-light-oil')
+can_deal_with_excess_heavy_oil = CanCraft('chemical-plant') & (UnlockedRecipe('heavy-oil-cracking') | UnlockedRecipe('solid-fuel-from-heavy-oil'))
+can_deal_with_excess_light_oil = CanCraft('chemical-plant') & (UnlockedRecipe('light-oil-cracking') | UnlockedRecipe('solid-fuel-from-light-oil'))
 
 
 def get_events_rules() -> dict[str, Rule]:
     rules = base_get_events_rules()
 
     # Advanced oil processing need to have storage tanks to mesure output levels and some way to deal with excess production
-    rules['Automate advanced-oil-processing on space-platform'] &= CanCraft('storage-tank') & (can_crack_oil | can_burn_oil)
+    rules['Automate advanced-oil-processing on space-platform'] &= CanCraft('storage-tank') & can_deal_with_excess_heavy_oil & can_deal_with_excess_light_oil
 
     # Space location rules
     rules['Reach fulgora with space-platform'] &= can_destroy_medium_asterorid & has_truster_and_propellants
