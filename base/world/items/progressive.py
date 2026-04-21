@@ -1,6 +1,7 @@
 from BaseClasses import ItemClassification
 
 from .classes import FactorioItem
+from .factory import get_classification
 
 
 def make_progressive(items: list[FactorioItem], progressive_chains: dict[str, list[str]]) -> list[FactorioItem]:
@@ -24,24 +25,22 @@ def make_progressive(items: list[FactorioItem], progressive_chains: dict[str, li
 
         items_by_progressive_name[progressive_name].sort(key=lambda item: progressive_chain.index(item.name))
 
-        is_advancement = False
-        is_useful = False
+        advancement = False
+        useful = False
 
         progressive_items = []
+
         for item in reversed(items_by_progressive_name[progressive_name]):
             if item.advancement:
-                is_advancement = True
+                advancement = True
             if item.useful:
-                is_useful = True
+                useful = True
 
-            if is_advancement:
-                classification = ItemClassification.progression
-            elif is_useful:
-                classification = ItemClassification.useful
-            else:
-                classification = ItemClassification.filler
-
-            progressive_items.append(FactorioItem(progressive_name, classification, item.player))
+            progressive_items.append(FactorioItem(
+                progressive_name,
+                get_classification(advancement, useful),
+                item.player,
+            ))
 
         items_with_progressive.extend(reversed(progressive_items))
 

@@ -2,27 +2,30 @@ from BaseClasses import ItemClassification
 
 from ...data.raw import technologies
 from ...data.utils import upgrades_levels, upgrades_map
-from ...utils import range_inclusive
 from ..options import FactorioOptions
 from .classes import FactorioItem, FactorioRecipeItem, FactorioTechnologyItem
 from .classification import is_advancement, is_useful
 from .pool import recipe_pool
 
 
+def get_classification(advancement: bool, useful: bool) -> ItemClassification:
+    if advancement:
+        return ItemClassification.progression
+    elif useful:
+        return ItemClassification.useful
+    else:
+        return ItemClassification.filler
+
+
 def create_item(options: FactorioOptions, player: int, name: str) -> FactorioItem:
-    if name in upgrades_levels:
-        level = len(upgrades_levels[name])
-    else:
-        level = None
-
-    if is_advancement(name, level, options.split_technologies):
-        classification = ItemClassification.progression
-    elif is_useful(name, level, options.split_technologies):
-        classification = ItemClassification.useful
-    else:
-        classification = ItemClassification.filler
-
-    return FactorioItem(name, classification, player)
+    return FactorioItem(
+        name,
+        get_classification(
+            is_advancement(name, 0, options.split_technologies),
+            is_useful(name, 0, options.split_technologies),
+        ),
+        player
+    )
 
 
 def create_items(options: FactorioOptions, player: int) -> list[FactorioItem]:
@@ -36,34 +39,35 @@ def create_items(options: FactorioOptions, player: int) -> list[FactorioItem]:
             if len(technology.unlocked_space_locations) == 0 and len(technology.modifiers) == 0:
                 continue
 
-        if is_advancement(technology.name, None, options.split_technologies):
-            classification = ItemClassification.progression
-        elif is_useful(technology.name, None, options.split_technologies):
-            classification = ItemClassification.useful
-        else:
-            classification = ItemClassification.filler
-
-        items.append(FactorioTechnologyItem(technology.name, classification, player))
+        items.append(FactorioTechnologyItem(
+            technology.name,
+            get_classification(
+                is_advancement(technology.name, 0, options.split_technologies),
+                is_useful(technology.name, 0, options.split_technologies),
+            ),
+            player,
+        ))
 
     for item_name, levels in upgrades_levels.items():
-        count = options.upgrades_count[item_name]
-
-        for level in range_inclusive(1, count):
-            if any((is_advancement(item_name, level_to_check, options.split_technologies) for level_to_check in range_inclusive(level, count))):
-                classification = ItemClassification.progression
-            elif any((is_useful(item_name, level_to_check, options.split_technologies) for level_to_check in range_inclusive(level, count))):
-                classification = ItemClassification.useful
-            else:
-                classification = ItemClassification.filler
-
-            items.append(FactorioTechnologyItem(item_name, classification, player))
+        for index in range(0, options.upgrades_count[item_name]):
+            items.append(FactorioTechnologyItem(
+                item_name,
+                get_classification(
+                    is_advancement(item_name, index, options.split_technologies),
+                    is_useful(item_name, index, options.split_technologies),
+                ),
+                player,
+            ))
 
     if options.split_technologies:
         for recipe_name, recipe_count in recipe_pool.items():
             for index in range(recipe_count):
                 items.append(FactorioRecipeItem(
                     recipe_name,
-                    ItemClassification.progression if index == 0 else ItemClassification.useful,
+                    get_classification(
+                        is_advancement(f'recipe: {recipe_name}', index),
+                        is_useful(f'recipe: {recipe_name}', index),
+                    ),
                     player,
                 ))
 
