@@ -44,6 +44,8 @@ progressive_items_with_split_technologies = {
     'progressive concrete': ['concrete recipe', 'refined-concrete recipe'],
     'progressive inserter': ['inserter recipe', 'long-handed-inserter recipe', 'fast-inserter recipe', 'bulk-inserter recipe', 'stack-inserter recipe'],
     'progressive oil processing': ['basic-oil-processing recipe', 'advanced-oil-processing recipe'],
+    'progressive pipe': ['pipe recipe', 'pipe-to-ground recipe'],
+    'progressive pipe casting': ['casting-pipe recipe', 'casting-pipe-to-ground recipe'],
     'progressive quality': ['quality-module', 'epic-quality', 'legendary-quality'],
     'progressive rail': ['rail recipe', 'rail-ramp recipe', 'rail-support recipe'],
     'progressive rail automation': ['train-stop recipe', 'rail-signal recipe', 'rail-chain-signal recipe'],
