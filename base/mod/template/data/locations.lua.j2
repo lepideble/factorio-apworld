@@ -24,8 +24,9 @@ end
 
 local set_icon = function(technology, item_name, important)
     if item_name then
-        if string_ends_with(item_name, " recipe") then
-            local source_recipe = data.raw["recipe"][item_name:sub(0, -8)]
+        local source_recipe_name = string_strip_prefix(item_name, "recipe: ")
+        if source_recipe_name then
+            local source_recipe = data.raw["recipe"][source_recipe_name]
 
             if source_recipe then
                 if copy_icons(source_recipe, technology) then

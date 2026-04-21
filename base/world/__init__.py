@@ -33,7 +33,7 @@ class FactorioWorld(World):
 
         if self.options.progressive:
             if self.options.split_technologies:
-                self.progressive_items['progressive science-pack'] = [f'{science_pack} recipe' for science_pack in science_packs]
+                self.progressive_items['progressive science-pack'] = [f'recipe: {science_pack}' for science_pack in science_packs]
                 self.progressive_items.update(progressive_items_with_split_technologies)
             else:
                 self.progressive_items['progressive science-pack'] = science_packs

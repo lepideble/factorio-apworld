@@ -6,6 +6,22 @@ function string_ends_with(str, suffix)
     return str:sub(-#suffix) == suffix
 end
 
+function string_strip_prefix(str, prefix)
+    if string_starts_with(str, prefix) then
+        return str:sub(#prefix + 1)
+    end
+
+    return nil
+end
+
+function string_strip_suffix(str, suffix)
+    if string_ends_with(str, suffix) then
+        return str:sub(-(#suffix + 1))
+    end
+
+    return nil
+end
+
 function get_any_stack_size(name)
     local item = prototypes.item[name]
     if item ~= nil then

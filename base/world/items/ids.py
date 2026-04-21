@@ -20,7 +20,7 @@ for technology in technologies:
         item_ids[technology.name] = next(ids)
 
 for recipe_name in recipe_pool:
-    item_ids[f'{recipe_name} recipe'] = next(ids)
+    item_ids[f'recipe: {recipe_name}'] = next(ids)
 
 item_ids['progressive science-pack'] = next(ids)
 for progressive_name in progressive_items_with_split_technologies:
