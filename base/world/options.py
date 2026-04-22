@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from schema import Schema, Optional, And, Or, SchemaError
 
-from Options import Choice, DefaultOnToggle, OptionCounter, OptionDict, OptionSet, PerGameCommonOptions, Range, Toggle, Visibility
+from Options import Choice, DefaultOnToggle, OptionCounter, OptionDict, OptionSet, PerGameCommonOptions, Range, StartInventoryPool, Toggle, Visibility
 
 from ..config import craftsanity_filter, items_required_for_research, victory_conditions
 from ..data.raw import items, science_packs
@@ -308,6 +308,7 @@ class FactorioOptions(PerGameCommonOptions):
     free_sample_blacklist: FactorioFreeSampleBlacklist
     free_sample_whitelist: FactorioFreeSampleWhitelist
     world_gen: WorldGen
+    start_inventory_from_pool: StartInventoryPool
 
     def apply_required_adjustments(self):
         self.craftsanity.value = max(self.craftsanity.value, len(items_required_for_research(self)))

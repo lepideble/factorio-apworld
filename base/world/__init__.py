@@ -123,7 +123,20 @@ class FactorioWorld(World):
     def create_item(self, name: str) -> FactorioItem:
         from .items.factory import create_item
 
-        return create_item(self.options, self.player, name)
+        if name in self.progressive_items:
+            return create_item(self.options, self.player, self.progressive_items[name][0])
+        else:
+            return create_item(self.options, self.player, name)
+
+    def get_filler_item_name(self) -> str:
+        from .items.pool import upgrades_max_count
+
+        filler_item_pool = [name for name, max_count in upgrades_max_count.items() if max_count is None]
+
+        if len(filler_item_pool) == 0:
+            filler_item_pool = upgrades_max_count.keys()
+
+        return self.random.choice(filler_item_pool)
 
     def collect(self, state: CollectionState, item: Item) -> bool:
         if super().collect(state, item):
