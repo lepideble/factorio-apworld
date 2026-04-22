@@ -1,8 +1,8 @@
-local remove_unlock_recipe_effects = function(effects)
+local remove_effects_by_type = function(effects, type)
     local new_effects = {}
 
     for _, effect in pairs(effects) do
-        if effect.type ~= "unlock-recipe" then
+        if effect.type ~= type then
             table.insert(new_effects, effect)
         end
     end
@@ -18,7 +18,9 @@ technologies["{{ technology_name }}"].unit = nil
 technologies["{{ technology_name }}"].research_trigger = { type = "scripted" }
 {%- if options.split_technologies and technology_name not in data_utils.upgrades_map %}
 if technologies["{{ technology_name }}"].effects then
-    technologies["{{ technology_name }}"].effects = remove_unlock_recipe_effects(technologies["{{ technology_name }}"].effects)
+    technologies["{{ technology_name }}"].effects = remove_effects_by_type(technologies["{{ technology_name }}"].effects, "unlock-quality")
+    technologies["{{ technology_name }}"].effects = remove_effects_by_type(technologies["{{ technology_name }}"].effects, "unlock-recipe")
+    technologies["{{ technology_name }}"].effects = remove_effects_by_type(technologies["{{ technology_name }}"].effects, "unlock-space-location")
 end
 {%- endif %}
 {% endfor %}

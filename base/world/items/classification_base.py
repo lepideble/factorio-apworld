@@ -2,6 +2,10 @@ from ...data.raw import technologies
 from ...data.utils import upgrades_levels, upgrades_map
 
 
+def _has_advancement_modifier(technology) -> bool:
+    return len(technology.unlocked_recipes) > 0 or len(technology.unlocked_space_locations) > 0
+
+
 def is_advancement(name: str, index: int = 0, split_technologies: bool | None = None) -> bool:
     """
     Is the given item advancement.
@@ -13,21 +17,22 @@ def is_advancement(name: str, index: int = 0, split_technologies: bool | None = 
     if name in upgrades_levels:
         if index < len(upgrades_levels[name]):
             return any((
-                upgrades_levels[name][index_to_check].has_unlock
+                _has_advancement_modifier(upgrades_levels[name][index_to_check])
                 for index_to_check in range(index, len(upgrades_levels[name]))
             ))
         else:
             return False
+    elif name.startswith('quality: '):
+        return False
     elif name.startswith('recipe: '):
         return index == 0
+    elif name.startswith('space location: '):
+        return index == 0
     else:
-        if len(technologies[name].unlocked_space_locations) > 0:
-            return True
-
-        if not split_technologies and len(technologies[name].unlocked_recipes) > 0:
-            return True
-
-        return False
+        if split_technologies:
+            return False
+        else:
+            return _has_advancement_modifier(technologies[name])
 
 
 def is_useful(name: str, index: int = 0, split_technologies: bool | None = None) -> bool:
@@ -46,7 +51,11 @@ def is_useful(name: str, index: int = 0, split_technologies: bool | None = None)
             ))
         else:
             return upgrades_levels[name][-1].has_modifier
+    elif name.startswith('quality: '):
+        return True
     elif name.startswith('recipe: '):
+        return True
+    elif name.startswith('space location: '):
         return True
     else:
         return technologies[name].has_modifier

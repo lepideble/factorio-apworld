@@ -62,6 +62,23 @@ local receive_item = function(item_name, source)
         return true
     end
 
+    local quality_name = string_strip_prefix(item_name, "quality: ")
+    if quality_name then
+        local quality = prototypes.quality[quality_name]
+        if quality ~= nil then
+            if force.is_quality_unlocked(quality) then
+                return false
+            end
+
+            game.print({"", "Received [quality=" .. quality.name .. "] from ", source})
+            game.play_sound({path="utility/research_completed"})
+
+            force.unlock_quality(quality)
+
+            return true
+        end
+    end
+
     local recipe_name = string_strip_prefix(item_name, "recipe: ")
     if recipe_name then
         local recipe = force.recipes[recipe_name]
@@ -76,6 +93,23 @@ local receive_item = function(item_name, source)
             recipe.enabled = true
 
             free_samples.send_for_recipe(force, recipe.name)
+
+            return true
+        end
+    end
+
+    local space_location_name = string_strip_prefix(item_name, "space location: ")
+    if space_location_name then
+        local space_location = prototypes.space_location[space_location_name]
+        if space_location ~= nil then
+            if force.is_space_location_unlocked(space_location) then
+                return false
+            end
+
+            game.print({"", "Received [space-location=" .. space_location.name .. "] from ", source})
+            game.play_sound({path="utility/research_completed"})
+
+            force.unlock_space_location(space_location)
 
             return true
         end
