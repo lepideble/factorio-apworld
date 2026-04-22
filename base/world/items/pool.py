@@ -34,6 +34,7 @@ for name, levels in upgrades_levels.items():
 # Split technologies item pools
 quality_pool = collections.Counter()
 recipe_pool = collections.Counter()
+space_location_pool = collections.Counter()
 
 for technology in technologies:
     # Ignore upgrades because it would make things messy
@@ -45,3 +46,6 @@ for technology in technologies:
 
     for recipe_name in technology.unlocked_recipes:
         recipe_pool[recipe_name] += 1
+
+    for space_location_name in technology.unlocked_space_locations:
+        space_location_pool[space_location_name] += 1

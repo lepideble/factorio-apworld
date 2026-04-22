@@ -20,6 +20,7 @@ technologies["{{ technology_name }}"].research_trigger = { type = "scripted" }
 if technologies["{{ technology_name }}"].effects then
     technologies["{{ technology_name }}"].effects = remove_effects_by_type(technologies["{{ technology_name }}"].effects, "unlock-quality")
     technologies["{{ technology_name }}"].effects = remove_effects_by_type(technologies["{{ technology_name }}"].effects, "unlock-recipe")
+    technologies["{{ technology_name }}"].effects = remove_effects_by_type(technologies["{{ technology_name }}"].effects, "unlock-space-location")
 end
 {%- endif %}
 {% endfor %}

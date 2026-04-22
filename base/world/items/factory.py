@@ -3,9 +3,9 @@ from BaseClasses import ItemClassification
 from ...data.raw import technologies
 from ...data.utils import upgrades_levels, upgrades_map
 from ..options import FactorioOptions
-from .classes import FactorioItem, FactorioQualityItem, FactorioRecipeItem, FactorioTechnologyItem
+from .classes import FactorioItem, FactorioQualityItem, FactorioRecipeItem, FactorioSpaceLocationItem, FactorioTechnologyItem
 from .classification import is_advancement, is_useful
-from .pool import quality_pool, recipe_pool
+from .pool import quality_pool, recipe_pool, space_location_pool
 
 
 def get_classification(advancement: bool, useful: bool) -> ItemClassification:
@@ -35,9 +35,8 @@ def create_items(options: FactorioOptions, player: int) -> list[FactorioItem]:
         if technology.name in upgrades_map:
             continue
 
-        if options.split_technologies:
-            if len(technology.unlocked_space_locations) == 0 and len(technology.modifiers) == 0:
-                continue
+        if options.split_technologies and len(technology.modifiers) == 0:
+            continue
 
         items.append(FactorioTechnologyItem(
             technology.name,
@@ -82,6 +81,17 @@ def create_items(options: FactorioOptions, player: int) -> list[FactorioItem]:
                     player,
                 ))
 
+        for space_location_name, space_location_count in space_location_pool.items():
+            for index in range(space_location_count):
+                items.append(FactorioSpaceLocationItem(
+                    space_location_name,
+                    get_classification(
+                        is_advancement(f'space location: {space_location_name}', index),
+                        is_useful(f'space location: {space_location_name}', index),
+                    ),
+                    player,
+                ))
+
     assert len(items) == get_item_count(options), 'Unexpected item count'
 
     return items
@@ -94,9 +104,8 @@ def get_item_count(options: FactorioOptions) -> int:
         if technology.name in upgrades_map:
             continue
 
-        if options.split_technologies:
-            if len(technology.unlocked_space_locations) == 0 and len(technology.modifiers) == 0:
-                continue
+        if options.split_technologies and len(technology.modifiers) == 0:
+            continue
 
         count += 1
 
@@ -106,5 +115,6 @@ def get_item_count(options: FactorioOptions) -> int:
     if options.split_technologies:
         count += quality_pool.total()
         count += recipe_pool.total()
+        count += space_location_pool.total()
 
     return count

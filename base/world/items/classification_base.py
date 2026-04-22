@@ -26,9 +26,11 @@ def is_advancement(name: str, index: int = 0, split_technologies: bool | None = 
         return False
     elif name.startswith('recipe: '):
         return index == 0
+    elif name.startswith('space location: '):
+        return index == 0
     else:
         if split_technologies:
-            return len(technologies[name].unlocked_space_locations) > 0
+            return False
         else:
             return _has_advancement_modifier(technologies[name])
 
@@ -52,6 +54,8 @@ def is_useful(name: str, index: int = 0, split_technologies: bool | None = None)
     elif name.startswith('quality: '):
         return True
     elif name.startswith('recipe: '):
+        return True
+    elif name.startswith('space location: '):
         return True
     else:
         return technologies[name].has_modifier

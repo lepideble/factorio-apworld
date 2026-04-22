@@ -98,6 +98,23 @@ local receive_item = function(item_name, source)
         end
     end
 
+    local space_location_name = string_strip_prefix(item_name, "space location: ")
+    if space_location_name then
+        local space_location = prototypes.space_location[space_location_name]
+        if space_location ~= nil then
+            if force.is_space_location_unlocked(space_location) then
+                return false
+            end
+
+            game.print({"", "Received [space-location=" .. space_location.name .. "] from ", source})
+            game.play_sound({path="utility/research_completed"})
+
+            force.unlock_space_location(space_location)
+
+            return true
+        end
+    end
+
     if TRAP_TABLE[item_name] ~= nil then
         game.print({"", "Received ", item_name, " from ", source})
         TRAP_TABLE[item_name]()
