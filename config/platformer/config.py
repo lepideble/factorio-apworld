@@ -46,7 +46,7 @@ progressive_items_with_split_technologies = {
     'progressive oil processing': ['recipe: basic-oil-processing', 'recipe: advanced-oil-processing'],
     'progressive pipe': ['recipe: pipe', 'recipe: pipe-to-ground'],
     'progressive pipe casting': ['recipe: casting-pipe', 'recipe: casting-pipe-to-ground'],
-    'progressive quality': ['quality-module', 'epic-quality', 'legendary-quality'],
+    'progressive quality': ['quality: uncommon', 'quality: rare', 'quality: epic', 'quality: legendary'],
     'progressive rail': ['recipe: rail', 'recipe: rail-ramp', 'recipe: rail-support'],
     'progressive rail automation': ['recipe: train-stop', 'recipe: rail-signal', 'recipe: rail-chain-signal'],
     'progressive splitter': ['recipe: splitter', 'recipe: fast-splitter', 'recipe: express-splitter', 'recipe: turbo-splitter'],

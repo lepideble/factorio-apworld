@@ -3,7 +3,7 @@ import itertools
 from ...config import progressive_items_with_split_technologies, progressive_items_without_split_technologies
 from ...data.raw import technologies
 from ...data.utils import upgrades_map
-from .pool import recipe_pool
+from .pool import quality_pool, recipe_pool
 
 
 # Generate ids
@@ -18,6 +18,9 @@ for technology in technologies:
         item_ids[upgrades_map[technology.name]] = next(ids)
     else:
         item_ids[technology.name] = next(ids)
+
+for quality_name in quality_pool:
+    item_ids[f'quality: {quality_name}'] = next(ids)
 
 for recipe_name in recipe_pool:
     item_ids[f'recipe: {recipe_name}'] = next(ids)

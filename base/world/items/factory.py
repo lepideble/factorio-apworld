@@ -3,9 +3,9 @@ from BaseClasses import ItemClassification
 from ...data.raw import technologies
 from ...data.utils import upgrades_levels, upgrades_map
 from ..options import FactorioOptions
-from .classes import FactorioItem, FactorioRecipeItem, FactorioTechnologyItem
+from .classes import FactorioItem, FactorioQualityItem, FactorioRecipeItem, FactorioTechnologyItem
 from .classification import is_advancement, is_useful
-from .pool import recipe_pool
+from .pool import quality_pool, recipe_pool
 
 
 def get_classification(advancement: bool, useful: bool) -> ItemClassification:
@@ -60,6 +60,17 @@ def create_items(options: FactorioOptions, player: int) -> list[FactorioItem]:
             ))
 
     if options.split_technologies:
+        for quality_name, quality_count in quality_pool.items():
+            for index in range(quality_count):
+                items.append(FactorioQualityItem(
+                    quality_name,
+                    get_classification(
+                        is_advancement(f'quality: {quality_name}', index),
+                        is_useful(f'quality: {quality_name}', index),
+                    ),
+                    player,
+                ))
+
         for recipe_name, recipe_count in recipe_pool.items():
             for index in range(recipe_count):
                 items.append(FactorioRecipeItem(
@@ -93,6 +104,7 @@ def get_item_count(options: FactorioOptions) -> int:
         count += options.upgrades_count[item_name]
 
     if options.split_technologies:
+        count += quality_pool.total()
         count += recipe_pool.total()
 
     return count

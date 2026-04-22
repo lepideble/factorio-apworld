@@ -105,15 +105,17 @@ class Recipe(Base):
 class Technology(Base):
     upgrade: bool = False
     max_level: int | None | typing.Literal['infinite'] = None
+    unlocked_qualities: set[str] = dataclasses.field(default_factory=set)
     unlocked_recipes: set[str] = dataclasses.field(default_factory=set)
     unlocked_space_locations: set[str] = dataclasses.field(default_factory=set)
     modifiers: list[str] = dataclasses.field(default_factory=list)
     unit_count: int | None = None
 
     @property
-    def has_unlock(self):
-        return len(self.unlocked_recipes) > 0 or len(self.unlocked_space_locations) > 0
-
-    @property
     def has_modifier(self):
-        return self.has_unlock or len(self.modifiers) > 0
+        return any((
+            len(self.unlocked_qualities) > 0,
+            len(self.unlocked_recipes) > 0,
+            len(self.unlocked_space_locations) > 0,
+            len(self.modifiers) > 0,
+        ))

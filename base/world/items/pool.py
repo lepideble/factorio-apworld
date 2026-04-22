@@ -31,13 +31,17 @@ for name, levels in upgrades_levels.items():
         upgrades_default_count[name] = len(levels) - 1
 
 
-# Recipe pool
+# Split technologies item pools
+quality_pool = collections.Counter()
 recipe_pool = collections.Counter()
 
 for technology in technologies:
     # Ignore upgrades because it would make things messy
     if technology.name in upgrades_map:
         continue
+
+    for quality_name in technology.unlocked_qualities:
+        quality_pool[quality_name] += 1
 
     for recipe_name in technology.unlocked_recipes:
         recipe_pool[recipe_name] += 1

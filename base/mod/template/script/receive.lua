@@ -62,6 +62,23 @@ local receive_item = function(item_name, source)
         return true
     end
 
+    local quality_name = string_strip_prefix(item_name, "quality: ")
+    if quality_name then
+        local quality = prototypes.quality[quality_name]
+        if quality ~= nil then
+            if force.is_quality_unlocked(quality) then
+                return false
+            end
+
+            game.print({"", "Received [quality=" .. quality.name .. "] from ", source})
+            game.play_sound({path="utility/research_completed"})
+
+            force.unlock_quality(quality)
+
+            return true
+        end
+    end
+
     local recipe_name = string_strip_prefix(item_name, "recipe: ")
     if recipe_name then
         local recipe = force.recipes[recipe_name]

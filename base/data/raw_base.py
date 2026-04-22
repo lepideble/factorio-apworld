@@ -166,15 +166,17 @@ for technology_name, technology_data in get_data('technology'):
     technology = Technology(technology_name)
 
     for effect in technology_data.get('effects', []):
-        match effect["type"]:
-            case "unlock-recipe":
-                technology.unlocked_recipes.add(effect["recipe"])
-            case "mining-with-fluid":
+        match effect['type']:
+            case 'unlock-quality':
+                technology.unlocked_qualities.add(effect['quality'])
+            case 'unlock-recipe':
+                technology.unlocked_recipes.add(effect['recipe'])
+            case 'mining-with-fluid':
                 technology.unlocked_recipes.update(recipes_mining_with_fluid)
             case 'unlock-space-location':
                 technology.unlocked_space_locations.add(effect['space_location'])
             case _:
-                technology.modifiers.append(effect["type"])
+                technology.modifiers.append(effect['type'])
 
     technology.upgrade = technology_data.get('upgrade', False)
     technology.max_level = technology_data.get('max_level')

@@ -11,6 +11,11 @@ class FactorioItem(Item):
         super().__init__(name, classification, item_ids[name], player)
 
 
+class FactorioQualityItem(FactorioItem):
+    def __init__(self, quality_name: str, classification: ItemClassification, player: int):
+        super().__init__(f'quality: {quality_name}', classification, player)
+
+
 class FactorioRecipeItem(FactorioItem):
     def __init__(self, recipe_name: str, classification: ItemClassification, player: int):
         super().__init__(f'recipe: {recipe_name}', classification, player)
