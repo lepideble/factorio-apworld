@@ -132,6 +132,18 @@ class CraftSanity(Range):
     range_end = len(craftsanity_item_pool)
 
 
+class TechTreeObscurity(Toggle):
+    """Hides research technologies based on if you have the recipe for the corresponding science packs.
+    If tech tree information is Full, then this will also hide the hints."""
+    display_name = "Tech Tree Obscurity"
+
+
+class CraftsanityObscurity(Toggle):
+    """Hides craft trigger technologies based on if you have the recipe onlocked.
+    If tech tree information is Full, then this will also hide the hints."""
+    display_name = "CraftSanity Obscurity"
+
+
 class SplitTechnologies(Toggle):
     """Split technologies into individual recipes instead of awarding them as a whole"""
     display_name = "Split technologies"
@@ -299,6 +311,8 @@ class FactorioOptions(PerGameCommonOptions):
     tech_tree_information: TechTreeInformation
     goal: Goal
     craftsanity: CraftSanity
+    tech_tree_obscurity: TechTreeObscurity
+    craftsanity_obscurity: CraftsanityObscurity
     split_technologies: SplitTechnologies
     progressive: Progressive
     upgrades_count: FactorioUpgradesCount

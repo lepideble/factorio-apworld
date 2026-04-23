@@ -167,7 +167,9 @@ class FactorioWorld(World):
 
         if self.options.tech_tree_information.value == self.options.tech_tree_information.option_full:
             for location in self.get_locations():
-                 if not location.is_event:
+                if isinstance(location, FactorioCraftLocation) and not self.options.craftsanity_obscurity
+                    self.options.start_location_hints.value.add(location.name)
+                if isinstance(location, FactorioScienceLocation) and not self.options.tech_tree_obscurity
                     self.options.start_location_hints.value.add(location.name)
 
     def generate_output(self, output_directory: str) -> None:
