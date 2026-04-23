@@ -51,7 +51,6 @@ def get_mod_data(world: FactorioWorld) -> dict:
         'slot_name': world.player_name,
         'slot_player': world.player,
         'starting_items': world.options.starting_items.value,
-        'tech_tree_information': world.options.tech_tree_information.value,
         'technologies': [technology.name for technology in technologies],
         'victory_condition': world.options.goal.get_victory_condition(),
         'world_gen': world.options.world_gen.value,

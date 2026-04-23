@@ -107,7 +107,7 @@ end
 {% for location, item in locations %}
 new_tree_copy = table.deepcopy(template_tech)
 new_tree_copy.name = "{{ location.id }}"
-{%- if tech_tree_information == 2 %}
+{%- if item.name is not none %}
 new_tree_copy.localised_name = {"technology-name.ap-technology-full", "{{ item.player_name }}", "{{ item.name }}", "{{ location.name }}"}
 new_tree_copy.localised_description = {"technology-description.ap-technology-full", "{{ item.name }}", "{{ item.player_name }}", {% if item.advancement %}{"technology-description.ap-technology-item-advancement"}{% elif item.useful %}{"technology-description.ap-technology-item-useful"}{% elif item.trap %}{"technology-description.ap-technology-item-trap"}{% else %}""{% endif %}}
 {%- else  %}
