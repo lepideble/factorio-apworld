@@ -22,6 +22,22 @@ function string_strip_suffix(str, suffix)
     return nil
 end
 
+function create_hook()
+    local hooks = {}
+
+    local register = function (hook)
+        table.insert(hooks, hook)
+    end
+
+    local call = function (...)
+        for _, hook in pairs(hooks) do
+            hook(...)
+        end
+    end
+
+    return register, call
+end
+
 function get_any_stack_size(name)
     local item = prototypes.item[name]
     if item ~= nil then

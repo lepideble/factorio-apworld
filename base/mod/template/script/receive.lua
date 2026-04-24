@@ -1,4 +1,7 @@
-local free_samples = require("script/free_samples").interface
+require("lib")
+
+local register_received_recipe_hook, call_received_recipe_hooks = create_hook()
+local register_received_technology_hook, call_received_technology_hooks = create_hook()
 
 local TRAP_TABLE = {
 ["Attack Trap"] = function ()
@@ -57,7 +60,7 @@ local receive_item = function(item_name, source)
 
         technology.researched = true
 
-        free_samples.send_for_technology(force, technology.name)
+        call_received_technology_hooks(foce, technology.name)
 
         return true
     end
@@ -92,7 +95,7 @@ local receive_item = function(item_name, source)
 
             recipe.enabled = true
 
-            free_samples.send_for_recipe(force, recipe.name)
+            call_received_recipe_hooks(force, recipe.name)
 
             return true
         end
@@ -182,4 +185,8 @@ return {
     add_commands = function()
         commands.add_command("ap-get-technology", "Grant a technology, used by the Archipelago Client.", get_technology_command)
     end,
+    hooks = {
+        received_recipe = register_received_recipe_hook,
+        received_technology = register_received_technology_hook,
+    },
 }

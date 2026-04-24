@@ -60,10 +60,6 @@ local queue_samples = function(force, name, count)
 end
 
 local send_for_recipe = function(force, recipe_name)
-    if FREE_SAMPLES == 0 then
-        return
-    end
-
     local recipe = prototypes.recipe[recipe_name]
 
     for _, result in pairs(recipe.products) do
@@ -86,10 +82,6 @@ local send_for_recipe = function(force, recipe_name)
 end
 
 local send_for_technology = function(force, technology_name)
-    if FREE_SAMPLES == 0 then
-        return
-    end
-
     local technology = prototypes.technology[technology_name]
 
     for _, effect in pairs(technology.effects) do
@@ -146,6 +138,11 @@ local on_init = function ()
     end
 end
 
+if FREE_SAMPLES ~= 0 then
+    require("script/receive").hooks.received_recipe(send_for_recipe)
+    require("script/receive").hooks.received_technology(send_for_technology)
+end
+
 return {
     on_init = on_init,
     events = {
@@ -153,9 +150,5 @@ return {
         [defines.events.on_surface_deleted] = on_surface_deleted,
         [defines.events.on_space_platform_built_entity] = on_space_platform_built_entity,
         [defines.events.on_space_platform_built_tile] = on_space_platform_built_tile,
-    },
-    interface = {
-        send_for_recipe = send_for_recipe,
-        send_for_technology = send_for_technology,
     },
 }
