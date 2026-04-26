@@ -34,7 +34,7 @@ def is_advancement(name: str, index: int = 0, split_technologies: bool | None = 
         return index == 0
     else:
         if split_technologies:
-            return False
+            return 'mining-with-fluid' in technologies[name].modifiers
         else:
             return _has_advancement_modifier(technologies[name])
 

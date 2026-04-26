@@ -19,6 +19,7 @@ jobs:
 
             const CONFIG = {
               platformer: { name: 'Factorio: Platformer', templateName: 'Factorio Platformer.yaml' },
+              scrappy: { name: 'Scrappy Factorio', templateName: 'Scrappy Factorio.yaml' },
             };
 
             const tag = context.ref.slice('refs/tags/'.length);
