@@ -1,23 +1,10 @@
 import re
 
-from .classes import Machine, Recipe, Technology
-from .raw import machines, machines_available_at_start, recipes, recipes_unlocked_at_start, space_locations, technologies
+from .classes import Machine, Recipe, Surface, Table, Technology
+from .raw import machines, machines_for_manual_craft, recipes, recipes_unlocked_at_start, space_locations, technologies
 
 
 # Create lookup tables
-_machines_by_category: dict[str, list[Machine]] = {}
-
-for machine in machines:
-    for category in machine.categories:
-        if not category in _machines_by_category:
-            _machines_by_category[category] = list()
-
-        _machines_by_category[category].append(machine)
-
-def machines_by_category(category: str) -> list[Machine]:
-    return _machines_by_category.get(category, [])
-
-
 _recipes_by_product: dict[str, list[Recipe]] = {}
 
 for recipe in recipes:
@@ -54,6 +41,24 @@ def technologies_by_space_location_unlocked(space_location: str) -> list[Technol
     return _technologies_by_space_location_unlocked.get(space_location, [])
 
 
+# Machines
+manual_crafting_categories = set()
+manual_mining_categories = set()
+for machine_name in machines_for_manual_craft:
+    manual_crafting_categories.update(machines[machine_name].crafting_categories)
+    manual_mining_categories.update(machines[machine_name].mining_categories)
+
+def machines_by(crafting_category: str|None = None, mining_category: str|None = None, can_be_placed_on: Surface|None = None):
+    filtered_machines = machines
+    if craftable_category is not None:
+        filtered_machines = filter(lambda machine: crafting_category in machine.crafting_categories, filtered_machines)
+    if mining_category is not None:
+        filtered_machines = filter(lambda machine: mining_category in machine.mining_categories, filtered_machines)
+    if can_be_placed_on is not None:
+        filtered_machines = filter(lambda machine: machine.can_be_placed_on(can_be_placed_on), filtered_machines)
+    return filtered_machines
+
+
 # Compute what is realy available
 unlockable_recipes = set()
 
@@ -62,12 +67,12 @@ for recipe in recipes:
         unlockable_recipes.add(recipe.name)
 
 
-def _get_craftable(recipes: list[Recipe]) -> tuple[set[str], set[str]]:
+def _get_craftable(recipes: list[Recipe]) -> tuple[set[str], Table]:
     craftable_items: set[str] = set()
-    craftable_recipes: set[str] = set()
+    craftable_recipes: Table = Table()
     craftable_categories: set[str] = set()
 
-    for machine_name in machines_available_at_start:
+    for machine_name in machines_for_manual_craft:
         craftable_categories.update(machines[machine_name].categories)
 
     loop = True
