@@ -3,6 +3,8 @@ game_name = 'Scrappy Factorio'
 
 # Mod dependencies
 dependencies = [
+    'elevated-rails',
+    'quality',
     'scrap-industry',
     'scrap-chemistry',
 ]
