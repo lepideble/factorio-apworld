@@ -41,9 +41,10 @@ progressive_items_with_split_technologies = {
     # 'progressive oil processing': ['recipe: basic-oil-processing', 'recipe: advanced-oil-processing'],
     # 'progressive pipe': ['recipe: pipe', 'recipe: pipe-to-ground'],
     # 'progressive pipe casting': ['recipe: casting-pipe', 'recipe: casting-pipe-to-ground'],
-    # 'progressive quality': ['quality: uncommon', 'quality: rare', 'quality: epic', 'quality: legendary'],
+    'progressive quality': ['quality: uncommon', 'quality: rare', 'quality: epic', 'quality: legendary'],
     # 'progressive rail': ['recipe: rail', 'recipe: rail-ramp', 'recipe: rail-support'],
     # 'progressive rail automation': ['recipe: train-stop', 'recipe: rail-signal', 'recipe: rail-chain-signal'],
+    'progressive science-pack': ['recipe: automation-science-pack', 'recipe: logistic-science-pack', 'recipe: chemical-science-pack', 'recipe: military-science-pack', 'recipe: production-science-pack', 'recipe: utility-science-pack', 'recipe: satellite'],
     # 'progressive splitter': ['recipe: splitter', 'recipe: fast-splitter', 'recipe: express-splitter', 'recipe: turbo-splitter'],
     # 'progressive train': ['recipe: locomotive', 'recipe: cargo-wagon', 'recipe: fluid-wagon'],
     # 'progressive transport belt': ['recipe: fast-transport-belt', 'recipe: express-transport-belt', 'recipe: turbo-transport-belt'],
@@ -52,11 +53,11 @@ progressive_items_with_split_technologies = {
     # # Bacteria
     # 'progressive copper bacteria': ['recipe: copper-bacteria', 'recipe: copper-bacteria-cultivation'],
     # 'progressive iron bacteria': ['recipe: iron-bacteria', 'recipe: iron-bacteria-cultivation'],
-    # # Modules
-    # 'progressive efficiency module': ['recipe: efficiency-module', 'recipe: efficiency-module-2', 'recipe: efficiency-module-3'],
-    # 'progressive productivity module': ['recipe: productivity-module', 'recipe: productivity-module-2', 'recipe: productivity-module-3'],
-    # 'progressive quality module': ['recipe: quality-module', 'recipe: quality-module-2', 'recipe: quality-module-3'],
-    # 'progressive speed module': ['recipe: speed-module', 'recipe: speed-module-2', 'recipe: speed-module-3'],
+    # Modules
+    'progressive efficiency module': ['recipe: efficiency-module', 'recipe: efficiency-module-2', 'recipe: efficiency-module-3'],
+    'progressive productivity module': ['recipe: productivity-module', 'recipe: productivity-module-2', 'recipe: productivity-module-3'],
+    'progressive quality module': ['recipe: quality-module', 'recipe: quality-module-2', 'recipe: quality-module-3'],
+    'progressive speed module': ['recipe: speed-module', 'recipe: speed-module-2', 'recipe: speed-module-3'],
     # # Propellants
     # 'progressive thruster fuel': ['recipe: thruster-fuel', 'recipe: advanced-thruster-fuel'],
     # 'progressive thruster oxidizer': ['recipe: thruster-oxidizer', 'recipe: advanced-thruster-oxidizer'],
@@ -72,11 +73,11 @@ progressive_items_without_split_technologies = {
     # 'progressive railway': ['railway', 'elevated-rail', 'rail-support-foundations'],
     # 'progressive quality': ['epic-quality', 'legendary-quality'],
     # 'progressive wall': ['stone-wall', 'gate'],
-    # # Modules
-    # 'progressive efficiency module': ['efficiency-module', 'efficiency-module-2', 'efficiency-module-3'],
-    # 'progressive productivity module': ['productivity-module', 'productivity-module-2', 'productivity-module-3'],
-    # 'progressive quality module': ['quality-module', 'quality-module-2', 'quality-module-3'],
-    # 'progressive speed module': ['speed-module', 'speed-module-2', 'speed-module-3'],
+    # Modules
+    'progressive efficiency module': ['efficiency-module', 'efficiency-module-2', 'efficiency-module-3'],
+    'progressive productivity module': ['productivity-module', 'productivity-module-2', 'productivity-module-3'],
+    'progressive quality module': ['quality-module', 'quality-module-2', 'quality-module-3'],
+    'progressive speed module': ['speed-module', 'speed-module-2', 'speed-module-3'],
 }
 
 # Item that should be included in craftsanity
