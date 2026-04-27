@@ -117,8 +117,10 @@ class FactorioWorld(World):
         match (self.options.goal.get_victory_condition()):
             case {'type': 'reach-space-location', 'space_location': space_location}:
                 self.set_completion_rule(Has(f'Reach {space_location} with space-platform'))
+            case {'type': 'launch-rocket'}:
+                self.set_completion_rule(Has(f'Automate rocket-part on nauvis'))
             case _:
-                raise Error('Invalid victory condition')
+                raise Exception('Invalid victory condition')
 
     def create_item(self, name: str) -> FactorioItem:
         from .items.factory import create_item

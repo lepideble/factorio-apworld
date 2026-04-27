@@ -12,30 +12,28 @@ end
 
 {% if victory_condition.type == 'launch-rocket' %}
 local on_rocket_launched = function(event)
-    if event.rocket and event.rocket.valid and storage.forcedata[event.rocket.force.name]['victory'] == 0 then
-        satellite_count = 0
-        cargo_pod = event.rocket.cargo_pod
-        if cargo_pod then
-            satellite_count = cargo_pod.get_item_count("satellite")
-        end
-        if satellite_count > 0 or GOAL == 0 then
-            storage.forcedata[event.rocket.force.name]['victory'] = 1
-            dumpInfo(event.rocket.force)
-            game.set_game_state
-            {
-                game_finished = true,
-                player_won = true,
-                can_continue = true,
-                victorious_force = event.rocket.force
-            }
-        end
-    end
+    local rocket = event.rocket
+    if not (rocket and rocket.valid) then return end
+
+    if storage.forcedata[rocket.force.name]['victory'] == 1 then return end
+
+    storage.forcedata[rocket.force.name]['victory'] = 1
+    dumpInfo(rocket.force)
+    game.set_game_state
+    {
+        game_finished = true,
+        player_won = true,
+        can_continue = true,
+        victorious_force = rocket.force
+    }
 end
 {% endif %}
 {% if victory_condition.type == 'reach-space-location' %}
 local on_space_platform_changed_state = function(event)
     local platform = event.platform
     if not (platform and platform.valid) then return end
+
+    if storage.forcedata[platform.force.name]['victory'] == 1 then return end
 
     local last_visited_location = platform.last_visited_space_location
     if not last_visited_location then return end
