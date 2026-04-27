@@ -6,12 +6,12 @@ from worlds.AutoWorld import World
 
 from ..config import game_name, progressive_items_with_split_technologies, progressive_items_without_split_technologies, items_required_for_automation, items_required_for_research
 from ..data.raw import science_packs, space_locations, surfaces, surfaces_accessible_at_start, technologies
-from ..data.utils import craftable_recipes
 from .items.classes import FactorioItem
 from .items.ids import item_ids
 from .locations.classes import FactorioCraftLocation, FactorioScienceLocation
 from .locations.ids import location_ids
 from .options import FactorioOptions
+from .production.event import collect_production_event, create_production_event, FactorioProductionEventItem, remove_production_event
 
 class FactorioWorld(World):
     game = game_name
@@ -43,6 +43,8 @@ class FactorioWorld(World):
     def create_regions(self) -> None:
         from .items.factory import get_item_count
         from .locations.factory import get_locations
+        from .production.crafting import get_crafting_events
+        from .production.mining import get_mining_events
 
         # Menu region holds all locations that are not tied to a specific surface
         menu_region = Region('Menu', self.player, self.multiworld)
@@ -56,22 +58,22 @@ class FactorioWorld(World):
             if surface.name in surfaces_accessible_at_start:
                 menu_region.connect(region)
 
-            for recipe_name in craftable_recipes:
-                region.add_event(f'Automate {recipe_name} on {surface.name}', show_in_spoiler=False)
-                region.add_event(f'Craft {recipe_name} on {surface.name}', show_in_spoiler=False)
+            self.multiworld.regions.append(region)
+
+            create_production_event(self, surface, get_crafting_events(surface))
+            create_production_event(self, surface, get_mining_events(surface))
 
             if surface.is_space_platform:
                 for space_location in space_locations:
                     if not space_location.accessible_at_start:
                         region.add_event(f'Reach {space_location.name} with {surface.name}', show_in_spoiler=False)
 
-            self.multiworld.regions.append(region)
-
-        for location in get_locations(self.options, self.random, get_item_count(self.options)):
+        for (location, rule) in get_locations(self.options, self.random, get_item_count(self.options)):
             location.player = self.player
             location.parent_region = menu_region
 
             menu_region.locations.append(location)
+            self.set_rule(location, rule)
 
     def create_items(self) -> None:
         from .items.factory import create_items
@@ -108,12 +110,9 @@ class FactorioWorld(World):
                 self.multiworld.itempool.append(item)
 
     def set_rules(self) -> None:
-        from .rules.factory import get_events_rules, get_locations_rules
+        from .rules.factory import get_events_rules
 
         for location_name, rule in get_events_rules().items():
-            self.set_rule(self.get_location(location_name), rule)
-
-        for location_name, rule in get_locations_rules(self.get_locations()).items():
             self.set_rule(self.get_location(location_name), rule)
 
         match (self.options.goal.get_victory_condition()):
@@ -143,6 +142,9 @@ class FactorioWorld(World):
         return self.random.choice(filler_item_pool)
 
     def collect(self, state: CollectionState, item: Item) -> bool:
+        if isinstance(item, FactorioProductionEventItem):
+            return collect_production_event(state, item)
+
         if super().collect(state, item):
             if item.name in self.progressive_items:
                 current_count = state.prog_items[self.player][item.name]
@@ -154,6 +156,9 @@ class FactorioWorld(World):
         return False
 
     def remove(self, state: CollectionState, item: Item) -> bool:
+        if isinstance(item, FactorioProductionEventItem):
+            return remove_production_event(state, item)
+
         if super().remove(state, item):
             if item.name in self.progressive_items:
                 current_count = state.prog_items[self.player][item.name]

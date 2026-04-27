@@ -1,36 +1,57 @@
 from random import Random
 
-from BaseClasses import Location, Region
+from rule_builder.rules import Rule
 
 from ...config import items_required_for_automation, items_required_for_research
-from ...data.raw import science_packs
+from ...data.raw import science_packs, surfaces
 from ...data.utils import craftable_items_at_start
 from ..options import FactorioOptions
+from ..rules import All, Any, HasItem
 from .classes import FactorioCraftLocation, FactorioLocation, FactorioScienceLocation
 from .pool import craftsanity_item_pool, science_location_pools
 
 
-def get_locations(options: FactorioOptions, random: Random, locations_to_create: int) -> list[FactorioLocation]:
+def get_crafsanity_location(item_name: str) -> tuple[FactorioCraftLocation, Rule]:
+    return (
+        FactorioCraftLocation(0, item_name),
+        Any([HasItem(surface, item_name) for surface in surfaces]),
+    )
+
+
+def get_science_location(science_location_name: str, early: bool = False) -> tuple[FactorioScienceLocation, Rule]:
+    return (
+        FactorioScienceLocation(0, science_location_name),
+        Any([
+            All([
+                HasItem(surface, science_pack, not early),
+                for science_pack in location.ingredients
+            ])
+            for surface in surfaces
+        ]),
+    )
+
+
+def get_locations(options: FactorioOptions, random: Random, location_count: int) -> list[tuple[FactorioLocation, Rule]]:
     early_craftsanity_count = len(items_required_for_research(options))
     early_science_location_count = len(items_required_for_automation(options))
-    craftsanity_count = min(options.craftsanity.value - early_craftsanity_count, locations_to_create - early_craftsanity_count - early_science_location_count)
-    science_location_count = locations_to_create - early_craftsanity_count - early_science_location_count - craftsanity_count
+    craftsanity_count = min(options.craftsanity.value - early_craftsanity_count, location_count - early_craftsanity_count - early_science_location_count)
+    science_location_count = location_count - early_craftsanity_count - early_science_location_count - craftsanity_count
 
     # Ensure enough early craftsanity location exists
     early_craftsanity_items = random.sample([item_name for item_name in craftsanity_item_pool if item_name in craftable_items_at_start], early_craftsanity_count)
 
-    craftsanity_locations = [FactorioCraftLocation(0, item_name) for item_name in early_craftsanity_items]
+    craftsanity_locations = [get_crafsanity_location(item_name) for item_name in early_craftsanity_items]
 
     # Create remaining craftsanity locations
     craftsanity_items = random.sample([item_name for item_name in craftsanity_item_pool if item_name not in early_craftsanity_items], craftsanity_count)
 
     for item_name in craftsanity_items:
-        craftsanity_locations.append(FactorioCraftLocation(0, item_name))
+        craftsanity_locations.append(get_crafsanity_location(item_name))
 
     # Ensure enough early science locations exists
     early_science_locations_names = random.sample(science_location_pools[science_packs[0]], early_science_location_count)
 
-    science_locations = [FactorioScienceLocation(0, science_location_name) for science_location_name in early_science_locations_names]
+    science_locations = [get_science_location(science_location_name, True) for science_location_name in early_science_locations_names]
 
     # Create remaining science locations
     science_location_pool = []
@@ -41,7 +62,7 @@ def get_locations(options: FactorioOptions, random: Random, locations_to_create:
                 science_location_pool.append(science_location_name)
 
     for science_location_name in random.sample(science_location_pool, science_location_count):
-        science_locations.append(FactorioScienceLocation(0, science_location_name))
+        science_locations.append(get_science_location(science_location_name))
 
     # Attribute ingredients to science locations
     for science_location in science_locations:

@@ -1,13 +1,51 @@
 import importlib.resources
 import json
 
-from .classes import Machine, Recipe, SpaceLocation, Surface, SurfaceCondition, Table, Technology
+from .classes import GatherableResource, Machine, MinableResource, PumpableResource, Recipe, SpaceLocation, Surface, SurfaceCondition, Table, Technology
 
+
+# Base data
+sub_types = {
+    'entity': ['fish', 'resource', 'simple-entity'],
+    'item': ['item', 'ammo', 'capsule', 'gun', 'item-with-entity-data', 'item-with-label', 'item-with-inventory', 'blueprint-book', 'item-with-tags', 'selection-tool', 'blueprint', 'copy-paste-tool', 'deconstruction-item', 'spidertron-remote', 'upgrade-item', 'module', 'rail-planner', 'space-platform-starter-pack', 'tool', 'armor', 'repair-tool'],
+    'tile': ['tile'],
+}
 
 data = json.loads(importlib.resources.files(__name__).parent.joinpath('data.json').read_text())
 
 def get_data(type: str):
     return ((k, v) for k, v in data.get(type, {}).items() if not v.get('hidden', False) and not v.get('parameter', False))
+
+def get_prototype(type: str, name: str):
+    for sub_type in sub_types[type]:
+        prototype_data = data.get(sub_type, {}).get(name)
+        if prototype_data is not None:
+            return prototype_data
+    return None
+
+
+# Utility parsing functions
+def parse_product_protoype_array(product_prototypes: list) -> dict[str, int|float]:
+    result = {}
+
+    for product_prototype in product_prototypes:
+        if 'amount' in product_prototype:
+            amount = product_prototype['amount']
+        else:
+            amount = (product_prototype['amount_min'] + product_prototype['amount_max']) / 2
+
+        if 'probability' in product_prototype:
+            amount *= product_prototype['probability']
+
+        if 'extra_count_fraction' in product_prototype:
+            amount += product_prototype['extra_count_fraction']
+
+        result[product_prototype['name']] = amount
+
+    return result
+
+def parse_surface_condition_array(surface_conditions: list) -> list[SurfaceCondition]:
+    return [SurfaceCondition(surface_condition['property'], surface_condition.get('min'), surface_condition.get('max')) for surface_condition in surface_conditions]
 
 
 # Surfaces
@@ -18,7 +56,34 @@ for surface_name, surface_data in get_data('surface'):
     surfaces.add(Surface(surface_name, surface_data['surface_properties']))
 
 for planet_name, planet_data in get_data('planet'):
-    surfaces.add(Surface(planet_name, planet_data['surface_properties']))
+    resources = []
+
+    for tile_name in planet_data['map_gen_settings']['autoplace_settings']['tile']['settings'].keys():
+        tile_data = get_prototype('tile', tile_name)
+        tile_fluid = tile_data.get('fluid')
+
+        if tile_fluid is not None:
+            resources.append(PumpableResource(tile_name, tile_fluid))
+
+    for entity_name in planet_data['map_gen_settings']['autoplace_settings']['entity']['settings'].keys():
+        entity_data = get_prototype('entity', entity_name)
+
+        if 'minable' not in entity_data:
+            continue
+
+        minable_data = entity_data['minable']
+
+        if 'results' in minable_data:
+            results = parse_product_protoype_array(minable_data['results'])
+        else:
+            results = {minable_data['result']: minable_data.get('count', 1)}
+
+        if entity_data['type'] == 'resource':
+            resources.append(MinableResource(entity_name, entity_data.get('category', 'basic-solid'), results, minable_data.get('required_fluid')))
+        else:
+            resources.append(GatherableResource(entity_name, results))
+
+    surfaces.add(Surface(planet_name, planet_data['surface_properties'], resources))
 
 
 # Space locations
@@ -58,9 +123,15 @@ for space_location_name, space_location_data in [*get_data('space-location'), *g
         else:
             asteroid_chunks.update(_recursive_asteroid_to_chunks(asteroid_spawn_definition['asteroid']))
 
+    asteroid_chunks_results = set()
+    for asteroid_chunk in asteroid_chunks:
+        asteroid_chunk_data = get_prototype('asteroid-chunk', asteroid_chunk)
+        if 'minable' in asteroid_chunk_data:
+            asteroid_chunks_results.add(asteroid_chunk_data['minable']['result'])
+
     space_locations.add(SpaceLocation(
         name=space_location_name,
-        asteroid_chunks=asteroid_chunks,
+        asteroid_chunks=asteroid_chunks_results,
         unlocked_at_start=space_location_name == 'nauvis',
         accessible_at_start=space_location_name == 'nauvis',
     ))
@@ -73,81 +144,69 @@ for space_connection_name, space_connection_data in get_data('space-connection')
 # Machines
 machines = Table()
 
-for machine_name, machine_data in get_data("assembling-machine"):
+for machine_name, machine_data in get_data('assembling-machine'):
     machines.add(Machine(
         machine_name,
-        set(machine_data["crafting_categories"]),
-        [SurfaceCondition.from_data(surface_condition) for surface_condition in machine_data.get('surface_conditions', [])],
+        set(machine_data['crafting_categories']),
+        set(),
+        parse_surface_condition_array(machine_data.get('surface_conditions', [])),
     ))
 
-for machine_name, machine_data in get_data("asteroid-collector"):
+for machine_name, machine_data in get_data('character'):
     machines.add(Machine(
         machine_name,
-        {'asteroid-chunk'},
-        [SurfaceCondition.from_data(surface_condition) for surface_condition in machine_data.get('surface_conditions', [])],
+        set(machine_data['crafting_categories']),
+        set(machine_data['mining_categories']),
     ))
 
-for machine_name, machine_data in get_data("character"):
-    machines.add(Machine(machine_name, set(machine_data["crafting_categories"])))
+for machine_name, machine_data in get_data('mining-drill'):
+    machines.add(Machine(
+        machine_name,
+        set(),
+        set(machine_data['resource_categories'],
+        parse_surface_condition_array(machine_data.get('surface_conditions', [])),
+    )))
 
-for machine_name, machine_data in get_data("mining-drill"):
-    machines.add(Machine(machine_name, set(machine_data["resource_categories"])))
+for machine_name, machine_data in get_data('furnace'):
+    machines.add(Machine(
+        machine_name,
+        set(machine_data['crafting_categories'],
+        set(),
+        parse_surface_condition_array(machine_data.get('surface_conditions', [])),
+    )))
 
-for machine_name, machine_data in get_data("furnace"):
-    machines.add(Machine(machine_name, set(machine_data["crafting_categories"])))
+for machine_name, machine_data in get_data('rocket-silo'):
+    machines.add(Machine(
+        machine_name,
+        set(machine_data['crafting_categories'],
+        set(),
+        parse_surface_condition_array(machine_data.get('surface_conditions', [])),
+    )))
 
-for machine_name, machine_data in get_data("rocket-silo"):
-    machines.add(Machine(machine_name, set(machine_data["crafting_categories"])))
+machines_for_manual_craft = {'character'}
 
-machines_available_at_start = {'character'}
+
+# Special "machines"
+offshore_pumps = set((name for name, _ in get_data('offshore-pump')))
+asteroid_collectors = set((name for name, _ in get_data('asteroid-collector')))
 
 
 # Recipes
 recipes = Table()
 recipes_unlocked_at_start: dict[str] = set()
-recipes_mining_with_fluid: dict[str] = set()
-
-for asteroid_chunk_name, asteroid_chunk_data in get_data('asteroid-chunk'):
-    if not 'minable' in asteroid_chunk_data:
-        continue
-
-    recipes.add(Recipe(asteroid_chunk_name, 'asteroid-chunk', {}, {asteroid_chunk_data['minable']['result']: 1}, 0))
-    recipes_unlocked_at_start.add(asteroid_chunk_name)
 
 for recipe_name, recipe_data in get_data('recipe'):
     recipe = Recipe(
         recipe_name,
         recipe_data.get("category", "crafting"),
         {ingredient["name"]: ingredient["amount"] for ingredient in recipe_data.get("ingredients", [])},
-        {result["name"]: (result["amount"] if "amount" in result else (result["amount_min"] + result["amount_max"]) / 2) * result.get('probability', 1) + result.get('extra_count_fraction', 0) for result in recipe_data.get("results", [])},
+        parse_product_protoype_array(recipe_data.get("results", [])),
         recipe_data.get("energy_required", 0.5)
     )
 
     recipes.add(recipe)
     if recipe_data.get("enabled", True):
         recipes_unlocked_at_start.add(recipe.name)
-
-for resource_name, resource_data in get_data("resource"):
-    if "result" in resource_data["minable"]:
-        products = {resource_data["minable"]["result"]: 1}
-    elif "results" in resource_data["minable"]:
-        products = {result_data["name"]: 1 for result_data in resource_data["minable"]["results"]}
-    else:
-        continue
-
-    recipe = Recipe(
-        f"mining-{resource_name}",
-        resource_data.get("category", "basic-solid"),
-        {resource_data["minable"]["required_fluid"]: resource_data["minable"]["fluid_amount"]} if "required_fluid" in resource_data["minable"] else {},
-        products,
-        resource_data["minable"]["mining_time"]
-    )
-
-    recipes.add(recipe)
-    recipes_unlocked_at_start.add(recipe.name)
-
-    if "required_fluid" in resource_data["minable"]:
-        recipes_mining_with_fluid.add(recipe.name)
 
 
 # Science packs
@@ -171,8 +230,6 @@ for technology_name, technology_data in get_data('technology'):
                 technology.unlocked_qualities.add(effect['quality'])
             case 'unlock-recipe':
                 technology.unlocked_recipes.add(effect['recipe'])
-            case 'mining-with-fluid':
-                technology.unlocked_recipes.update(recipes_mining_with_fluid)
             case 'unlock-space-location':
                 technology.unlocked_space_locations.add(effect['space_location'])
             case _:
@@ -189,36 +246,8 @@ for technology_name, technology_data in get_data('technology'):
 
 
 # Items
-_item_types = [
-    'item',
-    'ammo',
-    'capsule',
-    'gun',
-    'item-with-entity-data',
-    'item-with-label',
-    'item-with-inventory',
-    'blueprint-book',
-    'item-with-tags',
-    'selection-tool',
-    'blueprint',
-    'copy-paste-tool',
-    'deconstruction-item',
-    'spidertron-remote',
-    'upgrade-item',
-    'module',
-    'rail-planner',
-    'space-platform-starter-pack',
-    'tool',
-    'armor',
-    'repair-tool',
-]
-
 items = set()
 
-for item_type in _item_types:
+for item_type in sub_types['item']:
     for item_name, item_data in get_data(item_type):
         items.add(item_name)
-
-
-# Cleanup
-del recipes_mining_with_fluid
