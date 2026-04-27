@@ -88,7 +88,8 @@ for machine_name, machine_data in get_data("asteroid-collector"):
     ))
 
 for machine_name, machine_data in get_data("character"):
-    machines.add(Machine(machine_name, set(machine_data["crafting_categories"])))
+    # Character can mine basic solid... but not uranium, this is broken and mining should not be implemented as fake recipes
+    machines.add(Machine(machine_name, set(machine_data["crafting_categories"]) | {'basic-solid'}))
 
 for machine_name, machine_data in get_data("mining-drill"):
     machines.add(Machine(machine_name, set(machine_data["resource_categories"])))
