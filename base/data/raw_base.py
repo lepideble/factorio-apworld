@@ -150,6 +150,9 @@ for resource_name, resource_data in get_data("resource"):
     if "required_fluid" in resource_data["minable"]:
         recipes_mining_with_fluid.add(recipe.name)
 
+recipes.add(Recipe('pumping-water', 'basic-solid', {}, {'water': 1}, 1)) # Fake water pumping recipe, this is starting to be silly
+recipes_unlocked_at_start.add('pumping-water')
+
 
 # Science packs
 # this is a list because keeping the order in which they are defined is important
