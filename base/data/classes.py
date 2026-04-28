@@ -39,7 +39,7 @@ class Table:
 
 @dataclasses.dataclass
 class Resource:
-    pass
+    name: str
 
 
 @dataclasses.dataclass
@@ -101,7 +101,8 @@ class SurfaceCondition:
 
 @dataclasses.dataclass
 class Machine(Base):
-    categories: set[str]
+    crafting_categories: set[str]
+    mining_categories: set[str]
     surface_conditions: list[SurfaceCondition] = dataclasses.field(default_factory=list)
 
     def can_be_placed_on(self, surface: Surface) -> bool:

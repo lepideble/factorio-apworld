@@ -11,6 +11,7 @@ from .items.classes import FactorioItem
 from .items.ids import item_ids
 from .locations import FactorioCraftLocation, FactorioScienceLocation, get_locations, location_ids
 from .options import FactorioOptions
+from .production.event import collect_production_event, create_production_event, FactorioProductionEventItem, remove_production_event
 
 class FactorioWorld(World):
     game = game_name
@@ -41,6 +42,8 @@ class FactorioWorld(World):
 
     def create_regions(self) -> None:
         from .items.factory import get_item_count
+        from .production.crafting import get_crafting_events
+        from .production.mining import get_mining_events
 
         # Menu region holds all locations that are not tied to a specific surface
         menu_region = Region('Menu', self.player, self.multiworld)
@@ -54,16 +57,15 @@ class FactorioWorld(World):
             if surface.name in surfaces_accessible_at_start:
                 menu_region.connect(region)
 
-            for recipe_name in craftable_recipes:
-                region.add_event(f'Automate {recipe_name} on {surface.name}', show_in_spoiler=False)
-                region.add_event(f'Craft {recipe_name} on {surface.name}', show_in_spoiler=False)
+            self.multiworld.regions.append(region)
+
+            create_production_event(self, surface, get_crafting_events(surface))
+            create_production_event(self, surface, get_mining_events(surface))
 
             if surface.is_space_platform:
                 for space_location in space_locations:
                     if not space_location.accessible_at_start:
                         region.add_event(f'Reach {space_location.name} with {surface.name}', show_in_spoiler=False)
-
-            self.multiworld.regions.append(region)
 
         for location in get_locations(self.options, self.random, get_item_count(self.options)):
             location.player = self.player
@@ -141,6 +143,9 @@ class FactorioWorld(World):
         return self.random.choice(filler_item_pool)
 
     def collect(self, state: CollectionState, item: Item) -> bool:
+        if isinstance(item, FactorioProductionEventItem):
+            return collect_production_event(state, item)
+
         if super().collect(state, item):
             if item.name in self.progressive_items:
                 current_count = state.prog_items[self.player][item.name]
@@ -152,6 +157,9 @@ class FactorioWorld(World):
         return False
 
     def remove(self, state: CollectionState, item: Item) -> bool:
+        if isinstance(item, FactorioProductionEventItem):
+            return remove_production_event(state, item)
+
         if super().remove(state, item):
             if item.name in self.progressive_items:
                 current_count = state.prog_items[self.player][item.name]

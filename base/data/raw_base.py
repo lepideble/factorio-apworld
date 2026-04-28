@@ -63,7 +63,7 @@ for planet_name, planet_data in get_data('planet'):
         tile_fluid = tile_data.get('fluid')
 
         if tile_fluid is not None:
-            resources.append(PumpableResource(tile_fluid))
+            resources.append(PumpableResource(tile_name, tile_fluid))
 
     for entity_name in planet_data['map_gen_settings']['autoplace_settings']['entity']['settings'].keys():
         entity_data = get_data_by_name('entity', entity_name)
@@ -79,9 +79,9 @@ for planet_name, planet_data in get_data('planet'):
             results = {minable_data['result']: minable_data.get('count', 1)}
 
         if entity_data['type'] == 'resource':
-            resources.append(MinableResource(entity_data.get('category', 'basic-solid'), results, minable_data.get('required_fluid')))
+            resources.append(MinableResource(entity_name, entity_data.get('category', 'basic-solid'), results, minable_data.get('required_fluid')))
         else:
-            resources.append(GatherableResource(results))
+            resources.append(GatherableResource(entity_name, results))
 
     surfaces.add(Surface(planet_name, planet_data['surface_properties'], resources))
 
@@ -138,34 +138,51 @@ for space_connection_name, space_connection_data in get_data('space-connection')
 # Machines
 machines = Table()
 
-for machine_name, machine_data in get_data("assembling-machine"):
+for machine_name, machine_data in get_data('assembling-machine'):
     machines.add(Machine(
         machine_name,
-        set(machine_data["crafting_categories"]),
+        set(machine_data['crafting_categories']),
+        set(),
         parse_surface_condition_array(machine_data.get('surface_conditions', [])),
     ))
 
-for machine_name, machine_data in get_data("asteroid-collector"):
+for machine_name, machine_data in get_data('character'):
     machines.add(Machine(
         machine_name,
-        {'asteroid-chunk'},
-        parse_surface_condition_array(machine_data.get('surface_conditions', [])),
+        set(machine_data['crafting_categories']),
+        set(machine_data['mining_categories']),
     ))
 
-for machine_name, machine_data in get_data("character"):
-    # Character can mine basic solid... but not uranium, this is broken and mining should not be implemented as fake recipes
-    machines.add(Machine(machine_name, set(machine_data["crafting_categories"]) | {'basic-solid'}))
+for machine_name, machine_data in get_data('mining-drill'):
+    machines.add(Machine(
+        machine_name,
+        set(),
+        set(machine_data['resource_categories'],
+        parse_surface_condition_array(machine_data.get('surface_conditions', [])),
+    )))
 
-for machine_name, machine_data in get_data("mining-drill"):
-    machines.add(Machine(machine_name, set(machine_data["resource_categories"])))
+for machine_name, machine_data in get_data('furnace'):
+    machines.add(Machine(
+        machine_name,
+        set(machine_data['crafting_categories'],
+        set(),
+        parse_surface_condition_array(machine_data.get('surface_conditions', [])),
+    )))
 
-for machine_name, machine_data in get_data("furnace"):
-    machines.add(Machine(machine_name, set(machine_data["crafting_categories"])))
-
-for machine_name, machine_data in get_data("rocket-silo"):
-    machines.add(Machine(machine_name, set(machine_data["crafting_categories"])))
+for machine_name, machine_data in get_data('rocket-silo'):
+    machines.add(Machine(
+        machine_name,
+        set(machine_data['crafting_categories'],
+        set(),
+        parse_surface_condition_array(machine_data.get('surface_conditions', [])),
+    )))
 
 machines_available_at_start = {'character'}
+
+
+# Special "machines"
+offshore_pumps = set((name for name, _ in get_data('offshore-pump')))
+asteroid_collectors = set((name for name, _ in get_data('asteroid-collector')))
 
 
 # Recipes
