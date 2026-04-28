@@ -4,7 +4,7 @@ from rule_builder.rules import Rule
 
 from ...data.raw import recipes, space_locations, surfaces
 from ...data.utils import craftable_recipes, machines_by_category
-from ..locations import FactorioLocation, FactorioCraftLocation, FactorioScienceLocation
+from ..locations.classes import FactorioLocation, FactorioCraftLocation, FactorioScienceLocation
 from .classes import All, Any, CanAutomate, CanCraft, HasMachine, ReachedSpaceLocation, UnlockedRecipe, UnlockedSpaceLocation
 
 

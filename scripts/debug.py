@@ -61,14 +61,14 @@ def create_options(options_dict):
 
     return FactorioOptions(**options)
 
-def create_world():
+def create_world(options_dict):
     from BaseClasses import MultiWorld
     from factorio_platformer.world import FactorioWorld
 
     multiworld = MultiWorld(1)
     world = FactorioWorld(multiworld, 1)
     multiworld.worlds[1] = world
-    world.options = create_options()
+    world.options = create_options(options_dict)
 
     world.create_regions()
     world.create_items()
@@ -125,7 +125,7 @@ def main(what, options):
     if what == 'items':
         print_items(options_dict)
     if what == 'locations':
-        print_locations()
+        print_locations(options_dict)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('what')

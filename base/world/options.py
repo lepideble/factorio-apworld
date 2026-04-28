@@ -7,7 +7,7 @@ from Options import Choice, DefaultOnToggle, OptionCounter, OptionDict, OptionSe
 from ..config import craftsanity_filter, items_required_for_research, victory_conditions
 from ..data.raw import items, science_packs
 from .items.pool import upgrades_default_count, upgrades_min_count, upgrades_max_count
-from .locations import craftsanity_item_pool
+from .locations.pool import craftsanity_item_pool
 
 
 # schema helpers
