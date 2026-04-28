@@ -1,7 +1,5 @@
 from random import Random
 
-from BaseClasses import Location, Region
-
 from ...config import items_required_for_automation, items_required_for_research
 from ...data.raw import science_packs
 from ...data.utils import craftable_items_at_start
