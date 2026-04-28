@@ -1,11 +1,14 @@
 from random import Random
+from collections import Iterable
 
 from BaseClasses import Location, Region
+from rule_builder.rules import Rule
 
 from ...config import items_required_for_automation, items_required_for_research
 from ...data.raw import science_packs
 from ...data.utils import craftable_items_at_start
 from ..options import FactorioOptions
+from ..rules import All, Any, HasItem
 from .classes import FactorioCraftLocation, FactorioLocation, FactorioScienceLocation
 from .pool import craftsanity_item_pool, science_location_pools
 
@@ -78,3 +81,23 @@ def get_locations(options: FactorioOptions, random: Random, locations_to_create:
     science_locations.sort(key=lambda location: (location.complexity, location.cost))
 
     return craftsanity_locations + science_locations
+
+
+def get_locations_rules(locations: Iterable[FactorioLocation]) -> dict[str, Rule]:
+    rules = {}
+
+    for location in locations:
+        if isinstance(location, FactorioCraftLocation):
+            rules[location.name] = Any([HasItem(surface, location.item_name) for surface in surfaces])
+
+        if isinstance(location, FactorioScienceLocation):
+            rules[location.name] = Any([
+                All([
+                    # Early science locations can be recognised by the fact that they already have an item
+                    HasItem(surface, science_pack, location.item is None),
+                    for science_pack in location.ingredients
+                ])
+                for surface in surfaces
+            ])
+
+    return rules

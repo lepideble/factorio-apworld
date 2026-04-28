@@ -20,11 +20,11 @@ del machines['character']
 del machines['steel-furnace']
 
 # Starting machines
-machines_available_at_start.clear()
-machines_available_at_start.add('assembling-machine-1')
-machines_available_at_start.add('asteroid-collector')
-machines_available_at_start.add('crusher')
-machines_available_at_start.add('electric-furnace')
+machines_for_manual_craft.clear()
+machines_for_manual_craft.add('assembling-machine-1')
+machines_for_manual_craft.add('asteroid-collector')
+machines_for_manual_craft.add('crusher')
+machines_for_manual_craft.add('electric-furnace')
 
 # Space platform is automaticaly unlocked on game start
 recipes_unlocked_at_start.update(technologies['space-platform'].unlocked_recipes)

@@ -4,7 +4,7 @@ from rule_builder.rules import And, False_, Has, HasAny, Or, Rule, True_
 
 from ...config import game_name
 from ...data.classes import SpaceLocation, Surface
-from ...data.raw import machines_available_at_start, recipes_unlocked_at_start, space_locations, surfaces, technologies
+from ...data.raw import machines_for_manual_craft, recipes_unlocked_at_start, space_locations, surfaces, technologies
 from ...data.utils import recipes_by_product, technologies_by_recipe_unlocked, technologies_by_space_location_unlocked, upgrades_map, upgrades_levels
 
 
@@ -34,7 +34,7 @@ class HasMachine(Rule['FactorioWorld'], game=game_name):
     surface_name: str
 
     def _instantiate(self, world: 'FactorioWorld') -> Rule.Resolved:
-        if self.machine_name in machines_available_at_start:
+        if self.machine_name in machines_for_manual_craft:
             return True_().resolve(world)
         else:
             return CanCraft(self.machine_name, self.surface_name).resolve(world)
