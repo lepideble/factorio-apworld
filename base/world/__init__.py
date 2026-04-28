@@ -9,7 +9,8 @@ from ..data.raw import science_packs, space_locations, surfaces, surfaces_access
 from ..data.utils import craftable_recipes
 from .items.classes import FactorioItem
 from .items.ids import item_ids
-from .locations import FactorioCraftLocation, FactorioScienceLocation, get_locations, location_ids
+from .locations.classes import FactorioCraftLocation, FactorioScienceLocation
+from .locations.ids import location_ids
 from .options import FactorioOptions
 
 class FactorioWorld(World):
@@ -41,6 +42,7 @@ class FactorioWorld(World):
 
     def create_regions(self) -> None:
         from .items.factory import get_item_count
+        from .locations.factory import get_locations
 
         # Menu region holds all locations that are not tied to a specific surface
         menu_region = Region('Menu', self.player, self.multiworld)
