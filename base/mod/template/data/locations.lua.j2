@@ -124,6 +124,9 @@ new_tree_copy.unit = nil
 new_tree_copy.research_trigger = {{ variable_to_lua(location.research_trigger) }}
 {%- endif %}
 set_icon(new_tree_copy, {% if item.name %}{% if item.name in progressive_items %}"{{ progressive_items[item.name][0] }}"{% else %}"{{ item.name }}"{% endif %}{% else %}nil{% endif %}, {{ variable_to_lua(item.advancement) }})
+{%- if item.advancement is not none %}
+new_tree_copy.essential = {{ variable_to_lua(item.advancement) }}
+{%- endif %}
 {#- connect Technology  #}
 {%- if location in tech_tree_layout_prerequisites %}
 {%- for prerequisite in tech_tree_layout_prerequisites[location] %}
