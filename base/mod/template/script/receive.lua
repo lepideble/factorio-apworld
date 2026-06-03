@@ -11,7 +11,7 @@ end,
     local new_factor = game.forces["enemy"].get_evolution_factor("nauvis") +
         (TRAP_EVO_FACTOR * (1 - game.forces["enemy"].get_evolution_factor("nauvis")))
     game.forces["enemy"].set_evolution_factor(new_factor, "nauvis")
-    game.print({"", "New evolution factor:", new_factor})
+    game.print({"traps.new-evolution-factor", new_factor})
 end,
 ["Teleport Trap"] = function()
     for _, player in ipairs(game.forces["player"].players) do
@@ -55,7 +55,7 @@ local receive_item = function(item_name, source)
             return false
         end
 
-        game.print({"", "Received [technology=" .. technology.name .. "] from ", source})
+        game.print({"archipelago.receive-ap-item", "[technology=" .. tech.name .. "]", source})
         game.play_sound({path="utility/research_completed"})
 
         technology.researched = true
@@ -73,7 +73,7 @@ local receive_item = function(item_name, source)
                 return false
             end
 
-            game.print({"", "Received [quality=" .. quality.name .. "] from ", source})
+            game.print({"archipelago.receive-ap-item", "[quality=" .. quality.name .. "]", source})
             game.play_sound({path="utility/research_completed"})
 
             force.unlock_quality(quality)
@@ -90,7 +90,7 @@ local receive_item = function(item_name, source)
                 return false
             end
 
-            game.print({"", "Received [recipe=" .. recipe.name .. "] from ", source})
+            game.print({"archipelago.receive-ap-item", "[recipe=" .. recipe.name .. "]", source})
             game.play_sound({path="utility/research_completed"})
 
             recipe.enabled = true
@@ -109,7 +109,7 @@ local receive_item = function(item_name, source)
                 return false
             end
 
-            game.print({"", "Received [space-location=" .. space_location.name .. "] from ", source})
+            game.print({"archipelago.receive-ap-item", "[space-location=" .. space_location.name .. "]", source})
             game.play_sound({path="utility/research_completed"})
 
             force.unlock_space_location(space_location)
@@ -119,7 +119,7 @@ local receive_item = function(item_name, source)
     end
 
     if TRAP_TABLE[item_name] ~= nil then
-        game.print({"", "Received ", item_name, " from ", source})
+        game.print({"archipelago.receive-ap-item", item_name, source})
         TRAP_TABLE[item_name]()
 
         return true
@@ -151,7 +151,7 @@ local get_technology_command = function(call)
     if index == "-1" then -- for coop sync and restoring from an older savegame
         local tech = force.technologies[item_name]
         if tech.researched ~= true then
-            game.print({"", "Received [technology=" .. tech.name .. "] as it is already checked."})
+            game.print({"archipelago.receive-ap-catchup", "[technology=" .. tech.name .. "]"})
             game.play_sound({path="utility/research_completed"})
             tech.researched = true
         end
