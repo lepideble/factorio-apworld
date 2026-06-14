@@ -54,8 +54,12 @@ local queue_samples = function(force, name, count)
     add_to_table(storage.forcedata[force.name]["earned_samples"])
     -- Add to existing platforms
     for _, platform in pairs(force.platforms) do
-        add_to_table(storage.free_samples.platforms[platform.index].pending_samples)
-        send_items(platform)
+        -- Platforms that have been created with the "add platform" button exists in the platform table but should not
+        -- be considered for free samples yet.
+        if platform.hub == nil do
+            add_to_table(storage.free_samples.platforms[platform.index].pending_samples)
+            send_items(platform)
+        end
     end
 end
 
