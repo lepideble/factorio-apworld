@@ -3,7 +3,7 @@ from rule_builder.rules import Rule, True_
 from ...data.classes import GatherableResource, MinableResource, PumpableResource, Surface
 from ...data.lookup import machines_by
 from ...data.raw import machines_for_manual_craft
-from ..rules import Any, CanAutomate, CanCraft, UnlockedMiningWithFluid
+from ..rules import Any, HasProduction, UnlockedMiningWithFluid
 
 def get_mining_productions(surface: Surface) -> dict[str, tuple[Rule, dict[str, bool]]]:
     events = {}
@@ -14,7 +14,7 @@ def get_mining_productions(surface: Surface) -> dict[str, tuple[Rule, dict[str, 
                 machines = machines_by(can_be_placed_on=surface, is_offshore_pump=True)
                 if len(machines) > 0:
                     events[f'Pump {name}'] = (
-                        Any([CanCraft(machine.name, surface) for machine in machines]),
+                        Any([HasProduction(machine.name, surface) for machine in machines]),
                         {fluid: True},
                     )
 
@@ -34,9 +34,9 @@ def get_mining_productions(surface: Surface) -> dict[str, tuple[Rule, dict[str, 
                     )
 
                 if len(machines) > 0:
-                    rule = Any([CanCraft(machine.name, surface) for machine in machines])
+                    rule = Any([HasProduction(machine.name, surface) for machine in machines])
                     if mining_fluid is not None:
-                        rule &= UnlockedMiningWithFluid() & CanAutomate(mining_fluid, surface)
+                        rule &= UnlockedMiningWithFluid() & HasProduction(mining_fluid, surface, True)
                     events[f'Automate {name} mining'] = (
                         rule,
                         {result: True for result in results},

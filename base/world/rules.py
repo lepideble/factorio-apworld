@@ -103,6 +103,30 @@ class UnlockedSpaceLocation(Rule['FactorioWorld'], game=game_name):
 
 
 @dataclass()
+class HasProduction(Rule['FactorioWorld'], game=game_name):
+    item_name: str
+    surface_name: str
+    automated: bool
+
+    def __init__(self, item: str, surface: Surface|str, automated = False):
+        super().__init__()
+        self.item_name = item
+        self.surface_name = get_name(surface)
+        self.automated = automated
+
+    def _instantiate(self, world: 'FactorioWorld') -> Rule.Resolved:
+        if self.automated:
+            return Has(
+                get_production_item_name(self.surface_name, self.item_name, True)
+            ).resolve(world)
+        else:
+            return HasAny(
+                get_production_item_name(self.surface_name, self.item_name, True),
+                get_production_item_name(self.surface_name, self.item_name, False),
+            ).resolve(world)
+
+
+@dataclass()
 class CanAutomate(Rule['FactorioWorld'], game=game_name):
     item_name: str
     surface_name: str

@@ -1,5 +1,5 @@
 from .classes import get_name, Machine, Recipe, SpaceLocation, Surface, Technology
-from .raw import machines, technologies
+from .raw import machines, recipes, technologies
 
 
 def machines_by(
@@ -21,6 +21,18 @@ def machines_by(
     if is_asteroid_collector is not None:
         filtered_machines = filter(lambda machine: machine.is_asteroid_collector, filtered_machines)
     return list(filtered_machines)
+
+
+def recipes_by(
+    product: str|None = None,
+    surface: Surface|None = None,
+) -> list[Recipe]:
+    filtered_recipes = recipes
+    if product is not None:
+        filtered_recipes = filter(lambda recipe: product in recipe.products, filtered_recipes)
+    if surface is not None:
+        pass # TODO implement recipe surface conditions
+    return list(filtered_recipes)
 
 
 def technologies_by(
