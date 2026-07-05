@@ -1,6 +1,6 @@
 from rule_builder.rules import Rule, True_
 
-from ...data.classes import Surface
+from ...data.classes import GatherableResource, MinableResource, PumpableResource, Surface
 from ...data.lookup import machines_by
 from ...data.raw import machines_for_manual_craft
 from ..rules import Any, CanAutomate, CanCraft, UnlockedMiningWithFluid
