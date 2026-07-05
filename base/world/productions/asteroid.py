@@ -3,7 +3,7 @@ from rule_builder.rules import Has, Rule, True_
 from ...data.classes import Surface
 from ...data.lookup import machines_by
 from ...data.raw import machines_for_manual_craft, space_locations
-from ..rules import Any, CanCraft
+from ..rules import Any, HasProduction
 
 def get_asteroid_productions(surface: Surface) -> dict[str, tuple[Rule, dict[str, bool]]]:
     events = {}
@@ -32,7 +32,7 @@ def get_asteroid_productions(surface: Surface) -> dict[str, tuple[Rule, dict[str
                 )
 
             events[f'Automate {asteroid_chunk} collection'] = (
-                reached_location_rule & Any([CanCraft(machine.name, surface) for machine in machines]),
+                reached_location_rule & Any([HasProduction(machine.name, surface) for machine in machines]),
                 {asteroid_chunk: True},
             )
 
