@@ -11,7 +11,7 @@ from .items.ids import item_ids
 from .locations.classes import FactorioCraftLocation, FactorioScienceLocation
 from .locations.ids import location_ids
 from .options import FactorioOptions
-from .productions.event import collect_production_event, create_production_events, FactorioProductionEventItem, remove_production_event
+from .productions.event import create_production_events
 
 class FactorioWorld(World):
     game = game_name
@@ -134,9 +134,6 @@ class FactorioWorld(World):
         return self.random.choice(filler_item_pool)
 
     def collect(self, state: CollectionState, item: Item) -> bool:
-        if isinstance(item, FactorioProductionEventItem):
-            return collect_production_event(self, state, item)
-
         if super().collect(state, item):
             if item.name in self.progressive_items:
                 current_count = state.prog_items[self.player][item.name]
@@ -148,9 +145,6 @@ class FactorioWorld(World):
         return False
 
     def remove(self, state: CollectionState, item: Item) -> bool:
-        if isinstance(item, FactorioProductionEventItem):
-            return remove_production_event(self, state, item)
-
         if super().remove(state, item):
             if item.name in self.progressive_items:
                 current_count = state.prog_items[self.player][item.name]
