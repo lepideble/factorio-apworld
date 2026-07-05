@@ -12,6 +12,7 @@ from .locations.classes import FactorioCraftLocation, FactorioScienceLocation
 from .locations.ids import location_ids
 from .options import FactorioOptions
 from .productions.event import create_production_events
+from .rules import Any, HasProduction
 
 class FactorioWorld(World):
     game = game_name
@@ -111,7 +112,7 @@ class FactorioWorld(World):
             case {'type': 'reach-space-location', 'space_location': space_location}:
                 self.set_completion_rule(Has(f'Reach {space_location} on space-platform'))
             case {'type': 'launch-rocket'}:
-                self.set_completion_rule(Has(f'Automate rocket-part on nauvis'))
+                self.set_completion_rule(Any([HasProduction('rocket-part', surface, True) for surface in surfaces]))
             case _:
                 raise Exception('Invalid victory condition')
 
