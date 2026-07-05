@@ -130,6 +130,37 @@ end
 
 local on_init = function()
     storage.receive_index = {}
+    storage.receive_items = {}
+end
+
+local on_technology_effects_reset = function()
+    local force = game.forces["player"]
+
+    for _, item_name in pairs(storage.receive_items) do
+        local quality_name = string_strip_prefix(item_name, "quality: ")
+        if quality_name then
+            local quality = prototypes.quality[quality_name]
+            if quality then
+                force.unlock_quality(quality)
+            end
+        end
+
+        local recipe_name = string_strip_prefix(item_name, "recipe: ")
+        if recipe_name then
+            local recipe = force.recipes[recipe_name]
+            if recipe then
+                recipe.enabled = true
+            end
+        end
+
+        local space_location_name = string_strip_prefix(item_name, "space location: ")
+        if space_location_name then
+            local space_location = prototypes.space_location[space_location_name]
+            if space_location then
+                force.unlock_space_location(space_location)
+            end
+        end
+    end
 end
 
 local get_technology_command = function(call)
@@ -162,10 +193,11 @@ local get_technology_command = function(call)
         return
     end
 
-    local received
+    local received, received_item
     if PROGRESSIVE_ITEMS[item_name] ~= nil then
-        for _, item_name in ipairs(PROGRESSIVE_ITEMS[item_name]) do
-            received = receive_item(item_name, source)
+        for _, progressive_item_name in ipairs(PROGRESSIVE_ITEMS[item_name]) do
+            received = receive_item(progressive_item_name, source)
+            received_item = progressive_item_name
 
             if received ~= false then
                 break
@@ -173,15 +205,20 @@ local get_technology_command = function(call)
         end
     else
         received = receive_item(item_name, source)
+        received_item = item_name
     end
 
     if received then
         storage.receive_index[index] = item_name
+        storage.receive_items[index] = received_item
     end
 end
 
 return {
     on_init = on_init,
+    events = {
+        [defines.events.on_technology_effects_reset] = on_technology_effects_reset,
+    },
     add_commands = function()
         commands.add_command("ap-get-technology", "Grant a technology, used by the Archipelago Client.", get_technology_command)
     end,
