@@ -11,11 +11,13 @@ from worlds.Files import APPlayerContainer
 from ..config import dependencies
 
 
-resources_lib = importlib.resources.files(__name__).joinpath('lib')
-resources_template = importlib.resources.files(__name__).joinpath('template')
+resources_lib = importlib.resources.files(__package__).joinpath('lib')
+resources_template = importlib.resources.files(__package__).joinpath('template')
 
 
 def _recursive_list_files(traversable) -> collections.abc.Iterator[str]:
+    assert traversable.is_dir(), 'Invalid package resources'
+
     for file in traversable.iterdir():
         if file.is_dir():
             for name in _recursive_list_files(file):
@@ -86,7 +88,7 @@ def generate_mod(mod_name: str, mod_version: str, mod_data: dict, world, output_
         else:
             mod.writing_tasks.append(lambda path=file: (versioned_mod_name + '/' + path, resources_template.joinpath(path).read_bytes()))
 
-    mod.writing_tasks.append(lambda: (versioned_mod_name + '/LICENSE', importlib.resources.files(__name__).parent.joinpath('LICENSE').read_bytes()))
+    mod.writing_tasks.append(lambda: (versioned_mod_name + '/LICENSE', importlib.resources.files(__package__).parent.joinpath('LICENSE').read_bytes()))
 
     info = base_info.copy()
     info['name'] = mod_name
