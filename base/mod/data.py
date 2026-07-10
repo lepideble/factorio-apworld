@@ -28,7 +28,7 @@ def get_mod_data(world: FactorioWorld) -> dict:
 
     progressive_items = {}
     progressive_items.update({ name: [level.name for level in levels] for name, levels in upgrades_levels.items() })
-    progressive_items.update(world.progressive_items)
+    progressive_items.update(world.progressive_chains)
 
     return {
         'custom_recipes': {},

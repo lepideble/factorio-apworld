@@ -23,7 +23,7 @@ class FactorioWorld(World):
     options_dataclass = FactorioOptions
     options: FactorioOptions
 
-    progressive_items: dict[str, list[str]]
+    progressive_chains: dict[str, list[str]]
 
     def __init__(self, multiworld, player: int):
         super().__init__(multiworld, player)
@@ -31,15 +31,15 @@ class FactorioWorld(World):
     def generate_early(self) -> None:
         self.options.apply_required_adjustments()
 
-        self.progressive_items = {}
+        self.progressive_chains = {}
 
         if self.options.progressive:
             if self.options.split_technologies:
-                self.progressive_items['progressive science-pack'] = [f'recipe: {science_pack}' for science_pack in science_packs]
-                self.progressive_items.update(progressive_items_with_split_technologies)
+                self.progressive_chains['progressive science-pack'] = [f'recipe: {science_pack}' for science_pack in science_packs]
+                self.progressive_chains.update(progressive_items_with_split_technologies)
             else:
-                self.progressive_items['progressive science-pack'] = science_packs
-                self.progressive_items.update(progressive_items_without_split_technologies)
+                self.progressive_chains['progressive science-pack'] = science_packs
+                self.progressive_chains.update(progressive_items_without_split_technologies)
 
     def create_regions(self) -> None:
         from .items.factory import get_item_count
@@ -81,9 +81,9 @@ class FactorioWorld(World):
         items_for_automation = items_required_for_automation(self.options)
         items_for_research = items_required_for_research(self.options)
 
-        for item in make_progressive(create_items(self.options, self.player), self.progressive_items):
-            if item.name in self.progressive_items:
-                item_name = self.progressive_items[item.name][progressive_counts[item.name]]
+        for item in make_progressive(create_items(self.options, self.player), self.progressive_chains):
+            if item.name in self.progressive_chains:
+                item_name = self.progressive_chains[item.name][progressive_counts[item.name]]
 
                 progressive_counts[item.name] += 1
             else:
@@ -119,8 +119,8 @@ class FactorioWorld(World):
     def create_item(self, name: str) -> FactorioItem:
         from .items.factory import create_item
 
-        if name in self.progressive_items:
-            return create_item(self.options, self.player, self.progressive_items[name][0])
+        if name in self.progressive_chains:
+            return create_item(self.options, self.player, self.progressive_chains[name][0])
         else:
             return create_item(self.options, self.player, name)
 
@@ -136,10 +136,11 @@ class FactorioWorld(World):
 
     def collect(self, state: CollectionState, item: Item) -> bool:
         if super().collect(state, item):
-            if item.name in self.progressive_items:
-                current_count = state.prog_items[self.player][item.name]
-                item_name = self.progressive_items[item.name][current_count - 1]
-                state.prog_items[self.player][item_name] = 1
+            if item.name in self.progressive_chains:
+                progressive_chain = self.progressive_chains[item.name]
+                collected_index = state.count(item.name, self.player) - 1
+                if collected_index < len(progressive_chain):
+                    state.add_item(progressive_chain[collected_index], self.player)
 
             return True
 
@@ -147,10 +148,11 @@ class FactorioWorld(World):
 
     def remove(self, state: CollectionState, item: Item) -> bool:
         if super().remove(state, item):
-            if item.name in self.progressive_items:
-                current_count = state.prog_items[self.player][item.name]
-                item_name = self.progressive_items[item.name][current_count]
-                state.prog_items[self.player][item_name] = 0
+            if item.name in self.progressive_chains:
+                progressive_chain = self.progressive_chains[item.name]
+                removed_index = state.count(item.name, self.player)
+                if removed_index < len(progressive_chain):
+                    state.remove_item(progressive_chain[removed_index], self.player)
 
             return True
 
