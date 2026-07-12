@@ -142,7 +142,6 @@ class Technology(Base):
     unlocked_recipes: set[str] = dataclasses.field(default_factory=set)
     unlocked_space_locations: set[str] = dataclasses.field(default_factory=set)
     modifiers: list[str] = dataclasses.field(default_factory=list)
-    unit_count: int | None = None
 
     @property
     def has_modifier(self):

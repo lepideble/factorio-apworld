@@ -76,35 +76,19 @@ class FactorioWorld(World):
     def create_items(self) -> None:
         from .items.factory import create_items
 
-        progressive_counts = collections.Counter()
-        items_for_automation = items_required_for_automation(self.options)
-        items_for_research = items_required_for_research(self.options)
-
         for item in create_items(self.options, self.progressive_chains, self.player):
-            if item.name in self.progressive_chains:
-                item_name = self.progressive_chains[item.name][progressive_counts[item.name]]
+            self.multiworld.itempool.append(item)
 
-                progressive_counts[item.name] += 1
+        local_early_items = collections.Counter()
+        for item in items_required_for_automation(self.options) & items_required_for_research(self.options):
+            for progressive_item, progressive_chain in self.progressive_chains.items():
+                if item in progressive_chain:
+                    local_early_items[progressive_item] += 1
+                    break
             else:
-                item_name = item.name
+                local_early_items[item] += 1
 
-            if item_name in items_for_automation:
-                # Early science locations are always placed at the start
-                for location in self.get_locations():
-                    if isinstance(location, FactorioScienceLocation) and location.item is None:
-                        location.count = min(location.count, technologies[item_name].unit_count if item_name in technologies else 10)
-                        location.place_locked_item(item)
-
-                        break
-            elif item_name in items_for_research:
-                # Early craft locations are always placed at the start
-                for location in self.get_locations():
-                    if isinstance(location, FactorioCraftLocation) and location.item is None:
-                        location.place_locked_item(item)
-
-                        break
-            else:
-                self.multiworld.itempool.append(item)
+        self.multiworld.local_early_items[self.player] = dict(local_early_items)
 
     def set_rules(self) -> None:
         match (self.options.goal.get_victory_condition()):

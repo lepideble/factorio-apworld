@@ -223,9 +223,6 @@ for prototype in get_prototypes('TechnologyPrototype'):
     technology.upgrade = prototype.get('upgrade', False)
     technology.max_level = prototype.get('max_level')
 
-    if (unit := prototype.get('unit')) is not None:
-        technology.unit_count = unit.get('count')
-
     technologies.add(technology)
 
 
