@@ -3,32 +3,24 @@ from BaseClasses import ItemClassification
 from ...data.raw import technologies
 from ...data.utils import upgrades_levels, upgrades_map
 from ..options import FactorioOptions
-from .classes import FactorioItem, FactorioQualityItem, FactorioRecipeItem, FactorioSpaceLocationItem, FactorioTechnologyItem
+from .classes import classification, FactorioItem, FactorioQualityItem, FactorioRecipeItem, FactorioSpaceLocationItem, FactorioTechnologyItem
 from .classification import is_advancement, is_useful
 from .pool import quality_pool, recipe_pool, space_location_pool
+from .progressive import make_progressive
 
 
-def get_classification(advancement: bool, useful: bool) -> ItemClassification:
-    if advancement:
-        return ItemClassification.progression
-    elif useful:
-        return ItemClassification.useful
+def item_classification(name: str, index: int = 0, split_technologies: bool | None = None) -> ItemClassification:
+    return classification(is_advancement(name, index, split_technologies), is_useful(name, index, split_technologies))
+
+
+def create_item(options: FactorioOptions, progressive_chains: dict[str, list[str]], player: int, name: str) -> FactorioItem:
+    if (progressive_chain := progressive_chains.get(name)):
+        return FactorioItem(name, item_classification(progressive_chain[0], 0, options.split_technologies), player)
     else:
-        return ItemClassification.filler
+        return FactorioItem(name, item_classification(name, 0, options.split_technologies), player)
 
 
-def create_item(options: FactorioOptions, player: int, name: str) -> FactorioItem:
-    return FactorioItem(
-        name,
-        get_classification(
-            is_advancement(name, 0, options.split_technologies),
-            is_useful(name, 0, options.split_technologies),
-        ),
-        player
-    )
-
-
-def create_items(options: FactorioOptions, player: int) -> list[FactorioItem]:
+def create_items(options: FactorioOptions, progressive_chains: dict[str, list[str]], player: int) -> list[FactorioItem]:
     items = []
 
     for technology in technologies:
@@ -40,10 +32,7 @@ def create_items(options: FactorioOptions, player: int) -> list[FactorioItem]:
 
         items.append(FactorioTechnologyItem(
             technology.name,
-            get_classification(
-                is_advancement(technology.name, 0, options.split_technologies),
-                is_useful(technology.name, 0, options.split_technologies),
-            ),
+            item_classification(technology.name, 0, options.split_technologies),
             player,
         ))
 
@@ -51,10 +40,7 @@ def create_items(options: FactorioOptions, player: int) -> list[FactorioItem]:
         for index in range(0, options.upgrades_count[item_name]):
             items.append(FactorioTechnologyItem(
                 item_name,
-                get_classification(
-                    is_advancement(item_name, index, options.split_technologies),
-                    is_useful(item_name, index, options.split_technologies),
-                ),
+                item_classification(item_name, index, options.split_technologies),
                 player,
             ))
 
@@ -63,10 +49,7 @@ def create_items(options: FactorioOptions, player: int) -> list[FactorioItem]:
             for index in range(quality_count):
                 items.append(FactorioQualityItem(
                     quality_name,
-                    get_classification(
-                        is_advancement(f'quality: {quality_name}', index),
-                        is_useful(f'quality: {quality_name}', index),
-                    ),
+                    item_classification(f'quality: {quality_name}', index),
                     player,
                 ))
 
@@ -74,10 +57,7 @@ def create_items(options: FactorioOptions, player: int) -> list[FactorioItem]:
             for index in range(recipe_count):
                 items.append(FactorioRecipeItem(
                     recipe_name,
-                    get_classification(
-                        is_advancement(f'recipe: {recipe_name}', index),
-                        is_useful(f'recipe: {recipe_name}', index),
-                    ),
+                    item_classification(f'recipe: {recipe_name}', index),
                     player,
                 ))
 
@@ -85,16 +65,13 @@ def create_items(options: FactorioOptions, player: int) -> list[FactorioItem]:
             for index in range(space_location_count):
                 items.append(FactorioSpaceLocationItem(
                     space_location_name,
-                    get_classification(
-                        is_advancement(f'space location: {space_location_name}', index),
-                        is_useful(f'space location: {space_location_name}', index),
-                    ),
+                    item_classification(f'space location: {space_location_name}', index),
                     player,
                 ))
 
     assert len(items) == get_item_count(options), 'Unexpected item count'
 
-    return items
+    return make_progressive(items, progressive_chains)
 
 
 def get_item_count(options: FactorioOptions) -> int:

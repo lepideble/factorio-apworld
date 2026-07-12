@@ -75,13 +75,12 @@ class FactorioWorld(World):
 
     def create_items(self) -> None:
         from .items.factory import create_items
-        from .items.progressive import make_progressive
 
         progressive_counts = collections.Counter()
         items_for_automation = items_required_for_automation(self.options)
         items_for_research = items_required_for_research(self.options)
 
-        for item in make_progressive(create_items(self.options, self.player), self.progressive_chains):
+        for item in create_items(self.options, self.progressive_chains, self.player):
             if item.name in self.progressive_chains:
                 item_name = self.progressive_chains[item.name][progressive_counts[item.name]]
 
@@ -119,10 +118,7 @@ class FactorioWorld(World):
     def create_item(self, name: str) -> FactorioItem:
         from .items.factory import create_item
 
-        if name in self.progressive_chains:
-            return create_item(self.options, self.player, self.progressive_chains[name][0])
-        else:
-            return create_item(self.options, self.player, name)
+        return create_item(self.options, self.progressive_chains, self.player, name)
 
     def get_filler_item_name(self) -> str:
         from .items.pool import upgrades_max_count

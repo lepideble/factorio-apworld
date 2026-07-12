@@ -4,6 +4,15 @@ from ...config import game_name
 from .ids import item_ids
 
 
+def classification(advancement: bool, useful: bool) -> ItemClassification:
+    if advancement:
+        return ItemClassification.progression
+    elif useful:
+        return ItemClassification.useful
+    else:
+        return ItemClassification.filler
+
+
 class FactorioItem(Item):
     game = game_name
 
