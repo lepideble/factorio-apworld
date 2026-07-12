@@ -55,7 +55,7 @@ local receive_item = function(item_name, source)
             return false
         end
 
-        game.print({"archipelago.receive-ap-item", "[technology=" .. tech.name .. "]", source})
+        game.print({"archipelago.receive-ap-item", "[technology=" .. technology.name .. "]", source})
         game.play_sound({path="utility/research_completed"})
 
         technology.researched = true
