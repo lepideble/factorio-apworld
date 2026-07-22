@@ -6,6 +6,7 @@ def machines_by(
     can_be_placed_on: Surface|None = None,
     crafting_category: str|None = None,
     mining_category: str|None = None,
+    allowed_science_packs: set[str]|None = None,
     is_offshore_pump: bool = None,
     is_asteroid_collector: bool = None,
 ) -> list[Machine]:
@@ -16,6 +17,8 @@ def machines_by(
         filtered_machines = filter(lambda machine: crafting_category in machine.crafting_categories, filtered_machines)
     if mining_category is not None:
         filtered_machines = filter(lambda machine: mining_category in machine.mining_categories, filtered_machines)
+    if allowed_science_packs is not None:
+        filtered_machines = filter(lambda machine: machine.allowed_science_packs.issuperset(allowed_science_packs), filtered_machines)
     if is_offshore_pump is not None:
         filtered_machines = filter(lambda machine: machine.is_offshore_pump, filtered_machines)
     if is_asteroid_collector is not None:

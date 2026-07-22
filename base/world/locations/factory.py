@@ -3,7 +3,7 @@ from random import Random
 from rule_builder.rules import CanReachLocation, Rule
 
 from ...config import items_required_for_automation, items_required_for_research
-from ...data.lookup import recipes_by
+from ...data.lookup import machines_by, recipes_by
 from ...data.raw import science_packs, surfaces
 from ...data.utils import craftable_items_at_start, unlockable_recipes
 from ..options import FactorioOptions
@@ -93,6 +93,12 @@ def get_locations(options: FactorioOptions, random: Random, location_count: int)
             All([
                 HasProduction(item_name, surface, i >= early_science_location_count)
                 for item_name in science_location.ingredients
+            ]) & Any([
+                HasProduction(lab.name, surface)
+                for lab in machines_by(
+                    can_be_placed_on=surface,
+                    allowed_science_packs=science_location.ingredients.keys(),
+                )
             ])
             for surface in surfaces
         ])
