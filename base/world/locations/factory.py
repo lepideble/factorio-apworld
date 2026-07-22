@@ -1,11 +1,13 @@
 from random import Random
 
+from rule_builder.rules import CanReachLocation, Rule
+
 from ...config import items_required_for_automation, items_required_for_research
 from ...data.lookup import recipes_by
 from ...data.raw import science_packs, surfaces
-from ...data.utils import craftable_items_at_start
+from ...data.utils import craftable_items_at_start, unlockable_recipes
 from ..options import FactorioOptions
-from ..rules import All, Any, HasProduction, Rule
+from ..rules import All, Any, HasProduction
 from .classes import FactorioCraftLocation, FactorioLocation, FactorioScienceLocation
 from .pool import craftsanity_item_pool, science_location_pools
 
@@ -80,9 +82,10 @@ def get_locations(options: FactorioOptions, random: Random, location_count: int)
     return [(
         craftsanity_location,
         Any([
-            All([HasProduction(ingredient, surface) for ingredient in recipe.ingredients])
+            CanReachLocation(f'Craft {recipe.name} output 1 on {surface.name}')
             for surface in surfaces
             for recipe in recipes_by(product=craftsanity_location.item_name, surface=surface)
+            if recipe.name in unlockable_recipes
         ])
     ) for craftsanity_location in craftsanity_locations] + [(
         science_location,
