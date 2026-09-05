@@ -17,4 +17,4 @@ def create_production_events(world, surface: Surface, events: dict[str, tuple[Ru
 
 
 def get_production_item_name(surface_name: str, item_name: str, automated: bool):
-    return f'Production of {item_name}{' automated' if automated else ''} on {surface_name}'
+    return f'Production of {item_name}{" automated" if automated else ""} on {surface_name}'
