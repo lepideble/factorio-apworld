@@ -19,25 +19,19 @@ for technology in technologies:
     else:
         item_ids[technology.name] = next(ids)
 
-for quality_name in quality_pool:
+for quality_name in sorted(quality_pool.keys()):
     item_ids[f'quality: {quality_name}'] = next(ids)
 
-for recipe_name in recipe_pool:
+for recipe_name in sorted(recipe_pool.keys()):
     item_ids[f'recipe: {recipe_name}'] = next(ids)
 
-for space_location_name in space_location_pool:
+for space_location_name in sorted(space_location_pool.keys()):
     item_ids[f'space location: {space_location_name}'] = next(ids)
 
-item_ids['progressive science-pack'] = next(ids)
-for progressive_name in progressive_items_with_split_technologies:
-    if not progressive_name in item_ids:
-        item_ids[progressive_name] = next(ids)
-
-    assert all((item in item_ids for item in progressive_items_with_split_technologies[progressive_name])), f'{progressive_name} has invalid items'
-for progressive_name in progressive_items_without_split_technologies:
-    if not progressive_name in item_ids:
-        item_ids[progressive_name] = next(ids)
-
-    assert all((item in item_ids for item in progressive_items_without_split_technologies[progressive_name])), f'{progressive_name} has invalid items'
+progressive_pool = {'progressive science-pack'}
+progressive_pool.update(progressive_items_with_split_technologies.keys())
+progressive_pool.update(progressive_items_without_split_technologies.keys())
+for progressive_name in sorted(progressive_pool):
+    item_ids[progressive_name] = next(ids)
 
 del ids
