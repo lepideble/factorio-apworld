@@ -60,7 +60,7 @@ local receive_item = function(item_name, source)
 
         technology.researched = true
 
-        call_received_technology_hooks(foce, technology.name)
+        call_received_technology_hooks(force, technology.name)
 
         return true
     end
