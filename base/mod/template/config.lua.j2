@@ -1,0 +1,18 @@
+{%- from "macros.lua" import dict_to_lua -%}
+
+{%- if free_samples is not none -%}
+local free_samples = {
+    blacklist = {{ dict_to_lua(free_samples.blacklist) }},
+    quality = "{{ free_samples.quality }}",
+    quantity = "{{ free_samples.quantity }}",
+}
+{%- else -%}
+local free_samples = nil
+{%- endif %}
+
+local starting_items = {{ dict_to_lua(starting_items) }}
+
+return {
+    free_samples = free_samples,
+    starting_items = starting_items,
+}

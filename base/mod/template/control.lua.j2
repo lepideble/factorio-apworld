@@ -27,19 +27,13 @@ function on_force_created(event)
         force = game.forces[force]
     end
     local data = {}
-    data['earned_samples'] = {{ dict_to_lua(starting_items) }}
     data["victory"] = 0
     data["death_link_tick"] = 0
     data["energy"] = 0
     data["energy_bridges"] = 0
     storage.forcedata[event.force] = data
 end
-script.on_event(defines.events.on_force_created, on_force_created)
-
--- Destroy force data.  This doesn't appear to be currently possible with the Factorio API, but here for completeness.
-function on_force_destroyed(event)
-    storage.forcedata[event.force.name] = nil
-end
+lib.events[defines.events.on_force_created] = on_force_created
 
 local on_player_created = function(event)
     local player = game.players[event.player_index]
@@ -171,6 +165,7 @@ handler.add_lib(require("script/death_link"))
 {% if energy_link %}
 handler.add_lib(require("script/energy_link"))
 {% endif %}
+handler.add_lib(require("script/items"))
 handler.add_lib(require("script/free_samples"))
 handler.add_lib(require("script/receive"))
 handler.add_lib(require("script/victory"))

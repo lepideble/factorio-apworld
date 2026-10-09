@@ -38,19 +38,6 @@ function create_hook()
     return register, call
 end
 
-function get_any_stack_size(name)
-    local item = prototypes.item[name]
-    if item ~= nil then
-        return item.stack_size
-    end
-    item = prototypes.equipment[name]
-    if item ~= nil then
-        return item.stack_size
-    end
-    -- failsafe
-    return 1
-end
-
 -- from https://stackoverflow.com/a/40180465
 -- split("a,b,c", ",") => {"a", "b", "c"}
 function split(s, sep)
