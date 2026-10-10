@@ -181,6 +181,13 @@ for prototype in get_prototypes('crafting-machine'):
         set(prototype['crafting_categories']),
     ))
 
+for prototype in get_prototypes('lab'):
+    machines.add(Machine(
+        prototype['name'],
+        parse_surface_condition_array(prototype.get('surface_conditions', [])),
+        allowed_science_packs=set(prototype['inputs']),
+    ))
+
 for prototype in get_prototypes('mining-drill'):
     machines.add(Machine(
         prototype['name'],

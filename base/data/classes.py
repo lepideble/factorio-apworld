@@ -111,6 +111,7 @@ class Machine(Base):
     surface_conditions: list[SurfaceCondition] = dataclasses.field(default_factory=list)
     crafting_categories: set[str] = dataclasses.field(default_factory=set)
     mining_categories: set[str] = dataclasses.field(default_factory=set)
+    allowed_science_packs: set[str] = dataclasses.field(default_factory=set)
     is_offshore_pump: bool = False
     is_asteroid_collector: bool = False
 
