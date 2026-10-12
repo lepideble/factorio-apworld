@@ -28,6 +28,22 @@ def _recursive_list_files(traversable) -> collections.abc.Iterator[str]:
 template_files = list(_recursive_list_files(resources_template))
 
 
+def _to_lua(variable) -> str:
+    if variable == None:
+        return 'nil'
+    if isinstance(variable, bool):
+        return 'true' if variable else 'false'
+    if isinstance(variable, int):
+        return str(variable)
+    if isinstance(variable, str):
+        return f'"{variable.replace('\\', '\\\\').replace('"', '\\"')}"'
+    if isinstance(variable, collections.abc.Mapping):
+        return '{' + ', '.join((key if key.isidentifier() else '[' + _to_lua(key) + ']') + ' = ' + _to_lua(value) for key, value in variable.items())  + '}'
+    if isinstance(variable, collections.abc.Sequence):
+        return '{' + ', '.join(_to_lua(item) for item in variable)  + '}'
+    raise Exception(f'Type {type(variable)} is not supported')
+
+
 base_info = {
     "title": "Archipelago",
     "author": "Berserker",
@@ -84,7 +100,7 @@ def generate_mod(mod_name: str, mod_version: str, mod_data: dict, world, output_
 
     for file in template_files:
         if file.endswith('.j2'):
-            mod.writing_tasks.append(lambda path=file: (versioned_mod_name + '/' + path.removesuffix('.j2'), template_env.get_template(path).render(**mod_data)))
+            mod.writing_tasks.append(lambda path=file: (versioned_mod_name + '/' + path.removesuffix('.j2'), template_env.get_template(path).render(**mod_data, to_lua=_to_lua)))
         else:
             mod.writing_tasks.append(lambda path=file: (versioned_mod_name + '/' + path, resources_template.joinpath(path).read_bytes()))
 
