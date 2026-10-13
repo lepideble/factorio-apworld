@@ -3,7 +3,7 @@
 require "lib"
 require "util"
 
-SLOT_NAME = "{{ slot_name }}"
+SLOT_NAME = {{ to_lua(slot_name) }}
 SEED_NAME = "{{ seed_name }}"
 TRAP_EVO_FACTOR = {{ evolution_trap_increase }} / 100
 MAX_SCIENCE_PACK = {{ max_science_pack }}
