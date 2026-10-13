@@ -1,5 +1,3 @@
-{% from "macros.lua" import variable_to_lua -%}
-
 local technologies = data.raw["technology"]
 local new_tree_copy
 
@@ -108,24 +106,24 @@ end
 new_tree_copy = table.deepcopy(template_tech)
 new_tree_copy.name = "{{ location.id }}"
 {%- if item.name is not none %}
-new_tree_copy.localised_name = {"technology-name.ap-technology-full", "{{ item.player_name }}", "{{ item.name }}", "{{ location.name }}"}
-new_tree_copy.localised_description = {"technology-description.ap-technology-full", "{{ item.name }}", "{{ item.player_name }}", {% if item.advancement %}{"technology-description.ap-technology-item-advancement"}{% elif item.useful %}{"technology-description.ap-technology-item-useful"}{% elif item.trap %}{"technology-description.ap-technology-item-trap"}{% else %}""{% endif %}}
+new_tree_copy.localised_name = {"technology-name.ap-technology-full", {{ to_lua(item.player_name) }}, {{ to_lua(item.name) }}, {{ to_lua(location.name) }}}
+new_tree_copy.localised_description = {"technology-description.ap-technology-full", {{ to_lua(item.name)  }}, {{ to_lua(item.player_name) }}, {% if item.advancement %}{"technology-description.ap-technology-item-advancement"}{% elif item.useful %}{"technology-description.ap-technology-item-useful"}{% elif item.trap %}{"technology-description.ap-technology-item-trap"}{% else %}""{% endif %}}
 {%- else  %}
-new_tree_copy.localised_name = {"technology-name.ap-technology-hidden", "{{location.name}}"}
+new_tree_copy.localised_name = {"technology-name.ap-technology-hidden", {{ to_lua(location.name) }}}
 new_tree_copy.localised_description = {"technology-description.ap-technology-hidden", {% if item.advancement %}{"technology-description.ap-technology-item-advancement"}{% else %}""{% endif %}}
 {%- endif %}
 {%- if location.unit is not none %}
 new_tree_copy.unit.count = {{ location.unit.count }}
-new_tree_copy.unit.ingredients = {{ variable_to_lua(location.unit.ingredients) }}
+new_tree_copy.unit.ingredients = {{ to_lua(location.unit.ingredients) }}
 {%- else %}
 new_tree_copy.unit = nil
 {%- endif %}
 {%- if location.research_trigger is not none %}
-new_tree_copy.research_trigger = {{ variable_to_lua(location.research_trigger) }}
+new_tree_copy.research_trigger = {{ to_lua(location.research_trigger) }}
 {%- endif %}
-set_icon(new_tree_copy, {% if item.name %}{% if item.name in progressive_items %}"{{ progressive_items[item.name][0] }}"{% else %}"{{ item.name }}"{% endif %}{% else %}nil{% endif %}, {{ variable_to_lua(item.advancement) }})
+set_icon(new_tree_copy, {% if item.name %}{% if item.name in progressive_items %}"{{ progressive_items[item.name][0] }}"{% else %}{{ to_lua(item.name) }}{% endif %}{% else %}nil{% endif %}, {{ to_lua(item.advancement) }})
 {%- if item.advancement is not none %}
-new_tree_copy.essential = {{ variable_to_lua(item.advancement) }}
+new_tree_copy.essential = {{ to_lua(item.advancement) }}
 {%- endif %}
 {#- connect Technology  #}
 {%- if location in tech_tree_layout_prerequisites %}
