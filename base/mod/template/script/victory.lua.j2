@@ -1,5 +1,3 @@
-{%- from "macros.lua" import dict_to_lua -%}
-
 local on_init = function()
     if remote.interfaces["silo_script"] then
         remote.call("silo_script", "set_no_victory", true)

@@ -28,6 +28,10 @@ def _recursive_list_files(traversable) -> collections.abc.Iterator[str]:
 template_files = list(_recursive_list_files(resources_template))
 
 
+def _to_lua_key(key) -> str:
+    return key if key.isidentifier() else '[' + _to_lua(key) + ']'
+
+
 def _to_lua(variable) -> str:
     if variable == None:
         return 'nil'
@@ -38,10 +42,16 @@ def _to_lua(variable) -> str:
     if isinstance(variable, str):
         return f'"{variable.replace('\\', '\\\\').replace('"', '\\"')}"'
     if isinstance(variable, collections.abc.Mapping):
-        return '{' + ', '.join((key if key.isidentifier() else '[' + _to_lua(key) + ']') + ' = ' + _to_lua(value) for key, value in variable.items())  + '}'
+        return '{' + ', '.join(_to_lua_key(key) + ' = ' + _to_lua(value) for key, value in variable.items())  + '}'
     if isinstance(variable, collections.abc.Sequence):
         return '{' + ', '.join(_to_lua(item) for item in variable)  + '}'
     raise Exception(f'Type {type(variable)} is not supported')
+
+
+def _to_lua_expanded(variable, indent = 0) -> str:
+    if isinstance(variable, collections.abc.Mapping):
+        return '{\n' + ''.join((' ' * (indent + 4)) + _to_lua_key(key) + ' = ' + _to_lua_expanded(value, indent + 4) + ',\n' for key, value in variable.items()) + (' ' * indent) + '}'
+    return _to_lua(variable)
 
 
 base_info = {
@@ -103,6 +113,11 @@ def generate_mod(mod_name: str, mod_version: str, mod_data: dict, world, output_
             mod.writing_tasks.append(lambda path=file: (versioned_mod_name + '/' + path.removesuffix('.j2'), template_env.get_template(path).render(**mod_data, to_lua=_to_lua)))
         else:
             mod.writing_tasks.append(lambda path=file: (versioned_mod_name + '/' + path, resources_template.joinpath(path).read_bytes()))
+
+    mod.writing_tasks.append(lambda: (versioned_mod_name + '/config.lua', 'return ' + _to_lua_expanded({
+        'free_samples': mod_data['free_samples'],
+        'starting_items': mod_data['starting_items'],
+    }) + '\n'))
 
     mod.writing_tasks.append(lambda: (versioned_mod_name + '/LICENSE', importlib.resources.files(__package__).parent.joinpath('LICENSE').read_bytes()))
 
