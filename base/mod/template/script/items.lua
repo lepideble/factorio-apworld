@@ -1,6 +1,6 @@
 local config = require("config")
 
-local function send_items(player)
+local function deliver_pending(player)
     if not player or not player.valid then     -- Do nothing if we reference an invalid player somehow
         return
     end
@@ -8,18 +8,17 @@ local function send_items(player)
     if not character or not character.valid then
         return
     end
+
     local data = storage.items.players[player.index]
-    local sent
-    local stack = {}
 
     for name, qualities in pairs(data.pending) do
         for quality, count in pairs(qualities) do
-            stack.name = name
-            stack.count = count
+            local stack = { name = name, count = count }
             if script.active_mods["quality"] then
                 stack.quality = quality
             end
             if prototypes.item[name] then
+                local sent
                 if character.can_insert(stack) then
                     sent = character.insert(stack)
                 else
@@ -35,7 +34,7 @@ local function send_items(player)
                     end
                     data.suppress_full_inventory_message = true -- Avoid spamming them with repeated full inventory messages.
                     data.pending[name][quality] = count - sent
-                    break                           -- Stop trying to send other things
+                    return                           -- Stop trying to send other things
                 else
                     data.pending[name][quality] = nil
                 end
@@ -54,7 +53,7 @@ local function add_to_item_table(table, name, count, quality)
     table[name][quality] = (table[name][quality] or 0) + count
 end
 
-local function queue_item(force, name, count, quality)
+local function deliver(force, name, count, quality)
     if count <= 0 then
         return
     end
@@ -63,7 +62,7 @@ local function queue_item(force, name, count, quality)
 
     for _, player in pairs(force.players) do
         add_to_item_table(storage.items.players[player.index].pending, name, count, quality)
-        send_items(player)
+        deliver_pending(player)
     end
 end
 
@@ -87,7 +86,7 @@ local on_player_created = function(event)
         pending = table.deepcopy(storage.items.forces[player.force.name].received),
     }
 
-    send_items(player)
+    deliver_pending(player)
 end
 
 local on_player_removed = function(event)
@@ -95,7 +94,7 @@ local on_player_removed = function(event)
 end
 
 local update_player_event = function(event)
-    send_items(game.players[event.player_index])
+    deliver_pending(game.players[event.player_index])
 end
 
 local function on_init()
@@ -116,7 +115,7 @@ end
 return {
     on_init = on_init,
     calls = {
-        queue_item = queue_item,
+        deliver = deliver,
     },
     events = {
         [defines.events.on_force_created] = on_force_created,

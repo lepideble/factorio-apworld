@@ -36,7 +36,7 @@ local function send_for_recipe(force, recipe_name)
                         count = math.ceil(count / 2)
                     end
                 end
-                items.calls.queue_item(force, name, count, config.free_samples.quality)
+                items.calls.deliver(force, name, count, config.free_samples.quality)
             end
         end
     end
