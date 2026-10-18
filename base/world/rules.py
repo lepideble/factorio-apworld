@@ -124,34 +124,3 @@ class HasProduction(Rule['FactorioWorld'], game=game_name):
                 get_production_item_name(self.surface_name, self.item_name, True),
                 get_production_item_name(self.surface_name, self.item_name, False),
             ).resolve(world)
-
-
-@dataclass()
-class CanAutomate(Rule['FactorioWorld'], game=game_name):
-    item_name: str
-    surface_name: str
-
-    def __init__(self, item: str, surface: Surface|str):
-        super().__init__()
-        self.item_name = item
-        self.surface_name = get_name(surface)
-
-    def _instantiate(self, world: 'FactorioWorld') -> Rule.Resolved:
-        return Has(get_production_item_name(self.surface_name, self.item_name, True)).resolve(world)
-
-
-@dataclass()
-class CanCraft(Rule['FactorioWorld'], game=game_name):
-    item_name: str
-    surface_name: str
-
-    def __init__(self, item: str, surface: Surface|str):
-        super().__init__()
-        self.item_name = item
-        self.surface_name = get_name(surface)
-
-    def _instantiate(self, world: 'FactorioWorld') -> Rule.Resolved:
-        return HasAny(
-            get_production_item_name(self.surface_name, self.item_name, True),
-            get_production_item_name(self.surface_name, self.item_name, False),
-        ).resolve(world)
