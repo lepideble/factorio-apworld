@@ -1,3 +1,4 @@
+from ...config import split_technologies_exclusions
 from ...data.raw import technologies
 from ...data.utils import upgrades_levels, upgrades_map
 
@@ -33,7 +34,7 @@ def is_advancement(name: str, index: int = 0, split_technologies: bool | None = 
     elif name.startswith('space location: '):
         return index == 0
     else:
-        if split_technologies:
+        if split_technologies and name not in split_technologies_exclusions:
             return False
         else:
             return _has_advancement_modifier(technologies[name])

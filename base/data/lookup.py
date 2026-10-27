@@ -4,7 +4,7 @@ from .raw import machines, recipes, technologies
 
 def machines_by(
     can_be_placed_on: Surface|None = None,
-    crafting_category: str|None = None,
+    can_craft: Recipe|None = None,
     mining_category: str|None = None,
     allowed_science_packs: set[str]|None = None,
     is_offshore_pump: bool = None,
@@ -13,8 +13,8 @@ def machines_by(
     filtered_machines = machines
     if can_be_placed_on is not None:
         filtered_machines = filter(lambda machine: machine.can_be_placed_on(can_be_placed_on), filtered_machines)
-    if crafting_category is not None:
-        filtered_machines = filter(lambda machine: crafting_category in machine.crafting_categories, filtered_machines)
+    if can_craft is not None:
+        filtered_machines = filter(lambda machine: len(can_craft.categories & machine.crafting_categories) > 0, filtered_machines)
     if mining_category is not None:
         filtered_machines = filter(lambda machine: mining_category in machine.mining_categories, filtered_machines)
     if allowed_science_packs is not None:

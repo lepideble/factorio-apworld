@@ -3,7 +3,7 @@ game_name = 'Factorio: Platformer'
 
 # Mod dependencies
 dependencies = [
-    'platformer',
+    'platformer-fork',
 ]
 
 
@@ -83,6 +83,9 @@ progressive_items_without_split_technologies = {
     'progressive quality module': ['quality-module', 'quality-module-2', 'quality-module-3'],
     'progressive speed module': ['speed-module', 'speed-module-2', 'speed-module-3'],
 }
+
+# Technologies that shouldn't be split into individual parts
+split_technologies_exclusions = {'recycling'}
 
 # Item that should be included in craftsanity
 def craftsanity_filter(item_name: str):

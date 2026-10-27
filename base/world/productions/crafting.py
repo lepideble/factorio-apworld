@@ -10,7 +10,7 @@ def get_crafting_productions(surface: Surface) -> dict[str, tuple[Rule, dict[str
     events = {}
 
     for recipe in unlockable_recipes:
-        machines = machines_by(can_be_placed_on=surface, crafting_category=recipe.category)
+        machines = machines_by(can_be_placed_on=surface, can_craft=recipe)
 
         if len(machines) == 0:
             continue
