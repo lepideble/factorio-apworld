@@ -1,3 +1,4 @@
+from ..config import split_technologies_exclusions
 from ..data.raw import science_packs, technologies
 from ..data.utils import upgrades_map, upgrades_levels
 from ..world import FactorioWorld
@@ -31,6 +32,9 @@ def get_mod_data(world: FactorioWorld) -> dict:
     progressive_items.update(world.progressive_chains)
 
     return {
+        'config': {
+            'split_technologies_exclusions': split_technologies_exclusions,
+        },
         'custom_recipes': {},
         'data_utils': {
             'upgrades_map': upgrades_map,

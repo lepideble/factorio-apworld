@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from rule_builder.rules import And, False_, Has, HasAny, Or, Rule, True_
 
-from ..config import game_name
+from ..config import game_name, split_technologies_exclusions
 from ..data.classes import get_name, Recipe, SpaceLocation, Surface, Technology
 from ..data.lookup import technologies_by
 from ..data.raw import recipes_unlocked_at_start, space_locations, technologies
@@ -74,7 +74,7 @@ class UnlockedRecipe(Rule['FactorioWorld'], game=game_name):
             raise Exception(f'No technology unlocks recipe "{self.recipe_name}"')
 
         if world.options.split_technologies:
-            technologies = [technology for technology in technologies if technology.name in upgrades_map]
+            technologies = [technology for technology in technologies if technology.name in split_technologies_exclusions or technology.name in upgrades_map]
 
         return (Has(f'recipe: {self.recipe_name}') | Any([HasTechnology(technology) for technology in technologies])).resolve(world)
 
@@ -97,7 +97,7 @@ class UnlockedSpaceLocation(Rule['FactorioWorld'], game=game_name):
             raise Exception(f'No technology unlocks space location "{self.space_location_name}"')
 
         if world.options.split_technologies:
-            technologies = [technology for technology in technologies if technology.name in upgrades_map]
+            technologies = [technology for technology in technologies if technology.name in split_technologies_exclusions or technology.name in upgrades_map]
 
         return (Has(f'space location: {self.space_location_name}') | Any([HasTechnology(technology) for technology in technologies])).resolve(world)
 
