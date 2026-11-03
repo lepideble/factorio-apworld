@@ -30,9 +30,9 @@ def is_advancement(name: str, index: int = 0, split_technologies: bool | None = 
     elif name.startswith('quality: '):
         return False
     elif name.startswith('recipe: '):
-        return index == 0
+        return True
     elif name.startswith('space location: '):
-        return index == 0
+        return True
     else:
         if split_technologies and name not in split_technologies_exclusions:
             return False
