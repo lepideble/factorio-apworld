@@ -59,7 +59,7 @@ base_info = {
     "author": "Berserker",
     "homepage": "https://archipelago.gg",
     "description": "Integration client for the Archipelago Randomizer",
-    "factorio_version": "2.0",
+    "factorio_version": "2.1",
     "dependencies": dependencies,
 }
 

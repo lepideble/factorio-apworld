@@ -31,7 +31,7 @@ def _get_craftable(recipes: list[Recipe], starting_ressource: list[str]) -> tupl
             if recipe.name in craftable_recipes:
                 continue
 
-            if recipe.category not in craftable_categories:
+            if recipe.categories.isdisjoint(craftable_categories):
                 continue
 
             if craftable_items.issuperset(recipe.ingredients.keys()):

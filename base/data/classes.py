@@ -121,14 +121,14 @@ class Machine(Base):
 
 @dataclasses.dataclass
 class Recipe(Base):
-    category: str
+    categories: set[str]
     ingredients: dict[str, int]
     products: dict[str, int | float] # int means an exact value, float an average
     time: float
 
-    def __init__(self, name: str, category: str, ingredients: dict[str, int], products: dict[str, int | float], time: float):
+    def __init__(self, name: str, categories: set[str], ingredients: dict[str, int], products: dict[str, int | float], time: float):
         super().__init__(name)
-        self.category = category
+        self.categories = categories
         self.ingredients = ingredients
         self.products = products
         self.time = time

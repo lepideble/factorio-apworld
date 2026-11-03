@@ -1,6 +1,7 @@
 import collections
 import itertools
 
+from ...config import split_technologies_exclusions
 from ...data.raw import technologies
 from ...data.utils import upgrades_levels, upgrades_map
 from .classification import is_advancement
@@ -38,7 +39,7 @@ space_location_pool = collections.Counter()
 
 for technology in technologies:
     # Ignore upgrades because it would make things messy
-    if technology.name in upgrades_map:
+    if technology.name in split_technologies_exclusions or technology.name in upgrades_map:
         continue
 
     for quality_name in technology.unlocked_qualities:

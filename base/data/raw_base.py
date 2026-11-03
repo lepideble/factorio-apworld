@@ -220,7 +220,7 @@ recipes_unlocked_at_start: dict[str] = set()
 for prototype in get_prototypes('recipe'):
     recipe = Recipe(
         prototype['name'],
-        prototype.get('category', 'crafting'),
+        set(prototype.get('categories', ['crafting'])),
         {ingredient['name']: ingredient['amount'] for ingredient in prototype.get('ingredients', [])},
         parse_product_protoype_array(prototype.get('results', [])),
         prototype.get('energy_required', 0.5)
@@ -235,9 +235,10 @@ for prototype in get_prototypes('recipe'):
 # this is a list because keeping the order in which they are defined is important
 science_packs = list()
 
-for prototype in get_prototypes('tool'):
-    if prototype['subgroup'] == 'science-pack':
-        science_packs.append(prototype['name'])
+for prototype in get_prototypes('lab'):
+    for science_pack in prototype['inputs']:
+        if not science_pack in science_packs:
+            science_packs.append(science_pack)
 
 
 # Technologies

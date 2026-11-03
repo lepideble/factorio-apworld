@@ -105,6 +105,7 @@ _removed_technologies = [
     'artillery',
     'logistic-robotics',
     'rocket-silo',
+    'landing-pad-unloading-bay',
     # Technologies pruned by platformer because they have no remaining modifiers
     'advanced-material-processing',
     'advanced-material-processing-2',
@@ -112,7 +113,6 @@ _removed_technologies = [
     'asteroid-reprocessing',
     'automobilism',
     'big-mining-drill',
-    'biter-egg-handling',
     'electric-mining-drill',
     'flammables',
     'laser',

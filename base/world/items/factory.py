@@ -1,5 +1,6 @@
 from BaseClasses import ItemClassification
 
+from ...config import split_technologies_exclusions
 from ...data.raw import technologies
 from ...data.utils import upgrades_levels, upgrades_map
 from ..options import FactorioOptions
@@ -27,7 +28,7 @@ def create_items(options: FactorioOptions, progressive_chains: dict[str, list[st
         if technology.name in upgrades_map:
             continue
 
-        if options.split_technologies and len(technology.modifiers) == 0:
+        if options.split_technologies and technology.name not in split_technologies_exclusions and len(technology.modifiers) == 0:
             continue
 
         items.append(FactorioTechnologyItem(
@@ -81,7 +82,7 @@ def get_item_count(options: FactorioOptions) -> int:
         if technology.name in upgrades_map:
             continue
 
-        if options.split_technologies and len(technology.modifiers) == 0:
+        if options.split_technologies and technology.name not in split_technologies_exclusions and len(technology.modifiers) == 0:
             continue
 
         count += 1

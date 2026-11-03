@@ -10,13 +10,42 @@ local remove_effects_by_type = function(effects, type)
     return new_effects
 end
 
+local dummy_lab_name = "archipelago-lab"
+local dummy_pack_name = "archipelago-pack"
+
+data:extend({
+    {
+        type = "lab",
+        name = dummy_lab_name,
+        energy_usage = "60kW",
+        energy_source = { type = "void" },
+        inputs = { dummy_pack_name },
+        hidden = true,
+    },
+    {
+        type = "item",
+        name = dummy_pack_name,
+        icon = "__{{ mod_name }}__/graphics/icons/ap_unimportant.png",
+        stack_size = 1,
+        hidden = true,
+    },
+})
+
+local dummy_pack_unit = {
+    count = 1,
+    time = 1,
+    ingredients = {
+        {dummy_pack_name, 1},
+    },
+}
+
 local technologies = data.raw["technology"]
 
 {% for technology_name in technologies %}
 technologies["{{ technology_name }}"].hidden = true
-technologies["{{ technology_name }}"].unit = nil
-technologies["{{ technology_name }}"].research_trigger = { type = "scripted" }
-{%- if options.split_technologies and technology_name not in data_utils.upgrades_map %}
+technologies["{{ technology_name }}"].unit = dummy_pack_unit
+technologies["{{ technology_name }}"].research_trigger = nil
+{%- if options.split_technologies and technology_name not in config.split_technologies_exclusions and technology_name not in data_utils.upgrades_map %}
 if technologies["{{ technology_name }}"].effects then
     technologies["{{ technology_name }}"].effects = remove_effects_by_type(technologies["{{ technology_name }}"].effects, "unlock-quality")
     technologies["{{ technology_name }}"].effects = remove_effects_by_type(technologies["{{ technology_name }}"].effects, "unlock-recipe")
