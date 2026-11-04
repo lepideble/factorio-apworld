@@ -1,45 +1,7 @@
 from collections import defaultdict
-from collections.abc import Iterable
-from importlib import resources
-from json import loads as json_loads
 
 from .classes import GatherableResource, Machine, MinableResource, PumpableResource, Recipe, SpaceLocation, Surface, SurfaceCondition, Table, Technology
-
-
-# Raw data
-types = {
-    'assembling-machine': { 'children': ['rocket-silo'] },
-    'crafting-machine': { 'abstract': True, 'children': ['assembling-machine', 'furnace'] },
-    'entity': { 'abstract': True, 'children': ['cliff', 'entity-with-health', 'resource'] }, # Incomplete list
-    'entity-with-health': { 'abstract': True, 'children': ['entity-with-owner', 'fish', 'simple-entity', 'tree'] }, # Incomplete list
-    'entity-with-owner': { 'abstract': True, 'children': ['lightning-attractor'] }, # Incomplete list
-    'item': { 'children': ['ammo', 'capsule', 'gun', 'item-with-entity-data', 'item-with-label', 'module', 'rail-planner', 'space-platform-starter-pack', 'tool'] },
-    'item-with-inventory': { 'children': ['blueprint-book'] },
-    'item-with-label': { 'children': ['item-with-inventory', 'item-with-tags', 'selection-tool'] },
-    'selection-tool': { 'children': ['blueprint', 'copy-paste-tool', 'deconstruction-item', 'spidertron-remote', 'upgrade-item'] },
-    'space-location': { 'children': ['planet'] },
-    'tool': { 'children': ['armor', 'repair-tool'] },
-    'tree': { 'children': ['plant'] },
-}
-
-data = json_loads(resources.files(__name__).parent.joinpath('data.json').read_text())
-
-def get_prototypes(type: str) -> Iterable[dict]:
-    if not types.get(type, {}).get('abstract', False):
-        for value in data.get(type, {}).values():
-             if not value.get('hidden', False) and not value.get('parameter', False):
-                yield value
-    for child_type in types.get(type, {}).get('children', []):
-        yield from get_prototypes(child_type)
-
-def get_prototype(type: str, name: str) -> dict|None:
-    if not types.get(type, {}).get('abstract', False):
-        if (prototype := data.get(type, {}).get(name)):
-            return prototype
-    for child_type in types.get(type, {}).get('children', []):
-        if (prototype := get_prototype(child_type, name)):
-            return prototype
-    return None
+from .prototypes import get_prototype, get_prototypes
 
 
 # Utility parsing functions
@@ -68,16 +30,16 @@ def parse_surface_condition_array(surface_conditions: list) -> list[SurfaceCondi
 surfaces = Table()
 surfaces_accessible_at_start = {'nauvis'}
 
-for prototype in get_prototypes('surface'):
+for prototype in get_prototypes('SurfacePrototype'):
     surfaces.add(Surface(prototype['name'], prototype['surface_properties']))
 
-for prototype in get_prototypes('planet'):
+for prototype in get_prototypes('PlanetPrototype'):
     resources = []
 
     autoplace_controls = prototype['map_gen_settings']['autoplace_controls']
     autoplace_settings = prototype['map_gen_settings']['autoplace_settings']
 
-    for tile_data in get_prototypes('tile'):
+    for tile_data in get_prototypes('TilePrototype'):
         autoplace = autoplace_settings['tile']['settings'].get(tile_data['name'], autoplace_controls.get(tile_data.get('autoplace', {}).get('control')))
 
         if autoplace is None:
@@ -89,7 +51,7 @@ for prototype in get_prototypes('planet'):
         if tile_fluid is not None:
             resources.append(PumpableResource(tile_name, tile_fluid))
 
-    for entity_data in get_prototypes('entity'):
+    for entity_data in get_prototypes('EntityPrototype'):
         autoplace = autoplace_settings['entity']['settings'].get(entity_data['name'], autoplace_controls.get(entity_data.get('autoplace', {}).get('control')))
 
         if autoplace is None:
@@ -118,7 +80,7 @@ for prototype in get_prototypes('planet'):
 _asteroid_to_chunks = defaultdict(list)
 _asteroid_to_asteroid = defaultdict(list)
 
-for prototype in get_prototypes('asteroid'):
+for prototype in get_prototypes('AsteroidPrototype'):
     for dying_trigger_effect in prototype.get('dying_trigger_effect', []):
         if dying_trigger_effect['type'] == 'create-asteroid-chunk':
             _asteroid_to_chunks[prototype['name']].append(dying_trigger_effect['asteroid_name'])
@@ -136,7 +98,7 @@ def _recursive_asteroid_to_chunks(asteroid_name: str):
 
 space_locations = Table()
 
-for prototype in get_prototypes('space-location'):
+for prototype in get_prototypes('SpaceLocationPrototype'):
     asteroid_chunks = set()
 
     for asteroid_spawn_definition in prototype.get('asteroid_spawn_definitions', []):
@@ -147,7 +109,7 @@ for prototype in get_prototypes('space-location'):
 
     asteroid_chunks_results = set()
     for asteroid_chunk in asteroid_chunks:
-        asteroid_chunk_data = get_prototype('asteroid-chunk', asteroid_chunk)
+        asteroid_chunk_data = get_prototype('AsteroidChunkPrototype', asteroid_chunk)
         if 'minable' in asteroid_chunk_data:
             asteroid_chunks_results.add(asteroid_chunk_data['minable']['result'])
 
@@ -158,7 +120,7 @@ for prototype in get_prototypes('space-location'):
         accessible_at_start=prototype['name'] == 'nauvis',
     ))
 
-for prototype in get_prototypes('space-connection'):
+for prototype in get_prototypes('SpaceConnectionPrototype'):
     space_locations[prototype['from']].connections.add(prototype['to'])
     space_locations[prototype['to']].connections.add(prototype['from'])
 
@@ -166,7 +128,7 @@ for prototype in get_prototypes('space-connection'):
 # Machines
 machines = Table()
 
-for prototype in get_prototypes('character'):
+for prototype in get_prototypes('CharacterPrototype'):
     machines.add(Machine(
         prototype['name'],
         [],
@@ -174,21 +136,21 @@ for prototype in get_prototypes('character'):
         set(prototype['mining_categories']),
     ))
 
-for prototype in get_prototypes('crafting-machine'):
+for prototype in get_prototypes('CraftingMachinePrototype'):
     machines.add(Machine(
         prototype['name'],
         parse_surface_condition_array(prototype.get('surface_conditions', [])),
         set(prototype['crafting_categories']),
     ))
 
-for prototype in get_prototypes('lab'):
+for prototype in get_prototypes('LabPrototype'):
     machines.add(Machine(
         prototype['name'],
         parse_surface_condition_array(prototype.get('surface_conditions', [])),
         allowed_science_packs=set(prototype['inputs']),
     ))
 
-for prototype in get_prototypes('mining-drill'):
+for prototype in get_prototypes('MiningDrillPrototype'):
     machines.add(Machine(
         prototype['name'],
         parse_surface_condition_array(prototype.get('surface_conditions', [])),
@@ -196,14 +158,14 @@ for prototype in get_prototypes('mining-drill'):
         set(prototype['resource_categories']),
     ))
 
-for prototype in get_prototypes('offshore-pump'):
+for prototype in get_prototypes('OffshorePumpPrototype'):
     machines.add(Machine(
         prototype['name'],
         parse_surface_condition_array(prototype.get('surface_conditions', [])),
         is_offshore_pump=True,
     ))
 
-for prototype in get_prototypes('asteroid-collector'):
+for prototype in get_prototypes('AsteroidCollectorPrototype'):
     machines.add(Machine(
         prototype['name'],
         parse_surface_condition_array(prototype.get('surface_conditions', [])),
@@ -217,7 +179,7 @@ machines_for_manual_craft = {'character'}
 recipes = Table()
 recipes_unlocked_at_start: dict[str] = set()
 
-for prototype in get_prototypes('recipe'):
+for prototype in get_prototypes('RecipePrototype'):
     recipe = Recipe(
         prototype['name'],
         set(prototype.get('categories', ['crafting'])),
@@ -235,7 +197,7 @@ for prototype in get_prototypes('recipe'):
 # this is a list because keeping the order in which they are defined is important
 science_packs = list()
 
-for prototype in get_prototypes('lab'):
+for prototype in get_prototypes('LabPrototype'):
     for science_pack in prototype['inputs']:
         if not science_pack in science_packs:
             science_packs.append(science_pack)
@@ -244,7 +206,7 @@ for prototype in get_prototypes('lab'):
 # Technologies
 technologies = Table()
 
-for prototype in get_prototypes('technology'):
+for prototype in get_prototypes('TechnologyPrototype'):
     technology = Technology(prototype['name'])
 
     for effect in prototype.get('effects', []):
@@ -270,7 +232,7 @@ for prototype in get_prototypes('technology'):
 # Items
 items = set()
 
-for prototype in get_prototypes('item'):
+for prototype in get_prototypes('ItemPrototype'):
     if 'only-in-cursor' in prototype.get('flags', []):
         continue
     items.add(prototype['name'])
