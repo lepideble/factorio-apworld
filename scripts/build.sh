@@ -25,7 +25,7 @@ cp LICENSE "build/$WORLD"
 # Dump data
 PYTHONPATH="build/$WORLD/" python3 scripts/dump_data.py > "build/$WORLD/data/generated.py"
 
-rm "build/$WORLD/data.json" "build/$WORLD/data/raw.py" "build/$WORLD/data/raw_base.py"
+rm "build/$WORLD/data/data.json" "build/$WORLD/data/prototypes.py" "build/$WORLD/data/raw.py" "build/$WORLD/data/raw_base.py" "build/$WORLD/data/types.json"
 mv "build/$WORLD/data/generated.py" "build/$WORLD/data/raw.py"
 
 # Create archipelago.json
