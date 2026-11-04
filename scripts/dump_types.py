@@ -20,6 +20,13 @@ def dump_types():
         if len(children) > 0:
             types[prototype['name']]['children'] = children
 
+        defaults = {}
+        for property in prototype['properties']:
+            if 'default' in property and isinstance(property['default'], dict) and property['default']['complex_type'] == 'literal':
+                defaults[property['name']] = property['default']['value']
+        if len(defaults) > 0:
+            types[prototype['name']]['defaults'] = defaults
+
     print(json.dumps(types, indent = 4))
 
 if __name__ == '__main__':

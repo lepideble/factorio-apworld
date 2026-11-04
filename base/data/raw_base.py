@@ -69,7 +69,7 @@ for prototype in get_prototypes('PlanetPrototype'):
             results = {minable_data['result']: minable_data.get('count', 1)}
 
         if entity_data['type'] == 'resource':
-            resources.append(MinableResource(entity_name, entity_data.get('category', 'basic-solid'), results, minable_data.get('required_fluid')))
+            resources.append(MinableResource(entity_name, entity_data.category, results, minable_data.get('required_fluid')))
         else:
             resources.append(GatherableResource(entity_name, results))
 
@@ -185,11 +185,11 @@ for prototype in get_prototypes('RecipePrototype'):
         set(prototype.get('categories', ['crafting'])),
         {ingredient['name']: ingredient['amount'] for ingredient in prototype.get('ingredients', [])},
         parse_product_protoype_array(prototype.get('results', [])),
-        prototype.get('energy_required', 0.5)
+        prototype.energy_required,
     )
 
     recipes.add(recipe)
-    if prototype.get('enabled', True):
+    if prototype.enabled:
         recipes_unlocked_at_start.add(prototype['name'])
 
 
@@ -220,7 +220,7 @@ for prototype in get_prototypes('TechnologyPrototype'):
             case _:
                 technology.modifiers.append(effect['type'])
 
-    technology.upgrade = prototype.get('upgrade', False)
+    technology.upgrade = prototype.upgrade
     technology.max_level = prototype.get('max_level')
 
     if (unit := prototype.get('unit')) is not None:
