@@ -1,7 +1,12 @@
 {
     "AccumulatorPrototype": {
         "type": "accumulator",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true
+        }
     },
     "AchievementPrototype": {
         "type": "achievement",
@@ -32,7 +37,12 @@
             "TrainPathAchievementPrototype",
             "UseEntityInEnergyProductionAchievementPrototype",
             "UseItemAchievementPrototype"
-        ]
+        ],
+        "defaults": {
+            "allowed_without_fight": true,
+            "icon_size": 64,
+            "steam_stats_name": ""
+        }
     },
     "AchievementPrototypeWithCondition": {
         "parent": "AchievementPrototype",
@@ -58,29 +68,87 @@
     },
     "AgriculturalTowerPrototype": {
         "type": "agricultural-tower",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "growth_area_radius": 0.95,
+            "growth_grid_tile_size": 3,
+            "output_inventory_size": 0,
+            "quality_affects_module_slots": false,
+            "random_growth_offset": 0.25,
+            "randomize_planting_tile": true
+        }
     },
     "AirbornePollutantPrototype": {
         "type": "airborne-pollutant",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "damages_trees": true,
+            "localised_name_with_amount": "airborne-pollutant-name-with-amount.<name>"
+        }
     },
     "AmbientSound": {
-        "type": "ambient-sound"
+        "type": "ambient-sound",
+        "defaults": {
+            "play_on_all_surfaces": false,
+            "weight": 1
+        }
     },
     "AmmoCategory": {
         "type": "ammo-category",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "bonus_gui_order": "",
+            "icon_size": 64
+        }
     },
     "AmmoItemPrototype": {
         "type": "ammo",
-        "parent": "ItemPrototype"
+        "parent": "ItemPrototype",
+        "defaults": {
+            "magazine_size": 1,
+            "reload_time": 0,
+            "shoot_protected": false
+        }
     },
     "AmmoTurretPrototype": {
         "type": "ammo-turret",
-        "parent": "TurretPrototype"
+        "parent": "TurretPrototype",
+        "defaults": {
+            "prepare_with_no_ammo": true
+        }
     },
     "AnimationPrototype": {
-        "type": "animation"
+        "type": "animation",
+        "defaults": {
+            "allow_forced_downscale": false,
+            "animation_speed": 1,
+            "apply_runtime_tint": false,
+            "apply_special_effect": false,
+            "blend_mode": "normal",
+            "draw_as_glow": false,
+            "draw_as_light": false,
+            "draw_as_shadow": false,
+            "frame_count": 1,
+            "generate_sdf": false,
+            "invert_colors": false,
+            "line_length": 0,
+            "load_in_minimal_mode": false,
+            "mipmap_count": 0,
+            "premul_alpha": true,
+            "priority": "medium",
+            "repeat_count": 1,
+            "rotate_shift": false,
+            "run_mode": "forward",
+            "scale": 1,
+            "surface": "any",
+            "tint_as_overlay": false,
+            "usage": "any",
+            "x": 0,
+            "y": 0
+        }
     },
     "ArithmeticCombinatorPrototype": {
         "type": "arithmetic-combinator",
@@ -88,50 +156,144 @@
     },
     "ArmorPrototype": {
         "type": "armor",
-        "parent": "ToolPrototype"
+        "parent": "ToolPrototype",
+        "defaults": {
+            "provides_flight": false
+        }
     },
     "ArrowPrototype": {
         "type": "arrow",
-        "parent": "EntityPrototype"
+        "parent": "EntityPrototype",
+        "defaults": {
+            "blinking": false,
+            "selection_priority": 20
+        }
     },
     "ArtilleryFlarePrototype": {
         "type": "artillery-flare",
-        "parent": "EntityPrototype"
+        "parent": "EntityPrototype",
+        "defaults": {
+            "early_death_ticks": 180,
+            "initial_frame_speed": 1,
+            "initial_height": 0,
+            "initial_vertical_speed": 0,
+            "movement_modifier": 1,
+            "movement_modifier_when_on_ground": 0.8,
+            "regular_trigger_effect_frequency": 0,
+            "render_layer": "object",
+            "render_layer_when_on_ground": "lower-object",
+            "selection_priority": 20,
+            "shots_per_flare": 1
+        }
     },
     "ArtilleryProjectilePrototype": {
         "type": "artillery-projectile",
-        "parent": "EntityPrototype"
+        "parent": "EntityPrototype",
+        "defaults": {
+            "height_from_ground": 1,
+            "rotatable": true,
+            "selection_priority": 20
+        }
     },
     "ArtilleryTurretPrototype": {
         "type": "artillery-turret",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "alert_when_attacking": true,
+            "base_picture_render_layer": "lower-object",
+            "base_picture_secondary_draw_order": 0,
+            "cannon_parking_frame_count": 0,
+            "cannon_parking_speed": 1,
+            "circuit_wire_max_distance": 0,
+            "disable_automatic_firing": false,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "is_military_target": true,
+            "turn_after_shooting_cooldown": 0
+        }
     },
     "ArtilleryWagonPrototype": {
         "type": "artillery-wagon",
-        "parent": "RollingStockPrototype"
+        "parent": "RollingStockPrototype",
+        "defaults": {
+            "cannon_base_height": 0.0,
+            "cannon_base_shift_when_horizontal": 0.0,
+            "cannon_base_shift_when_vertical": 0.0,
+            "cannon_parking_frame_count": 0,
+            "cannon_parking_speed": 1,
+            "disable_automatic_firing": false,
+            "turn_after_shooting_cooldown": 0
+        }
     },
     "AssemblingMachinePrototype": {
         "type": "assembling-machine",
         "parent": "CraftingMachinePrototype",
         "children": [
             "RocketSiloPrototype"
-        ]
+        ],
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "fixed_recipe": "",
+            "fluid_boxes_off_when_no_fluid_recipe": false,
+            "gui_title_key": "",
+            "ingredient_count": 65535,
+            "max_item_product_count": 65535
+        }
     },
     "AsteroidChunkPrototype": {
         "type": "asteroid-chunk",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "icon_size": 64
+        }
     },
     "AsteroidCollectorPrototype": {
         "type": "asteroid-collector",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "arm_angular_speed_cap_base": 0.1,
+            "arm_angular_speed_cap_quality_scaling": 0.1,
+            "arm_count_base": 3,
+            "arm_count_quality_scaling": 1,
+            "arm_inventory_size": 5,
+            "arm_inventory_size_quality_increase": 0,
+            "arm_speed_base": 0.1,
+            "arm_speed_quality_scaling": 0.1,
+            "circuit_wire_max_distance": 0,
+            "collection_box_offset": 0.0,
+            "deposit_radius": 1.5,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "energy_usage_quality_scaling": 0.1,
+            "head_collection_radius": 0.6,
+            "held_items_display_count": 5,
+            "held_items_offset": 0.1,
+            "held_items_spread": 0.15,
+            "inventory_size": 39,
+            "inventory_size_quality_increase": 5,
+            "minimal_arm_swing_segment_retraction": 6,
+            "tether_size": 0.4,
+            "unpowered_arm_speed_scale": 0.3
+        }
     },
     "AsteroidPrototype": {
         "type": "asteroid",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "damage_per_hp": 1.0
+        }
     },
     "AutoplaceControl": {
         "type": "autoplace-control",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "can_be_disabled": true,
+            "hidden": false,
+            "related_to_fight_achievements": false,
+            "richness": false
+        }
     },
     "BatteryEquipmentPrototype": {
         "type": "battery-equipment",
@@ -139,11 +301,21 @@
     },
     "BeaconPrototype": {
         "type": "beacon",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "beacon_counter": "total",
+            "quality_affects_module_slots": false,
+            "quality_affects_supply_area_distance": false
+        }
     },
     "BeamPrototype": {
         "type": "beam",
-        "parent": "EntityPrototype"
+        "parent": "EntityPrototype",
+        "defaults": {
+            "action_triggered_automatically": false,
+            "random_target_offset": false,
+            "selection_priority": 20
+        }
     },
     "BeltImmunityEquipmentPrototype": {
         "type": "belt-immunity-equipment",
@@ -151,23 +323,45 @@
     },
     "BlueprintBookPrototype": {
         "type": "blueprint-book",
-        "parent": "ItemWithInventoryPrototype"
+        "parent": "ItemWithInventoryPrototype",
+        "defaults": {
+            "draw_label_for_cursor_render": true
+        }
     },
     "BlueprintItemPrototype": {
         "type": "blueprint",
-        "parent": "SelectionToolPrototype"
+        "parent": "SelectionToolPrototype",
+        "defaults": {
+            "always_include_tiles": false,
+            "draw_label_for_cursor_render": true
+        }
     },
     "BoilerPrototype": {
         "type": "boiler",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "fire_flicker_enabled": false,
+            "fire_glow_flicker_enabled": false,
+            "mode": "heat-fluid-inside"
+        }
     },
     "BuildEntityAchievementPrototype": {
         "type": "build-entity-achievement",
-        "parent": "AchievementPrototype"
+        "parent": "AchievementPrototype",
+        "defaults": {
+            "amount": 1,
+            "limited_to_one_game": false
+        }
     },
     "BurnerGeneratorPrototype": {
         "type": "burner-generator",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "always_draw_idle_animation": false
+        }
     },
     "BurnerUsagePrototype": {
         "type": "burner-usage",
@@ -179,34 +373,80 @@
     },
     "CaptureRobotPrototype": {
         "type": "capture-robot",
-        "parent": "FlyingRobotPrototype"
+        "parent": "FlyingRobotPrototype",
+        "defaults": {
+            "capture_speed": 1,
+            "search_radius": 1
+        }
     },
     "CarPrototype": {
         "type": "car",
-        "parent": "VehiclePrototype"
+        "parent": "VehiclePrototype",
+        "defaults": {
+            "auto_sort_inventory": false,
+            "darkness_to_render_light_animation": 0.3,
+            "driving_sound_volume_modifier": 1.0,
+            "has_belt_immunity": false,
+            "immune_to_all_impacts": false,
+            "immune_to_cliff_impacts": true,
+            "immune_to_rock_impacts": false,
+            "immune_to_tree_impacts": false,
+            "render_layer": "object",
+            "tank_driving": false,
+            "trash_inventory_size": 0,
+            "turret_return_timeout": 60,
+            "turret_rotation_speed": 0.01
+        }
     },
     "CargoBayPrototype": {
         "type": "cargo-bay",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "allow_unloading": false,
+            "build_grid_size": 2,
+            "has_direction": false,
+            "use_unloading_distance_limit": false
+        }
     },
     "CargoLandingPadPrototype": {
         "type": "cargo-landing-pad",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "radar_range": 0,
+            "trash_inventory_size": 0
+        }
     },
     "CargoPodPrototype": {
         "type": "cargo-pod",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "selection_priority": 20
+        }
     },
     "CargoWagonPrototype": {
         "type": "cargo-wagon",
         "parent": "RollingStockPrototype",
         "children": [
             "InfinityCargoWagonPrototype"
-        ]
+        ],
+        "defaults": {
+            "quality_affects_inventory_size": false
+        }
     },
     "ChainActiveTriggerPrototype": {
         "type": "chain-active-trigger",
-        "parent": "ActiveTriggerPrototype"
+        "parent": "ActiveTriggerPrototype",
+        "defaults": {
+            "fork_chance": 0,
+            "fork_chance_increase_per_quality_level": 0.1,
+            "jump_delay_ticks": 0,
+            "max_forks_per_jump": 1,
+            "max_jumps": 5,
+            "max_range_per_jump": 5
+        }
     },
     "ChangedSurfaceAchievementPrototype": {
         "type": "change-surface-achievement",
@@ -214,11 +454,25 @@
     },
     "CharacterCorpsePrototype": {
         "type": "character-corpse",
-        "parent": "EntityPrototype"
+        "parent": "EntityPrototype",
+        "defaults": {
+            "render_layer": "object"
+        }
     },
     "CharacterPrototype": {
         "type": "character",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "crafting_speed": 1,
+            "enter_vehicle_distance": 3.0,
+            "flying_bob_speed": 1,
+            "grounded_landing_search_radius": 0,
+            "guns_inventory_size": 3,
+            "has_belt_immunity": false,
+            "is_military_target": true,
+            "respawn_time": 10,
+            "tool_attack_distance": 1.5
+        }
     },
     "CliffPrototype": {
         "type": "cliff",
@@ -230,11 +484,22 @@
     },
     "CombatRobotCountAchievementPrototype": {
         "type": "combat-robot-count-achievement",
-        "parent": "AchievementPrototype"
+        "parent": "AchievementPrototype",
+        "defaults": {
+            "count": 1
+        }
     },
     "CombatRobotPrototype": {
         "type": "combat-robot",
-        "parent": "FlyingRobotPrototype"
+        "parent": "FlyingRobotPrototype",
+        "defaults": {
+            "follows_player": false,
+            "friction": 0,
+            "max_separation_force": 0.0,
+            "range_from_player": 0,
+            "separation_force_factor": 0.0,
+            "separation_range": 0.0
+        }
     },
     "CombinatorPrototype": {
         "parent": "EntityWithOwnerPrototype",
@@ -242,7 +507,13 @@
             "ArithmeticCombinatorPrototype",
             "DeciderCombinatorPrototype",
             "SelectorCombinatorPrototype"
-        ]
+        ],
+        "defaults": {
+            "activity_led_hold_time": 5,
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true
+        }
     },
     "CompleteObjectiveAchievementPrototype": {
         "type": "complete-objective-achievement",
@@ -250,15 +521,28 @@
     },
     "ConstantCombinatorPrototype": {
         "type": "constant-combinator",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "pulse_duration": 0
+        }
     },
     "ConstructWithRobotsAchievementPrototype": {
         "type": "construct-with-robots-achievement",
-        "parent": "AchievementPrototype"
+        "parent": "AchievementPrototype",
+        "defaults": {
+            "amount": 0,
+            "more_than_manually": false
+        }
     },
     "ConstructionRobotPrototype": {
         "type": "construction-robot",
-        "parent": "RobotWithLogisticInterfacePrototype"
+        "parent": "RobotWithLogisticInterfacePrototype",
+        "defaults": {
+            "mined_sound_volume_modifier": 1.0
+        }
     },
     "ContainerPrototype": {
         "type": "container",
@@ -266,29 +550,84 @@
         "children": [
             "LogisticContainerPrototype",
             "TemporaryContainerPrototype"
-        ]
+        ],
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "default_status": "normal",
+            "direction_count": 1,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "inventory_type": "with_bar",
+            "inventory_weight_limit": 0,
+            "quality_affects_inventory_size": true
+        }
     },
     "CopyPasteToolPrototype": {
         "type": "copy-paste-tool",
-        "parent": "SelectionToolPrototype"
+        "parent": "SelectionToolPrototype",
+        "defaults": {
+            "always_include_tiles": false,
+            "cuts": false
+        }
     },
     "CorpsePrototype": {
         "type": "corpse",
         "parent": "EntityPrototype",
         "children": [
             "RailRemnantsPrototype"
-        ]
+        ],
+        "defaults": {
+            "animation_overlay_final_render_layer": "corpse",
+            "animation_overlay_render_layer": "object",
+            "animation_render_layer": "object",
+            "auto_setup_collision_box": true,
+            "decay_frame_transition_duration": 0,
+            "dying_speed": 1,
+            "expires": true,
+            "final_render_layer": "corpse",
+            "ground_patch_fade_in_delay": 0,
+            "ground_patch_fade_in_speed": 0,
+            "ground_patch_fade_out_duration": 0,
+            "ground_patch_fade_out_start": 0,
+            "ground_patch_render_layer": "ground-patch",
+            "protected_from_tile_building": false,
+            "remove_on_entity_placement": true,
+            "remove_on_tile_placement": true,
+            "selection_priority": 20,
+            "shuffle_directions_at_frame": 1,
+            "splash_render_layer": "object",
+            "splash_speed": 1,
+            "underwater_layer_offset": 1,
+            "use_decay_layer": false,
+            "use_tile_color_for_ground_patch_tint": false
+        }
     },
     "CraftingMachinePrototype": {
         "parent": "EntityWithOwnerPrototype",
         "children": [
             "AssemblingMachinePrototype",
             "FurnacePrototype"
-        ]
+        ],
+        "defaults": {
+            "animation_random_start_frame": false,
+            "draw_entity_info_icon_background": true,
+            "fast_transfer_modules_into_module_slots_only": false,
+            "ignore_output_full": false,
+            "match_animation_speed_to_activity": true,
+            "module_slots": 0,
+            "quality_affects_energy_usage": false,
+            "quality_affects_module_slots": false,
+            "return_ingredients_on_change": true,
+            "show_recipe_icon": true,
+            "show_recipe_icon_on_map": true
+        }
     },
     "CreatePlatformAchievementPrototype": {
         "type": "create-platform-achievement",
-        "parent": "AchievementPrototype"
+        "parent": "AchievementPrototype",
+        "defaults": {
+            "amount": 1
+        }
     },
     "CurvedRailAPrototype": {
         "type": "curved-rail-a",
@@ -310,7 +649,17 @@
     },
     "CustomInputPrototype": {
         "type": "custom-input",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "action": "lua",
+            "block_modifiers": false,
+            "consuming": "none",
+            "enabled": true,
+            "enabled_while_in_cutscene": false,
+            "enabled_while_spectating": false,
+            "include_selected_prototype": false,
+            "linked_game_control": ""
+        }
     },
     "DamageType": {
         "type": "damage-type",
@@ -330,15 +679,31 @@
     },
     "DeconstructionItemPrototype": {
         "type": "deconstruction-item",
-        "parent": "SelectionToolPrototype"
+        "parent": "SelectionToolPrototype",
+        "defaults": {
+            "always_include_tiles": false
+        }
     },
     "DecorativePrototype": {
         "type": "optimized-decorative",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "decal_overdraw_priority": 0,
+            "grows_through_rail_path": false,
+            "minimal_separation": 0.0,
+            "opacity_over_water": 1,
+            "render_layer": "decorative",
+            "target_count": 0,
+            "tile_layer": 0
+        }
     },
     "DelayedActiveTriggerPrototype": {
         "type": "delayed-active-trigger",
-        "parent": "ActiveTriggerPrototype"
+        "parent": "ActiveTriggerPrototype",
+        "defaults": {
+            "cancel_when_source_is_destroyed": false,
+            "repeat_count": 0
+        }
     },
     "DeliverByRobotsAchievementPrototype": {
         "type": "deliver-by-robots-achievement",
@@ -352,19 +717,38 @@
     },
     "DepleteResourceAchievementPrototype": {
         "type": "deplete-resource-achievement",
-        "parent": "AchievementPrototype"
+        "parent": "AchievementPrototype",
+        "defaults": {
+            "amount": 1,
+            "limited_to_one_game": false
+        }
     },
     "DestroyCliffAchievementPrototype": {
         "type": "destroy-cliff-achievement",
-        "parent": "AchievementPrototype"
+        "parent": "AchievementPrototype",
+        "defaults": {
+            "amount": 1,
+            "limited_to_one_game": false
+        }
     },
     "DisplayPanelPrototype": {
         "type": "display-panel",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "max_records_count": 100,
+            "max_text_length": 500,
+            "max_text_width": 400
+        }
     },
     "DontBuildEntityAchievementPrototype": {
         "type": "dont-build-entity-achievement",
-        "parent": "AchievementPrototypeWithCondition"
+        "parent": "AchievementPrototypeWithCondition",
+        "defaults": {
+            "amount": 0
+        }
     },
     "DontCraftManuallyAchievementPrototype": {
         "type": "dont-craft-manually-achievement",
@@ -380,22 +764,50 @@
     },
     "DontUseEntityInEnergyProductionAchievementPrototype": {
         "type": "dont-use-entity-in-energy-production-achievement",
-        "parent": "AchievementPrototypeWithCondition"
+        "parent": "AchievementPrototypeWithCondition",
+        "defaults": {
+            "last_hour_only": false,
+            "minimum_energy_produced": "0J"
+        }
     },
     "EditorControllerPrototype": {
         "type": "editor-controller"
     },
     "ElectricEnergyInterfaceEquipmentPrototype": {
         "type": "electric-energy-interface-equipment",
-        "parent": "EquipmentPrototype"
+        "parent": "EquipmentPrototype",
+        "defaults": {
+            "energy_production": 0,
+            "energy_usage": 0,
+            "gui_mode": "none",
+            "show_power_production_in_tooltip": true,
+            "show_power_usage_in_tooltip": true,
+            "show_stored_energy_in_tooltip": false
+        }
     },
     "ElectricEnergyInterfacePrototype": {
         "type": "electric-energy-interface",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "allow_copy_paste": false,
+            "continuous_animation": false,
+            "energy_production": 0,
+            "energy_usage": 0,
+            "gui_mode": "none",
+            "render_layer": "object"
+        }
     },
     "ElectricPolePrototype": {
         "type": "electric-pole",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "auto_connect_up_to_n_wires": 5,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "maximum_wire_distance": 0,
+            "rewire_neighbours_when_destroying": true,
+            "track_coverage_during_drag_building": true
+        }
     },
     "ElectricTurretPrototype": {
         "type": "electric-turret",
@@ -403,23 +815,47 @@
     },
     "ElevatedCurvedRailAPrototype": {
         "type": "elevated-curved-rail-a",
-        "parent": "CurvedRailAPrototype"
+        "parent": "CurvedRailAPrototype",
+        "defaults": {
+            "selection_priority": 55,
+            "tall": true
+        }
     },
     "ElevatedCurvedRailBPrototype": {
         "type": "elevated-curved-rail-b",
-        "parent": "CurvedRailBPrototype"
+        "parent": "CurvedRailBPrototype",
+        "defaults": {
+            "selection_priority": 55,
+            "tall": true
+        }
     },
     "ElevatedHalfDiagonalRailPrototype": {
         "type": "elevated-half-diagonal-rail",
-        "parent": "HalfDiagonalRailPrototype"
+        "parent": "HalfDiagonalRailPrototype",
+        "defaults": {
+            "selection_priority": 55,
+            "tall": true
+        }
     },
     "ElevatedStraightRailPrototype": {
         "type": "elevated-straight-rail",
-        "parent": "StraightRailPrototype"
+        "parent": "StraightRailPrototype",
+        "defaults": {
+            "selection_priority": 55,
+            "tall": true
+        }
     },
     "EnemySpawnerPrototype": {
         "type": "unit-spawner",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "allow_run_time_change_of_is_military_target": false,
+            "is_military_target": true,
+            "max_darkness_to_spawn": 1.0,
+            "min_darkness_to_spawn": 0.0,
+            "spawn_decorations_on_expansion": false,
+            "time_to_capture": 0
+        }
     },
     "EnergyShieldEquipmentPrototype": {
         "type": "energy-shield-equipment",
@@ -458,7 +894,23 @@
             "SpeechBubblePrototype",
             "StickerPrototype",
             "TileGhostPrototype"
-        ]
+        ],
+        "defaults": {
+            "allow_copy_paste": true,
+            "build_grid_size": 1,
+            "draw_stateless_visualisations_in_ghost": false,
+            "drawing_box_vertical_extension": 0.0,
+            "fast_replaceable_group": "",
+            "heating_energy": "0W",
+            "icon_size": 64,
+            "impact_category": "default",
+            "protected_from_tile_building": true,
+            "remove_decoratives": "automatic",
+            "selectable_in_game": true,
+            "selection_priority": 50,
+            "show_fluid_visualization_when_in_cursor": false,
+            "tall": false
+        }
     },
     "EntityWithHealthPrototype": {
         "parent": "EntityPrototype",
@@ -467,7 +919,18 @@
             "FishPrototype",
             "SimpleEntityPrototype",
             "TreePrototype"
-        ]
+        ],
+        "defaults": {
+            "alert_when_damaged": true,
+            "create_ghost_on_death": true,
+            "healing_per_tick": 0,
+            "hide_resistances": true,
+            "integration_patch_render_layer": "lower-object",
+            "max_health": 10,
+            "overkill_fraction": 0.05,
+            "random_corpse_variation": false,
+            "repair_speed_modifier": 1
+        }
     },
     "EntityWithOwnerPrototype": {
         "parent": "EntityWithHealthPrototype",
@@ -536,11 +999,19 @@
             "ValvePrototype",
             "VehiclePrototype",
             "WallPrototype"
-        ]
+        ],
+        "defaults": {
+            "allow_run_time_change_of_is_military_target": false,
+            "is_military_target": false
+        }
     },
     "EquipArmorAchievementPrototype": {
         "type": "equip-armor-achievement",
-        "parent": "AchievementPrototype"
+        "parent": "AchievementPrototype",
+        "defaults": {
+            "amount": 1,
+            "limited_to_one_game": false
+        }
     },
     "EquipmentCategory": {
         "type": "equipment-category",
@@ -552,7 +1023,10 @@
     },
     "EquipmentGridPrototype": {
         "type": "equipment-grid",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "locked": false
+        }
     },
     "EquipmentPrototype": {
         "parent": "Prototype",
@@ -573,11 +1047,76 @@
     },
     "ExplosionPrototype": {
         "type": "explosion",
-        "parent": "EntityPrototype"
+        "parent": "EntityPrototype",
+        "defaults": {
+            "beam": false,
+            "correct_rotation": false,
+            "delay": 0,
+            "delay_deviation": 0,
+            "fade_in_duration": 0,
+            "fade_out_duration": 0,
+            "height": 1,
+            "light_intensity_factor_final": 0.0,
+            "light_intensity_factor_initial": 0.0,
+            "light_intensity_peak_end_progress": 0.9,
+            "light_intensity_peak_start_progress": 0.0,
+            "light_size_factor_final": 0.1,
+            "light_size_factor_initial": 0.05,
+            "light_size_peak_end_progress": 0.5,
+            "light_size_peak_start_progress": 0.1,
+            "render_layer": "explosion",
+            "rotate": false,
+            "scale": 1,
+            "scale_animation_speed": false,
+            "scale_deviation": 0,
+            "scale_end": 1,
+            "scale_in_duration": 0,
+            "scale_increment_per_tick": 0,
+            "scale_initial": 1,
+            "scale_initial_deviation": 0,
+            "scale_out_duration": 0,
+            "selection_priority": 20,
+            "smoke_count": 0,
+            "smoke_slow_down_factor": 0
+        }
     },
     "FireFlamePrototype": {
         "type": "fire",
-        "parent": "EntityPrototype"
+        "parent": "EntityPrototype",
+        "defaults": {
+            "add_fuel_cooldown": 10,
+            "burnt_patch_alpha_default": 1,
+            "burnt_patch_lifetime": 1800,
+            "damage_multiplier_decrease_per_tick": 0.0,
+            "damage_multiplier_increase_per_added_fuel": 0.0,
+            "delay_between_initial_flames": 10,
+            "fade_in_duration": 30,
+            "fade_out_duration": 30,
+            "flame_alpha": 1,
+            "flame_alpha_deviation": 0,
+            "initial_flame_count": 0,
+            "initial_lifetime": 300,
+            "initial_render_layer": "object",
+            "lifetime_increase_by": 20,
+            "lifetime_increase_cooldown": 10,
+            "light_size_modifier_maximum": 1,
+            "light_size_modifier_per_flame": 0,
+            "limit_overlapping_particles": false,
+            "maximum_damage_multiplier": 1.0,
+            "maximum_spread_count": 200,
+            "particle_alpha": 1,
+            "particle_alpha_blend_duration": 0,
+            "particle_alpha_deviation": 0,
+            "render_layer": "object",
+            "secondary_picture_fade_out_duration": 30,
+            "secondary_picture_fade_out_start": 0,
+            "secondary_render_layer": "object",
+            "selection_priority": 20,
+            "smoke_fade_in_duration": 30,
+            "smoke_fade_out_duration": 30,
+            "tree_dying_factor": 0,
+            "uses_alternative_behavior": false
+        }
     },
     "FishPrototype": {
         "type": "fish",
@@ -585,11 +1124,39 @@
     },
     "FluidPrototype": {
         "type": "fluid",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "auto_barrel": true,
+            "draw_as_glow": false,
+            "emissions_multiplier": 1.0,
+            "fuel_value": "0J",
+            "heat_capacity": "1kJ",
+            "hidden": false,
+            "icon_size": 64
+        }
     },
     "FluidStreamPrototype": {
         "type": "stream",
-        "parent": "EntityPrototype"
+        "parent": "EntityPrototype",
+        "defaults": {
+            "oriented_particle": false,
+            "particle_alpha_per_part": 1,
+            "particle_buffer_size": 20,
+            "particle_end_alpha": 1,
+            "particle_fade_out_duration": 65535,
+            "particle_fade_out_threshold": 1,
+            "particle_loop_exit_threshold": 0,
+            "particle_loop_frame_count": 1,
+            "particle_scale_per_part": 1,
+            "particle_start_alpha": 1,
+            "particle_start_scale": 1,
+            "progress_to_create_smoke": 0.5,
+            "selection_priority": 20,
+            "shadow_scale_enabled": false,
+            "target_initial_position_only": false,
+            "target_position_deviation": 0,
+            "width": 0.5
+        }
     },
     "FluidTurretPrototype": {
         "type": "fluid-turret",
@@ -597,7 +1164,15 @@
     },
     "FluidWagonPrototype": {
         "type": "fluid-wagon",
-        "parent": "RollingStockPrototype"
+        "parent": "RollingStockPrototype",
+        "defaults": {
+            "base_valve_z_offset_projected_when_horizontal": -1.375,
+            "base_valve_z_offset_projected_when_vertical": -0.65,
+            "connection_category": "default",
+            "quality_affects_capacity": false,
+            "tank_count": 3,
+            "tank_spacing": 2.0
+        }
     },
     "FlyingRobotPrototype": {
         "parent": "EntityWithOwnerPrototype",
@@ -605,10 +1180,25 @@
             "CaptureRobotPrototype",
             "CombatRobotPrototype",
             "RobotWithLogisticInterfacePrototype"
-        ]
+        ],
+        "defaults": {
+            "energy_per_move": 0,
+            "energy_per_tick": 0,
+            "is_military_target": true,
+            "max_energy": 0,
+            "max_to_charge": 0.95,
+            "min_to_charge": 0.2,
+            "selection_priority": 35,
+            "speed_multiplier_when_out_of_energy": 0
+        }
     },
     "FontPrototype": {
-        "type": "font"
+        "type": "font",
+        "defaults": {
+            "border": false,
+            "filtered": false,
+            "spacing": 0
+        }
     },
     "FuelCategory": {
         "type": "fuel-category",
@@ -616,19 +1206,37 @@
     },
     "FurnacePrototype": {
         "type": "furnace",
-        "parent": "CraftingMachinePrototype"
+        "parent": "CraftingMachinePrototype",
+        "defaults": {
+            "cant_insert_at_source_message_key": "inventory-restriction.cant-be-smelted",
+            "circuit_wire_max_distance": 0,
+            "custom_input_slot_tooltip_key": "",
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true
+        }
     },
     "FusionGeneratorPrototype": {
         "type": "fusion-generator",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "burns_fluid": false,
+            "effectivity": 1
+        }
     },
     "FusionReactorPrototype": {
         "type": "fusion-reactor",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "neighbour_bonus": 1,
+            "two_direction_only": false
+        }
     },
     "GatePrototype": {
         "type": "gate",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "fadeout_interval": 0
+        }
     },
     "GeneratorEquipmentPrototype": {
         "type": "generator-equipment",
@@ -636,18 +1244,33 @@
     },
     "GeneratorPrototype": {
         "type": "generator",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "burns_fluid": false,
+            "destroy_non_fuel_fluid": true,
+            "effectivity": 1,
+            "scale_fluid_usage": false,
+            "two_direction_only": false
+        }
     },
     "GodControllerPrototype": {
         "type": "god-controller"
     },
     "GroupAttackAchievementPrototype": {
         "type": "group-attack-achievement",
-        "parent": "AchievementPrototype"
+        "parent": "AchievementPrototype",
+        "defaults": {
+            "amount": 1
+        }
     },
     "GuiStyle": {
         "type": "gui-style",
-        "parent": "PrototypeBase"
+        "parent": "PrototypeBase",
+        "defaults": {
+            "default_sprite_priority": "medium",
+            "default_sprite_scale": 1,
+            "default_tileset": ""
+        }
     },
     "GunPrototype": {
         "type": "gun",
@@ -662,34 +1285,85 @@
     },
     "HeatInterfacePrototype": {
         "type": "heat-interface",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "gui_mode": "all",
+            "heating_radius": 1
+        }
     },
     "HeatPipePrototype": {
         "type": "heat-pipe",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "heating_radius": 1,
+            "selection_priority": 45
+        }
     },
     "HighlightBoxEntityPrototype": {
         "type": "highlight-box",
-        "parent": "EntityPrototype"
+        "parent": "EntityPrototype",
+        "defaults": {
+            "selection_priority": 20
+        }
     },
     "ImpactCategory": {
         "type": "impact-category"
     },
     "InfinityCargoWagonPrototype": {
         "type": "infinity-cargo-wagon",
-        "parent": "CargoWagonPrototype"
+        "parent": "CargoWagonPrototype",
+        "defaults": {
+            "erase_contents_when_mined": true,
+            "gui_mode": "all",
+            "preserve_contents_when_created": true
+        }
     },
     "InfinityContainerPrototype": {
         "type": "infinity-container",
-        "parent": "LogisticContainerPrototype"
+        "parent": "LogisticContainerPrototype",
+        "defaults": {
+            "gui_mode": "all",
+            "preserve_contents_when_created": true,
+            "render_not_in_network_icon": false
+        }
     },
     "InfinityPipePrototype": {
         "type": "infinity-pipe",
-        "parent": "PipePrototype"
+        "parent": "PipePrototype",
+        "defaults": {
+            "gui_mode": "all"
+        }
     },
     "InserterPrototype": {
         "type": "inserter",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "allow_burner_leech": false,
+            "allow_custom_vectors": false,
+            "bulk": false,
+            "chases_belt_items": true,
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "draw_held_item": true,
+            "draw_inserter_arrow": true,
+            "energy_per_movement": 0,
+            "energy_per_rotation": 0,
+            "enter_drop_mode_if_held_stack_spoiled": false,
+            "filter_count": 0,
+            "grab_less_to_match_belt_stack": false,
+            "hand_size": 0.75,
+            "max_belt_stack_size": 1,
+            "stack_size_bonus": 0,
+            "starting_distance": 0.7,
+            "use_easter_egg": true,
+            "use_mirroring": true,
+            "uses_inserter_stack_size_bonus": true,
+            "wait_for_full_hand": false
+        }
     },
     "InventoryBonusEquipmentPrototype": {
         "type": "inventory-bonus-equipment",
@@ -701,7 +1375,10 @@
     },
     "ItemGroup": {
         "type": "item-group",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "icon_size": 64
+        }
     },
     "ItemPrototype": {
         "type": "item",
@@ -716,11 +1393,38 @@
             "RailPlannerPrototype",
             "SpacePlatformStarterPackPrototype",
             "ToolPrototype"
-        ]
+        ],
+        "defaults": {
+            "auto_recycle": true,
+            "burnt_result": "",
+            "dark_background_icon_size": 64,
+            "default_import_location": "nauvis",
+            "fuel_acceleration_multiplier": 1.0,
+            "fuel_emissions_multiplier": 1.0,
+            "fuel_top_speed_multiplier": 1.0,
+            "fuel_value": "0J",
+            "has_random_tint": true,
+            "hidden": false,
+            "icon_size": 64,
+            "ingredient_to_weight_coefficient": 0.5,
+            "lab_ignores_spoil_percent": false,
+            "place_as_equipment_result": "",
+            "place_result": "",
+            "quality_affects_spoil_ticks": true,
+            "science_capacity": 1,
+            "send_to_orbit_mode": "not-sendable",
+            "space_platform_request_priority": false,
+            "spoil_level": 0,
+            "spoil_quality_change": 0,
+            "spoil_ticks": 0
+        }
     },
     "ItemRequestProxyPrototype": {
         "type": "item-request-proxy",
-        "parent": "EntityPrototype"
+        "parent": "EntityPrototype",
+        "defaults": {
+            "use_target_entity_alert_icon_shift": true
+        }
     },
     "ItemSubGroup": {
         "type": "item-subgroup",
@@ -728,14 +1432,23 @@
     },
     "ItemWithEntityDataPrototype": {
         "type": "item-with-entity-data",
-        "parent": "ItemPrototype"
+        "parent": "ItemPrototype",
+        "defaults": {
+            "icon_tintable_mask_size": 64,
+            "icon_tintable_size": 64
+        }
     },
     "ItemWithInventoryPrototype": {
         "type": "item-with-inventory",
         "parent": "ItemWithLabelPrototype",
         "children": [
             "BlueprintBookPrototype"
-        ]
+        ],
+        "defaults": {
+            "filter_message_key": "item-limitation.item-not-allowed-in-this-container-item",
+            "filter_mode": "whitelist",
+            "quality_affects_inventory_size": false
+        }
     },
     "ItemWithLabelPrototype": {
         "type": "item-with-label",
@@ -744,7 +1457,10 @@
             "ItemWithInventoryPrototype",
             "ItemWithTagsPrototype",
             "SelectionToolPrototype"
-        ]
+        ],
+        "defaults": {
+            "draw_label_for_cursor_render": false
+        }
     },
     "ItemWithTagsPrototype": {
         "type": "item-with-tags",
@@ -752,23 +1468,63 @@
     },
     "KillAchievementPrototype": {
         "type": "kill-achievement",
-        "parent": "AchievementPrototype"
+        "parent": "AchievementPrototype",
+        "defaults": {
+            "amount": 1,
+            "in_vehicle": false,
+            "personally": false
+        }
     },
     "LabPrototype": {
         "type": "lab",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "quality_affects_module_slots": false,
+            "researching_speed": 1,
+            "science_pack_drain_rate_percent": 100,
+            "uses_quality_drain_modifier": false
+        }
     },
     "LampPrototype": {
         "type": "lamp",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "always_on": false,
+            "circuit_wire_max_distance": 0,
+            "darkness_for_all_lamps_off": 0.3,
+            "darkness_for_all_lamps_on": 0.5,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "glow_color_intensity": 0,
+            "glow_render_mode": "additive",
+            "glow_size": 0
+        }
     },
     "LandMinePrototype": {
         "type": "land-mine",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "force_die_on_attack": true,
+            "is_military_target": true,
+            "selection_priority": 45,
+            "timeout": 120,
+            "trigger_force": "enemy",
+            "trigger_interval": 10
+        }
     },
     "LaneSplitterPrototype": {
         "type": "lane-splitter",
-        "parent": "TransportBeltConnectablePrototype"
+        "parent": "TransportBeltConnectablePrototype",
+        "defaults": {
+            "structure_animation_movement_cooldown": 10,
+            "structure_animation_speed_coefficient": 1
+        }
     },
     "LegacyCurvedRailPrototype": {
         "type": "legacy-curved-rail",
@@ -780,19 +1536,41 @@
     },
     "LightningAttractorPrototype": {
         "type": "lightning-attractor",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "efficiency": 0,
+            "range_elongation": 0
+        }
     },
     "LightningPrototype": {
         "type": "lightning",
-        "parent": "EntityPrototype"
+        "parent": "EntityPrototype",
+        "defaults": {
+            "attracted_volume_modifier": 1.0,
+            "time_to_damage": 0
+        }
     },
     "LinkedBeltPrototype": {
         "type": "linked-belt",
-        "parent": "TransportBeltConnectablePrototype"
+        "parent": "TransportBeltConnectablePrototype",
+        "defaults": {
+            "allow_blueprint_connection": true,
+            "allow_clone_connection": true,
+            "allow_side_loading": false,
+            "structure_render_layer": "object"
+        }
     },
     "LinkedContainerPrototype": {
         "type": "linked-container",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "gui_mode": "all",
+            "inventory_type": "with_bar",
+            "inventory_weight_limit": 0
+        }
     },
     "Loader1x1Prototype": {
         "type": "loader-1x1",
@@ -807,18 +1585,43 @@
         "children": [
             "Loader1x1Prototype",
             "Loader1x2Prototype"
-        ]
+        ],
+        "defaults": {
+            "adjustable_belt_stack_size": false,
+            "allow_container_interaction": true,
+            "allow_rail_interaction": true,
+            "belt_length": 0.5,
+            "circuit_wire_max_distance": 0,
+            "container_distance": 1.5,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "energy_per_item": 0,
+            "max_belt_stack_size": 1,
+            "per_lane_filters": false,
+            "respect_insert_limits": false,
+            "structure_render_layer": "object",
+            "wait_for_full_stack": false
+        }
     },
     "LocomotivePrototype": {
         "type": "locomotive",
-        "parent": "RollingStockPrototype"
+        "parent": "RollingStockPrototype",
+        "defaults": {
+            "darkness_to_render_light_animation": 0.3,
+            "max_snap_to_train_stop_distance": 3.0
+        }
     },
     "LogisticContainerPrototype": {
         "type": "logistic-container",
         "parent": "ContainerPrototype",
         "children": [
             "InfinityContainerPrototype"
-        ]
+        ],
+        "defaults": {
+            "render_not_in_network_icon": true,
+            "trash_inventory_size": 0,
+            "use_exact_mode": false
+        }
     },
     "LogisticRobotPrototype": {
         "type": "logistic-robot",
@@ -832,11 +1635,31 @@
     },
     "MarketPrototype": {
         "type": "market",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "allow_access_to_all_forces": true
+        }
     },
     "MiningDrillPrototype": {
         "type": "mining-drill",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "drilling_sound_animation_end_frame": 0,
+            "drilling_sound_animation_start_frame": 0,
+            "drops_full_belt_stacks": false,
+            "filter_count": 0,
+            "migrate_horizontal_mirroring": false,
+            "quality_affects_mining_radius": false,
+            "quality_affects_module_slots": false,
+            "require_resources_to_place": true,
+            "resource_drain_rate_percent": 100,
+            "shuffle_resources_to_mine": false,
+            "use_mirroring": true,
+            "uses_force_mining_productivity_bonus": true
+        }
     },
     "ModData": {
         "type": "mod-data",
@@ -848,11 +1671,18 @@
     },
     "ModulePrototype": {
         "type": "module",
-        "parent": "ItemPrototype"
+        "parent": "ItemPrototype",
+        "defaults": {
+            "requires_beacon_alt_mode": true
+        }
     },
     "ModuleTransferAchievementPrototype": {
         "type": "module-transfer-achievement",
-        "parent": "AchievementPrototype"
+        "parent": "AchievementPrototype",
+        "defaults": {
+            "amount": 1,
+            "limited_to_one_game": false
+        }
     },
     "MouseCursor": {
         "type": "mouse-cursor"
@@ -871,38 +1701,89 @@
     },
     "NightVisionEquipmentPrototype": {
         "type": "night-vision-equipment",
-        "parent": "EquipmentPrototype"
+        "parent": "EquipmentPrototype",
+        "defaults": {
+            "darkness_to_turn_on": 0.5,
+            "sunglasses": false
+        }
     },
     "OffshorePumpPrototype": {
         "type": "offshore-pump",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "always_draw_fluid": true,
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "remove_on_tile_collision": false,
+            "show_fluid_visualization_when_in_cursor": true
+        }
     },
     "ParticlePrototype": {
         "type": "optimized-particle",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "draw_shadow_when_on_ground": true,
+            "mining_particle_frame_speed": 0,
+            "movement_modifier": 1,
+            "movement_modifier_when_on_ground": 0.8,
+            "regular_trigger_effect_frequency": 0,
+            "render_layer": "object",
+            "render_layer_when_on_ground": "lower-object",
+            "vertical_acceleration": -0.004
+        }
     },
     "ParticleSourcePrototype": {
         "type": "particle-source",
-        "parent": "EntityPrototype"
+        "parent": "EntityPrototype",
+        "defaults": {
+            "height_deviation": 0,
+            "horizontal_speed_deviation": 0,
+            "selection_priority": 20,
+            "time_before_start_deviation": 0,
+            "time_to_live_deviation": 0,
+            "vertical_speed_deviation": 0
+        }
     },
     "PipePrototype": {
         "type": "pipe",
         "parent": "EntityWithOwnerPrototype",
         "children": [
             "InfinityPipePrototype"
-        ]
+        ],
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "show_fluid_visualization_when_in_cursor": true
+        }
     },
     "PipeToGroundPrototype": {
         "type": "pipe-to-ground",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "draw_fluid_icon_override": false,
+            "show_fluid_visualization_when_in_cursor": true
+        }
     },
     "PlaceEquipmentAchievementPrototype": {
         "type": "place-equipment-achievement",
-        "parent": "AchievementPrototype"
+        "parent": "AchievementPrototype",
+        "defaults": {
+            "amount": 1,
+            "limited_to_one_game": false
+        }
     },
     "PlanetPrototype": {
         "type": "planet",
-        "parent": "SpaceLocationPrototype"
+        "parent": "SpaceLocationPrototype",
+        "defaults": {
+            "entities_require_heating": false,
+            "ticks_between_player_effects": 0
+        }
     },
     "PlantPrototype": {
         "type": "plant",
@@ -910,15 +1791,26 @@
     },
     "PlayerDamagedAchievementPrototype": {
         "type": "player-damaged-achievement",
-        "parent": "AchievementPrototype"
+        "parent": "AchievementPrototype",
+        "defaults": {
+            "type_of_dealer": ""
+        }
     },
     "PlayerPortPrototype": {
         "type": "player-port",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "selection_priority": 45
+        }
     },
     "PowerSwitchPrototype": {
         "type": "power-switch",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "wire_max_distance": 0
+        }
     },
     "ProcessionLayerInheritanceGroup": {
         "type": "procession-layer-inheritance-group",
@@ -938,11 +1830,29 @@
     },
     "ProgrammableSpeakerPrototype": {
         "type": "programmable-speaker",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "audible_distance_modifier": 1,
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true
+        }
     },
     "ProjectilePrototype": {
         "type": "projectile",
-        "parent": "EntityPrototype"
+        "parent": "EntityPrototype",
+        "defaults": {
+            "direction_only": false,
+            "enable_drawing_with_mask": false,
+            "force_condition": "all",
+            "height": 1,
+            "hit_at_collision_position": false,
+            "piercing_damage": 0,
+            "rotatable": true,
+            "selection_priority": 20,
+            "turn_speed": 1,
+            "turning_speed_increases_exponentially_with_projectile_speed": false
+        }
     },
     "Prototype": {
         "parent": "PrototypeBase",
@@ -999,23 +1909,65 @@
             "UtilityConstants",
             "UtilitySounds",
             "UtilitySprites"
-        ]
+        ],
+        "defaults": {
+            "hidden": false,
+            "order": "",
+            "parameter": false
+        }
     },
     "ProxyContainerPrototype": {
         "type": "proxy-container",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "direction_count": 1,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "draw_inventory_content": true
+        }
     },
     "PumpPrototype": {
         "type": "pump",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "flow_scaling": true,
+            "fluid_wagon_connector_frame_count": 1,
+            "fluid_wagon_tank_valve_max_distance": 2.2,
+            "show_fluid_visualization_when_in_cursor": true
+        }
     },
     "QualityPrototype": {
         "type": "quality",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "beacon_power_usage_multiplier": 1,
+            "crafting_machine_energy_usage_multiplier": 1,
+            "draw_sprite_by_default": true,
+            "icon_size": 64,
+            "mining_drill_resource_drain_multiplier": 1,
+            "next_probability": 0,
+            "previous_probability": 0,
+            "science_pack_drain_multiplier": 1
+        }
     },
     "RadarPrototype": {
         "type": "radar",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "connects_to_other_radars": true,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "energy_fraction_to_connect": 0.9,
+            "energy_fraction_to_disconnect": 0.1,
+            "is_military_target": true,
+            "reset_orientation_when_frozen": false,
+            "rotation_speed": 0.01
+        }
     },
     "RailChainSignalPrototype": {
         "type": "rail-chain-signal",
@@ -1035,22 +1987,44 @@
             "LegacyStraightRailPrototype",
             "RailRampPrototype",
             "StraightRailPrototype"
-        ]
+        ],
+        "defaults": {
+            "build_grid_size": 2,
+            "extra_planner_goal_penalty": 0,
+            "extra_planner_penalty": 0,
+            "forced_fence_segment_count": 0,
+            "removes_soft_decoratives": false,
+            "selection_priority": 45
+        }
     },
     "RailRampPrototype": {
         "type": "rail-ramp",
-        "parent": "RailPrototype"
+        "parent": "RailPrototype",
+        "defaults": {
+            "support_range": 15.0,
+            "tall": true
+        }
     },
     "RailRemnantsPrototype": {
         "type": "rail-remnants",
-        "parent": "CorpsePrototype"
+        "parent": "CorpsePrototype",
+        "defaults": {
+            "build_grid_size": 2
+        }
     },
     "RailSignalBasePrototype": {
         "parent": "EntityWithOwnerPrototype",
         "children": [
             "RailChainSignalPrototype",
             "RailSignalPrototype"
-        ]
+        ],
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "elevated_selection_priority": 55,
+            "selection_priority": 45
+        }
     },
     "RailSignalPrototype": {
         "type": "rail-signal",
@@ -1058,11 +2032,26 @@
     },
     "RailSupportPrototype": {
         "type": "rail-support",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "build_grid_size": 2,
+            "not_buildable_if_no_rails": false,
+            "snap_to_spots_distance": 1.0,
+            "support_range": 15.0
+        }
     },
     "ReactorPrototype": {
         "type": "reactor",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "heating_radius": 1,
+            "neighbour_bonus": 1,
+            "scale_energy_usage": false,
+            "use_fuel_glow_color": false
+        }
     },
     "RecipeCategory": {
         "type": "recipe-category",
@@ -1070,7 +2059,35 @@
     },
     "RecipePrototype": {
         "type": "recipe",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "allow_as_intermediate": true,
+            "allow_consumption": true,
+            "allow_decomposition": true,
+            "allow_inserter_overload": true,
+            "allow_intermediates": true,
+            "allow_pollution": true,
+            "allow_productivity": false,
+            "allow_quality": true,
+            "allow_speed": true,
+            "always_show_made_in": false,
+            "auto_recycle": true,
+            "emissions_multiplier": 1,
+            "enabled": true,
+            "energy_required": 0.5,
+            "hidden": false,
+            "hide_from_bonus_gui": false,
+            "hide_from_player_crafting": false,
+            "hide_from_stats": false,
+            "icon_size": 64,
+            "maximum_productivity": 3.0,
+            "overload_multiplier": 0,
+            "preserve_products_in_machine_output": false,
+            "raise_on_crafted": false,
+            "requester_paste_multiplier": 30,
+            "sort_item_ingredients": true,
+            "unlock_results": true
+        }
     },
     "RemoteControllerPrototype": {
         "type": "remote-controller"
@@ -1081,11 +2098,17 @@
     },
     "ResearchAchievementPrototype": {
         "type": "research-achievement",
-        "parent": "AchievementPrototype"
+        "parent": "AchievementPrototype",
+        "defaults": {
+            "research_all": false
+        }
     },
     "ResearchWithSciencePackAchievementPrototype": {
         "type": "research-with-science-pack-achievement",
-        "parent": "AchievementPrototype"
+        "parent": "AchievementPrototype",
+        "defaults": {
+            "amount": 1
+        }
     },
     "ResourceCategory": {
         "type": "resource-category",
@@ -1093,34 +2116,108 @@
     },
     "ResourceEntityPrototype": {
         "type": "resource",
-        "parent": "EntityPrototype"
+        "parent": "EntityPrototype",
+        "defaults": {
+            "category": "basic-solid",
+            "cliff_removal_probability": 1.0,
+            "draw_stateless_visualisation_under_building": true,
+            "effect_animation_period": 0.0,
+            "effect_animation_period_deviation": 0.0,
+            "effect_darkness_multiplier": 1.0,
+            "highlight": false,
+            "infinite": false,
+            "infinite_depletion_amount": 1,
+            "map_grid": true,
+            "max_effect_alpha": 1.0,
+            "min_effect_alpha": 0.0,
+            "minimum": 0,
+            "normal": 1,
+            "randomize_visual_position": true,
+            "resource_patch_search_radius": 3,
+            "selection_priority": 40,
+            "tree_removal_max_distance": 0,
+            "tree_removal_probability": 0
+        }
     },
     "RoboportEquipmentPrototype": {
         "type": "roboport-equipment",
-        "parent": "EquipmentPrototype"
+        "parent": "EquipmentPrototype",
+        "defaults": {
+            "charging_distance": 0.0,
+            "charging_station_count": 0,
+            "charging_station_count_affected_by_quality": false,
+            "charging_threshold_distance": 1.0,
+            "draw_construction_radius_visualization": true,
+            "draw_logistic_radius_visualization": true,
+            "robot_vertical_acceleration": 0.01,
+            "robots_shrink_when_entering_and_exiting": false,
+            "spawn_and_station_shadow_height_offset": 0,
+            "stationing_render_layer_swap_height": 0.87
+        }
     },
     "RoboportPrototype": {
         "type": "roboport",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "charging_distance": 0.0,
+            "charging_station_count": 0,
+            "charging_station_count_affected_by_quality": false,
+            "charging_threshold_distance": 1.0,
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_construction_radius_visualization": true,
+            "draw_copper_wires": true,
+            "draw_logistic_radius_visualization": true,
+            "render_recharge_icon": true,
+            "robot_vertical_acceleration": 0.01,
+            "robots_shrink_when_entering_and_exiting": false,
+            "spawn_and_station_shadow_height_offset": 0,
+            "stationing_render_layer_swap_height": 0.87
+        }
     },
     "RobotWithLogisticInterfacePrototype": {
         "parent": "FlyingRobotPrototype",
         "children": [
             "ConstructionRobotPrototype",
             "LogisticRobotPrototype"
-        ]
+        ],
+        "defaults": {
+            "draw_cargo": true,
+            "require_charge_to_mine": false
+        }
     },
     "RocketSiloPrototype": {
         "type": "rocket-silo",
-        "parent": "AssemblingMachinePrototype"
+        "parent": "AssemblingMachinePrototype",
+        "defaults": {
+            "arms_speed_modifier_per_quality_level": 0,
+            "can_launch_without_landing_pads": false,
+            "launch_to_space_platforms": false,
+            "launch_wait_time": 120,
+            "lift_weight": 1000000,
+            "logistic_trash_inventory_size": 0,
+            "render_not_in_network_icon": true,
+            "rocket_engine_starting_speed_modifier_per_quality_level": 0,
+            "rocket_rising_delay": 30,
+            "rocket_rising_speed_modifier_per_quality_level": 0,
+            "to_be_inserted_to_rocket_inventory_size": 0
+        }
     },
     "RocketSiloRocketPrototype": {
         "type": "rocket-silo-rocket",
-        "parent": "EntityPrototype"
+        "parent": "EntityPrototype",
+        "defaults": {
+            "rocket_above_wires_slice_offset_from_center": -3,
+            "rocket_air_object_slice_offset_from_center": -6,
+            "selection_priority": 20
+        }
     },
     "RocketSiloRocketShadowPrototype": {
         "type": "rocket-silo-rocket-shadow",
-        "parent": "EntityPrototype"
+        "parent": "EntityPrototype",
+        "defaults": {
+            "selection_priority": 19
+        }
     },
     "RollingStockPrototype": {
         "parent": "VehiclePrototype",
@@ -1129,18 +2226,40 @@
             "CargoWagonPrototype",
             "FluidWagonPrototype",
             "LocomotivePrototype"
-        ]
+        ],
+        "defaults": {
+            "allow_manual_color": true,
+            "allow_robot_dispatch_in_automatic_mode": false,
+            "default_copy_color_from_train_stop": false,
+            "drive_over_tie_trigger_minimal_speed": 0.0,
+            "elevated_selection_priority": 56,
+            "quality_affects_max_speed": false,
+            "tie_distance": 10.0
+        }
     },
     "SegmentPrototype": {
         "type": "segment",
         "parent": "EntityWithOwnerPrototype",
         "children": [
             "SegmentedUnitPrototype"
-        ]
+        ],
+        "defaults": {
+            "backward_overlap": 0,
+            "backward_padding": 0,
+            "dying_sound_volume_modifier": 1.0,
+            "forward_overlap": 0,
+            "forward_padding": 0,
+            "render_layer": "object"
+        }
     },
     "SegmentedUnitPrototype": {
         "type": "segmented-unit",
-        "parent": "SegmentPrototype"
+        "parent": "SegmentPrototype",
+        "defaults": {
+            "roar_probability": 0.00277777785,
+            "ticks_per_scan": 120,
+            "turn_smoothing": 1
+        }
     },
     "SelectionToolPrototype": {
         "type": "selection-tool",
@@ -1151,7 +2270,13 @@
             "DeconstructionItemPrototype",
             "SpidertronRemotePrototype",
             "UpgradeItemPrototype"
-        ]
+        ],
+        "defaults": {
+            "always_include_tiles": false,
+            "mouse_cursor": "selection-tool-cursor",
+            "send_pre_selection_events": false,
+            "skip_fog_of_war": false
+        }
     },
     "SelectorCombinatorPrototype": {
         "type": "selector-combinator",
@@ -1159,47 +2284,125 @@
     },
     "ShootAchievementPrototype": {
         "type": "shoot-achievement",
-        "parent": "AchievementPrototype"
+        "parent": "AchievementPrototype",
+        "defaults": {
+            "amount": 1
+        }
     },
     "ShortcutPrototype": {
         "type": "shortcut",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "associated_control_input": "",
+            "icon_size": 64,
+            "order": "",
+            "small_icon_size": 64,
+            "style": "default",
+            "toggleable": false,
+            "unavailable_until_unlocked": false
+        }
     },
     "SimpleEntityPrototype": {
         "type": "simple-entity",
-        "parent": "EntityWithHealthPrototype"
+        "parent": "EntityWithHealthPrototype",
+        "defaults": {
+            "count_as_rock_for_filtered_deconstruction": false,
+            "lower_render_layer": "lower-object",
+            "random_animation_offset": false,
+            "random_variation_on_create": true,
+            "render_layer": "object",
+            "secondary_draw_order": 0,
+            "shuffled_variation_on_chunk_generated": false
+        }
     },
     "SimpleEntityWithForcePrototype": {
         "type": "simple-entity-with-force",
-        "parent": "SimpleEntityWithOwnerPrototype"
+        "parent": "SimpleEntityWithOwnerPrototype",
+        "defaults": {
+            "is_military_target": true
+        }
     },
     "SimpleEntityWithOwnerPrototype": {
         "type": "simple-entity-with-owner",
         "parent": "EntityWithOwnerPrototype",
         "children": [
             "SimpleEntityWithForcePrototype"
-        ]
+        ],
+        "defaults": {
+            "force_visibility": "all",
+            "lower_render_layer": "lower-object",
+            "random_animation_offset": false,
+            "random_variation_on_create": true,
+            "render_layer": "object",
+            "secondary_draw_order": 0
+        }
     },
     "SmokePrototype": {
         "parent": "EntityPrototype",
         "children": [
             "SmokeWithTriggerPrototype"
-        ]
+        ],
+        "defaults": {
+            "affected_by_wind": true,
+            "cyclic": false,
+            "duration": 0,
+            "end_scale": 1.0,
+            "fade_away_duration": 0,
+            "fade_in_duration": 0,
+            "movement_slow_down_factor": 0.995,
+            "render_layer": "smoke",
+            "selection_priority": 20,
+            "show_when_smoke_off": false,
+            "spread_duration": 0,
+            "start_scale": 1.0
+        }
     },
     "SmokeWithTriggerPrototype": {
         "type": "smoke-with-trigger",
-        "parent": "SmokePrototype"
+        "parent": "SmokePrototype",
+        "defaults": {
+            "action_cooldown": 0,
+            "attach_to_target": false,
+            "fade_when_attachment_is_destroyed": false,
+            "particle_count": 1,
+            "particle_distance_scale_factor": 0.0,
+            "particle_duration_variation": 0,
+            "spread_duration_variation": 0
+        }
     },
     "SolarPanelEquipmentPrototype": {
         "type": "solar-panel-equipment",
-        "parent": "EquipmentPrototype"
+        "parent": "EquipmentPrototype",
+        "defaults": {
+            "performance_at_day": 1,
+            "performance_at_night": 0,
+            "solar_coefficient_property": "solar-power"
+        }
     },
     "SolarPanelPrototype": {
         "type": "solar-panel",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "performance_at_day": 1,
+            "performance_at_night": 0,
+            "solar_coefficient_property": "solar-power"
+        }
     },
     "SoundPrototype": {
-        "type": "sound"
+        "type": "sound",
+        "defaults": {
+            "allow_random_repeat": false,
+            "audible_distance_modifier": 1.0,
+            "category": "game-effect",
+            "max_speed": 1.0,
+            "max_volume": 1.0,
+            "min_speed": 1.0,
+            "min_volume": 1.0,
+            "priority": 127,
+            "speed": 1.0,
+            "speed_smoothing_window_size": 0,
+            "volume": 1.0
+        }
     },
     "SpaceConnectionDistanceTraveledAchievementPrototype": {
         "type": "space-connection-distance-traveled-achievement",
@@ -1207,41 +2410,97 @@
     },
     "SpaceConnectionPrototype": {
         "type": "space-connection",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "icon_size": 64,
+            "length": 600,
+            "shape": "arc"
+        }
     },
     "SpaceLocationPrototype": {
         "type": "space-location",
         "parent": "Prototype",
         "children": [
             "PlanetPrototype"
-        ]
+        ],
+        "defaults": {
+            "asteroid_spawn_influence": 0.1,
+            "auto_save_on_first_trip": true,
+            "draw_orbit": true,
+            "fly_condition": false,
+            "gravity_pull": 0,
+            "hidden": false,
+            "icon_size": 64,
+            "label_orientation": 0.25,
+            "magnitude": 1.0,
+            "solar_power_in_space": 1.0,
+            "starmap_icon_size": 64
+        }
     },
     "SpacePlatformHubPrototype": {
         "type": "space-platform-hub",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "build_grid_size": 256,
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "platform_repair_speed_modifier": 1,
+            "weight": 0
+        }
     },
     "SpacePlatformStarterPackPrototype": {
         "type": "space-platform-starter-pack",
-        "parent": "ItemPrototype"
+        "parent": "ItemPrototype",
+        "defaults": {
+            "create_electric_network": false
+        }
     },
     "SpectatorControllerPrototype": {
         "type": "spectator-controller"
     },
     "SpeechBubblePrototype": {
         "type": "speech-bubble",
-        "parent": "EntityPrototype"
+        "parent": "EntityPrototype",
+        "defaults": {
+            "fade_in_out_ticks": 60,
+            "selection_priority": 20,
+            "wrapper_flow_style": "flow_style",
+            "y_offset": 0
+        }
     },
     "SpiderLegPrototype": {
         "type": "spider-leg",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "ankle_height": 0,
+            "hip_flexibility": 1,
+            "selection_priority": 20,
+            "stretch_force_scalar": 0.715,
+            "walking_sound_speed_modifier": 1,
+            "walking_sound_volume_modifier": 1
+        }
     },
     "SpiderUnitPrototype": {
         "type": "spider-unit",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "max_pursue_distance": 50,
+            "min_pursue_time": 600,
+            "radar_range": 0,
+            "spawning_time_modifier": 1,
+            "torso_bob_speed": 1,
+            "torso_rotation_speed": 1
+        }
     },
     "SpiderVehiclePrototype": {
         "type": "spider-vehicle",
-        "parent": "VehiclePrototype"
+        "parent": "VehiclePrototype",
+        "defaults": {
+            "torso_bob_speed": 1,
+            "torso_rotation_speed": 1,
+            "trash_inventory_size": 0
+        }
     },
     "SpidertronRemotePrototype": {
         "type": "spidertron-remote",
@@ -1249,18 +2508,73 @@
     },
     "SplitterPrototype": {
         "type": "splitter",
-        "parent": "TransportBeltConnectablePrototype"
+        "parent": "TransportBeltConnectablePrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "structure_animation_movement_cooldown": 10,
+            "structure_animation_speed_coefficient": 1
+        }
     },
     "SpritePrototype": {
-        "type": "sprite"
+        "type": "sprite",
+        "defaults": {
+            "allow_forced_downscale": false,
+            "apply_runtime_tint": false,
+            "apply_special_effect": false,
+            "blend_mode": "normal",
+            "draw_as_glow": false,
+            "draw_as_light": false,
+            "draw_as_shadow": false,
+            "generate_sdf": false,
+            "invert_colors": false,
+            "load_in_minimal_mode": false,
+            "mipmap_count": 0,
+            "premul_alpha": true,
+            "priority": "medium",
+            "rotate_shift": false,
+            "scale": 1,
+            "surface": "any",
+            "tint_as_overlay": false,
+            "usage": "any",
+            "x": 0,
+            "y": 0
+        }
     },
     "StickerPrototype": {
         "type": "sticker",
-        "parent": "EntityPrototype"
+        "parent": "EntityPrototype",
+        "defaults": {
+            "damage_interval": 1,
+            "fire_spread_cooldown": 30,
+            "fire_spread_radius": 1,
+            "force_visibility": "all",
+            "ground_target": false,
+            "render_layer": "object",
+            "selection_box_type": "entity",
+            "selection_priority": 20,
+            "single_particle": false,
+            "stickers_per_square_meter": 15,
+            "target_movement_max": -1,
+            "target_movement_modifier": 1,
+            "use_damage_substitute": true,
+            "vehicle_friction_modifier": 1,
+            "vehicle_speed_max": -1,
+            "vehicle_speed_modifier": 1
+        }
     },
     "StorageTankPrototype": {
         "type": "storage-tank",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "show_fluid_icon": true,
+            "show_fluid_visualization_when_in_cursor": true,
+            "two_direction_only": false
+        }
     },
     "StraightRailPrototype": {
         "type": "straight-rail",
@@ -1271,19 +2585,40 @@
     },
     "SurfacePropertyPrototype": {
         "type": "surface-property",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "is_time": false
+        }
     },
     "SurfacePrototype": {
         "type": "surface",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "icon_size": 64
+        }
     },
     "TechnologyPrototype": {
         "type": "technology",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "allows_productivity": true,
+            "enabled": true,
+            "essential": false,
+            "hidden": false,
+            "icon_size": 64,
+            "ignore_tech_cost_multiplier": false,
+            "upgrade": false,
+            "visible_when_disabled": false
+        }
     },
     "TemporaryContainerPrototype": {
         "type": "temporary-container",
-        "parent": "ContainerPrototype"
+        "parent": "ContainerPrototype",
+        "defaults": {
+            "alert_after_time": 0,
+            "destroy_on_empty": true,
+            "time_to_live": 0
+        }
     },
     "ThrusterPrototype": {
         "type": "thruster",
@@ -1298,11 +2633,40 @@
     },
     "TilePrototype": {
         "type": "tile",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "allows_being_covered": true,
+            "can_be_part_of_blueprint": true,
+            "check_collision_with_entities": true,
+            "decorative_removal_probability": 0.0,
+            "destroys_dropped_items": false,
+            "icon_size": 64,
+            "is_foundation": false,
+            "layer_group": "ground-natural",
+            "lowland_fog": false,
+            "max_health": 0,
+            "needs_correction": false,
+            "searchable": false,
+            "sprite_usage_surface": "any",
+            "transition_overlay_layer_offset": 0,
+            "vehicle_friction_modifier": 1,
+            "walking_speed_modifier": 1,
+            "weight": 0
+        }
     },
     "TipsAndTricksItem": {
         "type": "tips-and-tricks-item",
-        "parent": "PrototypeBase"
+        "parent": "PrototypeBase",
+        "defaults": {
+            "icon_size": 64,
+            "image": "",
+            "indent": 0,
+            "is_title": false,
+            "player_input_method_filter": "all",
+            "starting_status": "locked",
+            "tag": "",
+            "tutorial": ""
+        }
     },
     "TipsAndTricksItemCategory": {
         "type": "tips-and-tricks-item-category"
@@ -1313,7 +2677,10 @@
         "children": [
             "ArmorPrototype",
             "RepairToolPrototype"
-        ]
+        ],
+        "defaults": {
+            "infinite": false
+        }
     },
     "TrainPathAchievementPrototype": {
         "type": "train-path-achievement",
@@ -1321,7 +2688,14 @@
     },
     "TrainStopPrototype": {
         "type": "train-stop",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "build_grid_size": 2,
+            "chart_name": true,
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true
+        }
     },
     "TransportBeltConnectablePrototype": {
         "parent": "EntityWithOwnerPrototype",
@@ -1332,25 +2706,50 @@
             "SplitterPrototype",
             "TransportBeltPrototype",
             "UndergroundBeltPrototype"
-        ]
+        ],
+        "defaults": {
+            "animation_speed_coefficient": 1,
+            "selection_priority": 45
+        }
     },
     "TransportBeltPrototype": {
         "type": "transport-belt",
-        "parent": "TransportBeltConnectablePrototype"
+        "parent": "TransportBeltConnectablePrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true
+        }
     },
     "TreePrototype": {
         "type": "tree",
         "parent": "EntityWithHealthPrototype",
         "children": [
             "PlantPrototype"
-        ]
+        ],
+        "defaults": {
+            "darkness_of_burnt_tree": 0.5,
+            "healing_per_tick": 0.001666
+        }
     },
     "TriggerTargetType": {
         "type": "trigger-target-type"
     },
     "TrivialSmokePrototype": {
         "type": "trivial-smoke",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "affected_by_wind": true,
+            "cyclic": false,
+            "end_scale": 1.0,
+            "fade_away_duration": 0,
+            "fade_in_duration": 0,
+            "movement_slow_down_factor": 0.995,
+            "render_layer": "smoke",
+            "show_when_smoke_off": false,
+            "spread_duration": 0,
+            "start_scale": 1.0
+        }
     },
     "TurretPrototype": {
         "type": "turret",
@@ -1359,7 +2758,33 @@
             "AmmoTurretPrototype",
             "ElectricTurretPrototype",
             "FluidTurretPrototype"
-        ]
+        ],
+        "defaults": {
+            "alert_when_attacking": true,
+            "allow_turning_when_starting_attack": false,
+            "attack_from_start_frame": false,
+            "attacking_speed": 1,
+            "can_retarget_while_starting_attack": false,
+            "circuit_wire_max_distance": 0,
+            "default_speed": 1,
+            "default_starting_progress_when_killed": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "energy_glow_animation_flicker_strength": 0.2,
+            "folded_animation_is_stateless": false,
+            "glow_light_intensity": 0,
+            "gun_animation_render_layer": "object",
+            "gun_animation_secondary_draw_order": 0,
+            "is_military_target": true,
+            "leave_attacking_if_shoot_fails": true,
+            "prepared_alternative_chance": 0,
+            "random_animation_offset": false,
+            "shoot_in_prepare_state": false,
+            "spawn_decorations_on_expansion": false,
+            "start_attacking_only_when_can_shoot": false,
+            "turret_base_has_direction": false,
+            "unfolds_before_dying": false
+        }
     },
     "TutorialDefinition": {
         "type": "tutorial",
@@ -1371,11 +2796,29 @@
     },
     "UnitPrototype": {
         "type": "unit",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "affected_by_tiles": false,
+            "allow_run_time_change_of_is_military_target": false,
+            "can_open_gates": false,
+            "has_belt_immunity": false,
+            "is_military_target": true,
+            "max_pursue_distance": 50,
+            "min_pursue_time": 600,
+            "move_while_shooting": false,
+            "radar_range": 0,
+            "render_layer": "object",
+            "rotation_speed": 0.025,
+            "spawning_time_modifier": 1
+        }
     },
     "UpgradeItemPrototype": {
         "type": "upgrade-item",
-        "parent": "SelectionToolPrototype"
+        "parent": "SelectionToolPrototype",
+        "defaults": {
+            "always_include_tiles": false,
+            "draw_label_for_cursor_render": true
+        }
     },
     "UseEntityInEnergyProductionAchievementPrototype": {
         "type": "use-entity-in-energy-production-achievement",
@@ -1383,7 +2826,11 @@
     },
     "UseItemAchievementPrototype": {
         "type": "use-item-achievement",
-        "parent": "AchievementPrototype"
+        "parent": "AchievementPrototype",
+        "defaults": {
+            "amount": 1,
+            "limited_to_one_game": false
+        }
     },
     "UtilityConstants": {
         "type": "utility-constants",
@@ -1399,7 +2846,10 @@
     },
     "ValvePrototype": {
         "type": "valve",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "threshold": 0
+        }
     },
     "VehiclePrototype": {
         "parent": "EntityWithOwnerPrototype",
@@ -1407,14 +2857,32 @@
             "CarPrototype",
             "RollingStockPrototype",
             "SpiderVehiclePrototype"
-        ]
+        ],
+        "defaults": {
+            "allow_passengers": true,
+            "allow_remote_driving": false,
+            "chunk_exploration_radius": 0,
+            "deliver_category": "",
+            "impact_speed_to_volume_ratio": 5.0,
+            "stop_trigger_speed": 0.0,
+            "terrain_friction_modifier": 1
+        }
     },
     "VirtualSignalPrototype": {
         "type": "virtual-signal",
-        "parent": "Prototype"
+        "parent": "Prototype",
+        "defaults": {
+            "icon_size": 64
+        }
     },
     "WallPrototype": {
         "type": "wall",
-        "parent": "EntityWithOwnerPrototype"
+        "parent": "EntityWithOwnerPrototype",
+        "defaults": {
+            "circuit_wire_max_distance": 0,
+            "draw_circuit_wires": true,
+            "draw_copper_wires": true,
+            "visual_merge_group": 0
+        }
     }
 }
