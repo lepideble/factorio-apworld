@@ -11,13 +11,19 @@ def get_mod_version(world: FactorioWorld) -> str:
     return '.'.join(map(str, world.world_version))
 
 
-def get_location_data(world, location) -> dict:
+def get_location_data(world, location) -> tuple[dict, dict]:
+    item = location.item
+
+    is_location_hinted = location.name in world.options.start_location_hints
+    is_item_hinted = item.name in world.multiworld.worlds[item.player].options.start_hints
+    is_hinted = is_location_hinted or is_item_hinted
+
     return (location.data, {
-        'name': location.item.name if world.options.tech_tree_information.value == 2 else None,
-        'player_name': world.multiworld.player_name[location.item.player] if world.options.tech_tree_information.value == 2 else None,
-        'advancement': location.item.advancement if world.options.tech_tree_information.value else None,
-        'useful': location.item.useful if world.options.tech_tree_information.value else None,
-        'trap': location.item.trap if world.options.tech_tree_information.value else None,
+        'name': item.name if is_hinted else None,
+        'player_name': world.multiworld.player_name[item.player] if is_hinted else None,
+        'advancement': item.advancement if is_hinted or world.options.tech_tree_information.value else None,
+        'useful': item.useful if is_hinted or world.options.tech_tree_information.value else None,
+        'trap': item.trap if is_hinted or world.options.tech_tree_information.value else None,
     })
 
 
