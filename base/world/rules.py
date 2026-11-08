@@ -68,6 +68,9 @@ class UnlockedRecipe(Rule['FactorioWorld'], game=game_name):
         if self.recipe_name in recipes_unlocked_at_start:
             return True_().resolve(world)
 
+        if self.recipe_name.startswith('empty-') and self.recipe_name.endswith('-barrel'):
+            return True_().resolve(world)
+
         technologies = technologies_by(unlock_recipe=self.recipe_name)
 
         if len(technologies) == 0:

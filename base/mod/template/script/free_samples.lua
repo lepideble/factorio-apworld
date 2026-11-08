@@ -20,23 +20,34 @@ local function get_stack_size(name)
     return 1
 end
 
+local function get_free_sample_count(name, amount)
+    if config.free_samples.quantity == "single_craft" then
+        return amount
+    else
+        local count = get_stack_size(name)
+        if config.free_samples.quantity == "half_stack" then
+            count = math.ceil(count / 2)
+        end
+        return count
+    end
+end
+
+
 local function send_for_recipe(force, recipe_name)
     local recipe = prototypes.recipe[recipe_name]
 
     for _, result in pairs(recipe.products) do
-        if result.type == "item" and result.amount then
-            local name = result.name
-            if config.free_samples.blacklist[name] ~= 1 then
-                local count
-                if config.free_samples.quantity == "single_craft" then
-                    count = result.amount
-                else
-                    count = get_stack_size(result.name)
-                    if config.free_samples.quantity == "half_stack" then
-                        count = math.ceil(count / 2)
-                    end
-                end
+        if config.free_samples.blacklist[result.name] ~= 1 then
+            if result.type == "item" and result.amount then
+                local name = result.name
+                local count = get_free_sample_count(name, result.amount)
                 items.calls.deliver(force, name, count, config.free_samples.quality)
+            end
+
+            if result.type == "fluid" and result.amount then
+                local name = result.name .. "-barrel"
+                local count = get_free_sample_count(name, math.ceil(result.amount / 50))
+                items.calls.deliver(force, name, count)
             end
         end
     end
