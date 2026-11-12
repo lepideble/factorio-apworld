@@ -1,5 +1,5 @@
 from ..config import split_technologies_exclusions
-from ..data.raw import science_packs, technologies
+from ..data.raw import items, science_packs, technologies
 from ..data.utils import upgrades_map, upgrades_levels
 from ..world import FactorioWorld
 
@@ -29,6 +29,7 @@ def get_location_data(world, location) -> tuple[dict, dict]:
 
 def get_mod_data(world: FactorioWorld) -> dict:
     free_sample_blacklist = {}
+    free_sample_blacklist.update({item: 1 for item in items if item.endswith('-barrel')})
     free_sample_blacklist.update({item: 1 for item in science_packs})
     free_sample_blacklist.update({item: 1 for item in world.options.free_sample_blacklist.value})
     free_sample_blacklist.update({item: 0 for item in world.options.free_sample_whitelist.value})

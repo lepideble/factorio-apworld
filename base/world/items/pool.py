@@ -46,6 +46,8 @@ for technology in technologies:
         quality_pool[quality_name] += 1
 
     for recipe_name in technology.unlocked_recipes:
+        if recipe_name.startswith('empty-') and recipe_name.endswith('-barrel'):
+            continue
         recipe_pool[recipe_name] += 1
 
     for space_location_name in technology.unlocked_space_locations:
