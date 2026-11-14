@@ -46,8 +46,10 @@ local function send_for_recipe(force, recipe_name)
 
             if result.type == "fluid" and result.amount then
                 local name = result.name .. "-barrel"
-                local count = get_free_sample_count(name, math.ceil(result.amount / 50))
-                items.calls.deliver(force, name, count)
+                if prototypes.item[name] then
+                    local count = get_free_sample_count(name, math.ceil(result.amount / 50))
+                    items.calls.deliver(force, name, count)
+                end
             end
         end
     end
