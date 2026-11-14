@@ -40,7 +40,6 @@ def items_required_for_automation(options) -> set[str]:
 progressive_items_with_split_technologies = {
     'progressive assembling machine': ['recipe: assembling-machine-1', 'recipe: assembling-machine-2', 'recipe: assembling-machine-3'],
     'progressive circuit': ['recipe: electronic-circuit', 'recipe: advanced-circuit', 'recipe: processing-unit', 'recipe: quantum-processor'],
-    'progressive combinator': ['recipe: constant-combinator', 'recipe: arithmetic-combinator', 'recipe: decider-combinator', 'recipe: selector-combinator'],
     'progressive concrete': ['recipe: concrete', 'recipe: refined-concrete'],
     'progressive inserter': ['recipe: inserter', 'recipe: long-handed-inserter', 'recipe: fast-inserter', 'recipe: bulk-inserter', 'recipe: stack-inserter'],
     'progressive oil processing': ['recipe: basic-oil-processing', 'recipe: advanced-oil-processing'],
