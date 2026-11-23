@@ -179,3 +179,8 @@ function spill_character_inventory(character)
         end
     end
 end
+
+return {
+    string_ends_with = string_ends_with,
+    string_starts_with = string_starts_with,
+}
