@@ -4,6 +4,7 @@ if config.free_samples == nil then
     return {}
 end
 
+local lib = require("lib")
 local items = require("script/items")
 local receive = require("script/receive")
 
@@ -32,8 +33,12 @@ local function get_free_sample_count(name, amount)
     end
 end
 
-
 local function send_for_recipe(force, recipe_name)
+    -- Don't send free samples for recycling recipes
+    if lib.string_ends_with(recipe_name, "-recycling") then
+        return
+    end
+
     local recipe = prototypes.recipe[recipe_name]
 
     for _, result in pairs(recipe.products) do
